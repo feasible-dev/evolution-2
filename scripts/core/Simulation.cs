@@ -48,6 +48,11 @@ public sealed class Simulation
         ResolveOverlaps();
     }
 
+    public void ResolvePopulationLayout()
+    {
+        ResolveOverlaps();
+    }
+
     private Agent CreateRandomAgent()
     {
         var radius = Settings.AgentRadius;

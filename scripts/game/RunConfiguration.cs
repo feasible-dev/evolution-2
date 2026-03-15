@@ -1,4 +1,5 @@
 using EvoPrototype.Core;
+using EvoPrototype.Evolution;
 using Godot;
 
 namespace EvoPrototype.Game;
@@ -33,6 +34,16 @@ public sealed class RunConfiguration
 
     public float NeighborBrakeDistance { get; set; } = 18.0f;
 
+    public float GenerationDurationSeconds { get; set; } = 20.0f;
+
+    public float SelectionDurationSeconds { get; set; } = 1.5f;
+
+    public float TimeScale { get; set; } = 1.0f;
+
+    public float SurvivalBandThickness { get; set; } = 64.0f;
+
+    public float MutationStrength { get; set; } = 0.12f;
+
     public SimulationSettings ToSimulationSettings()
     {
         return new SimulationSettings
@@ -49,6 +60,18 @@ public sealed class RunConfiguration
             MinimumDecisionIntervalSeconds = MinimumDecisionIntervalSeconds,
             LowSpeedReconsiderationSeconds = LowSpeedReconsiderationSeconds,
             NeighborBrakeDistance = NeighborBrakeDistance
+        };
+    }
+
+    public EvolutionSettings ToEvolutionSettings()
+    {
+        return new EvolutionSettings
+        {
+            GenerationDurationSeconds = GenerationDurationSeconds,
+            SelectionDurationSeconds = SelectionDurationSeconds,
+            TargetPopulationSize = AgentCount,
+            MutationStrength = MutationStrength,
+            SurvivalBandThickness = SurvivalBandThickness
         };
     }
 }

@@ -1,4 +1,5 @@
 using EvoPrototype.Core;
+using EvoPrototype.Evolution;
 using Godot;
 
 var failures = new List<string>();
@@ -16,6 +17,10 @@ Run("No energy prevents active acceleration", TestNoEnergyPreventsActiveAccelera
 Run("Idle drain reduces energy over time", TestIdleDrainReducesEnergyOverTime);
 Run("World acceleration wish is applied in absolute coordinates", TestWorldAccelerationWishIsAppliedInAbsoluteCoordinates);
 Run("Brain brakes when a neighbor is too close in front", TestBrainBrakesWhenNeighborIsTooCloseInFront);
+Run("Region survival rule keeps agents inside configured zones", TestRegionSurvivalRuleKeepsAgentsInsideConfiguredZones);
+Run("Reproduction system restores target population from survivors", TestReproductionSystemRestoresTargetPopulationFromSurvivors);
+Run("Reproduction system falls back when no survivor exists", TestReproductionSystemFallsBackWhenNoSurvivorExists);
+Run("Evolution cycle advances generation after duration", TestEvolutionCycleAdvancesGenerationAfterDuration);
 
 if (failures.Count > 0)
 {
@@ -460,6 +465,107 @@ void TestBrainBrakesWhenNeighborIsTooCloseInFront()
     AssertTrue(intent.BrakeWish > 0.1f, "A close neighbor in front should trigger braking.");
 }
 
+void TestRegionSurvivalRuleKeepsAgentsInsideConfiguredZones()
+{
+    var worldState = new WorldState(new Vector2(100.0f, 100.0f));
+    var rule = new RegionSurvivalRule(new[]
+    {
+        new SurvivalRegion(new Rect2(0.0f, 0.0f, 10.0f, 100.0f)),
+        new SurvivalRegion(new Rect2(90.0f, 0.0f, 10.0f, 100.0f))
+    });
+
+    var insideAgent = CreateTestAgent(new Vector2(5.0f, 50.0f));
+    var outsideAgent = CreateTestAgent(new Vector2(50.0f, 50.0f));
+
+    AssertTrue(rule.Survives(insideAgent, worldState, new EvolutionSettings()), "Agent inside a survival region should survive.");
+    AssertTrue(!rule.Survives(outsideAgent, worldState, new EvolutionSettings()), "Agent outside all survival regions should die.");
+}
+
+void TestReproductionSystemRestoresTargetPopulationFromSurvivors()
+{
+    var mutationSystem = new MutationSystem(seed: 1);
+    var reproductionSystem = new ReproductionSystem(mutationSystem, seed: 2);
+    var survivors = new[]
+    {
+        CreateTestAgent(new Vector2(10.0f, 10.0f)),
+        CreateTestAgent(new Vector2(20.0f, 20.0f))
+    };
+
+    var nextGeneration = reproductionSystem.BuildNextGeneration(
+        survivors,
+        new EvolutionSettings
+        {
+            TargetPopulationSize = 12,
+            MutationStrength = 0.05f
+        },
+        new SimulationSettings
+        {
+            WorldSize = new Vector2(200.0f, 120.0f),
+            AgentRadius = 4.0f
+        });
+
+    AssertTrue(nextGeneration.Count == 12, "Reproduction should rebuild the full target population.");
+}
+
+void TestReproductionSystemFallsBackWhenNoSurvivorExists()
+{
+    var mutationSystem = new MutationSystem(seed: 3);
+    var reproductionSystem = new ReproductionSystem(mutationSystem, seed: 4);
+
+    var nextGeneration = reproductionSystem.BuildNextGeneration(
+        Array.Empty<Agent>(),
+        new EvolutionSettings
+        {
+            TargetPopulationSize = 8,
+            MutationStrength = 0.05f
+        },
+        new SimulationSettings
+        {
+            WorldSize = new Vector2(200.0f, 120.0f),
+            AgentRadius = 4.0f
+        });
+
+    AssertTrue(nextGeneration.Count == 8, "Fallback reproduction should still rebuild the target population.");
+}
+
+void TestEvolutionCycleAdvancesGenerationAfterDuration()
+{
+    var worldState = new WorldState(new Vector2(100.0f, 100.0f));
+    worldState.Agents.Add(CreateTestAgent(new Vector2(5.0f, 50.0f)));
+    worldState.Agents.Add(CreateTestAgent(new Vector2(50.0f, 50.0f)));
+
+    var evolutionSettings = new EvolutionSettings
+    {
+        GenerationDurationSeconds = 1.0f,
+        TargetPopulationSize = 6,
+        MutationStrength = 0.05f
+    };
+
+    var cycleController = new EvolutionCycleController(
+        new RegionSurvivalRule(new[]
+        {
+            new SurvivalRegion(new Rect2(0.0f, 0.0f, 10.0f, 100.0f))
+        }),
+        new ReproductionSystem(new MutationSystem(seed: 5), seed: 6),
+        evolutionSettings,
+        new SimulationSettings
+        {
+            WorldSize = new Vector2(100.0f, 100.0f),
+            AgentRadius = 4.0f
+        });
+
+    var enteredSelection = cycleController.Update(worldState, 1.1f);
+    AssertTrue(!enteredSelection, "Controller should first enter selection mode before rebuilding the next generation.");
+    AssertTrue(cycleController.Phase == EvolutionPhase.Selection, "Cycle controller should enter the selection phase after the life duration.");
+    AssertTrue(cycleController.LastSurvivorCount == 1, "Exactly one agent should have survived this configured region.");
+
+    var advancedGeneration = cycleController.Update(worldState, 1.6f);
+    AssertTrue(advancedGeneration, "Controller should rebuild the next generation after the selection phase duration.");
+    AssertTrue(cycleController.GenerationIndex == 1, "Generation index should increment after a full cycle.");
+    AssertTrue(cycleController.Phase == EvolutionPhase.Running, "Controller should return to the running phase after reproduction.");
+    AssertTrue(worldState.Agents.Count == 6, "Next generation should restore the target population size.");
+}
+
 Vector2 SimulateSingleStepVelocity(Agent sourceAgent, float delta)
 {
     var simulation = new Simulation(new SimulationSettings
@@ -489,6 +595,22 @@ void SimulateSingleStep(Agent sourceAgent, float delta)
     simulation.WorldState.Agents.Add(sourceAgent);
     sourceAgent.DecisionTimer = 999.0f;
     simulation.Update(delta);
+}
+
+Agent CreateTestAgent(Vector2 position)
+{
+    return new Agent
+    {
+        Genome = AgentGenome.Default,
+        PhysicsProfile = PhysicsProfile.Default,
+        Position = position,
+        Velocity = Vector2.Zero,
+        Heading = 0.0f,
+        Radius = 4.0f,
+        Energy = 100.0f,
+        DecisionTimer = 999.0f,
+        CurrentIntent = AgentIntent.Neutral
+    };
 }
 
 void AssertTrue(bool condition, string message)
