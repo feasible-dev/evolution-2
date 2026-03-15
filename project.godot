@@ -12,8 +12,14 @@ config_version=5
 
 config/name="evo-prototype"
 run/main_scene="res://scenes/sandbox/SandboxScene.tscn"
-config/features=PackedStringArray("4.6", "GL Compatibility")
+config/features=PackedStringArray("4.6", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=1680
+window/size/viewport_height=900
+window/stretch/mode="canvas_items"
 
 [dotnet]
 
