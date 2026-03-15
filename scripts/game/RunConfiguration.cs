@@ -27,6 +27,8 @@ public sealed class RunConfiguration
 
     public float LowSpeedReconsiderationSeconds { get; init; } = 0.18f;
 
+    public float NeighborBrakeDistance { get; init; } = 18.0f;
+
     public SimulationSettings ToSimulationSettings()
     {
         return new SimulationSettings
@@ -41,7 +43,8 @@ public sealed class RunConfiguration
             NeighborAwarenessDistance = NeighborAwarenessDistance,
             StuckSpeedThreshold = StuckSpeedThreshold,
             MinimumDecisionIntervalSeconds = MinimumDecisionIntervalSeconds,
-            LowSpeedReconsiderationSeconds = LowSpeedReconsiderationSeconds
+            LowSpeedReconsiderationSeconds = LowSpeedReconsiderationSeconds,
+            NeighborBrakeDistance = NeighborBrakeDistance
         };
     }
 }

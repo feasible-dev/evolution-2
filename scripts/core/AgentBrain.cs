@@ -40,12 +40,28 @@ public static class AgentBrain
         }
 
         var throttle = Mathf.Clamp(agent.Genome.BaseThrottle, 0.0f, 1.0f);
+        var brakeWish = 0.0f;
+
+        if (observation.HasNeighbor && observation.NearestNeighborLocalOffset.Y > 0.0f)
+        {
+            var distance = observation.NearestNeighborLocalOffset.Length();
+            if (distance < settings.NeighborBrakeDistance)
+            {
+                brakeWish = Mathf.Clamp(1.0f - (distance / settings.NeighborBrakeDistance), 0.0f, 1.0f);
+            }
+        }
+
+        if (observation.IsTouchingWall && observation.Speed > settings.StuckSpeedThreshold)
+        {
+            brakeWish = Mathf.Max(brakeWish, 0.6f);
+        }
+
         var localAccelerationWish = new Vector2(0.0f, throttle);
 
         return new AgentIntent(
             WorldAccelerationWish: Vector2.Zero,
             LocalAccelerationWish: localAccelerationWish,
             TurnWish: turnRate,
-            BrakeWish: 0.0f);
+            BrakeWish: brakeWish);
     }
 }

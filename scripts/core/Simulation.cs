@@ -59,24 +59,30 @@ public sealed class Simulation
             WanderAmplitude: NextFloat(0.3f, 0.9f),
             WanderFrequency: NextFloat(0.6f, 2.4f),
             StuckTurnBias: NextFloat(1.6f, 3.2f));
+        var physicsProfile = PhysicsProfile.Default with
+        {
+            Mass = NextFloat(0.8f, 1.4f),
+            MaxForwardAcceleration = NextFloat(180.0f, 260.0f),
+            MaxLateralAcceleration = NextFloat(80.0f, 130.0f),
+            MaxBrakeAcceleration = NextFloat(140.0f, 210.0f),
+            MaxTurnRate = NextFloat(2.2f, 4.2f),
+            LinearDrag = NextFloat(0.25f, 0.45f),
+            MaxEnergy = NextFloat(70.0f, 130.0f),
+            IdleEnergyDrainPerSecond = NextFloat(0.08f, 0.22f),
+            AccelerationEnergyCost = NextFloat(0.03f, 0.06f),
+            BrakeEnergyCost = NextFloat(0.015f, 0.03f),
+            TurnEnergyCost = NextFloat(0.008f, 0.018f)
+        };
 
         return new Agent
         {
             Genome = genome,
-            PhysicsProfile = PhysicsProfile.Default with
-            {
-                Mass = NextFloat(0.8f, 1.4f),
-                MaxForwardAcceleration = NextFloat(180.0f, 260.0f),
-                MaxLateralAcceleration = NextFloat(80.0f, 130.0f),
-                MaxBrakeAcceleration = NextFloat(140.0f, 210.0f),
-                MaxTurnRate = NextFloat(2.2f, 4.2f),
-                LinearDrag = NextFloat(0.25f, 0.45f)
-            },
+            PhysicsProfile = physicsProfile,
             Position = position,
             Velocity = HeadingToVector(heading) * (NextFloat(0.2f, 0.8f) * Settings.MaxSpeed),
             Heading = heading,
             Radius = radius,
-            Energy = 100.0f,
+            Energy = physicsProfile.MaxEnergy,
             DecisionTimer = NextDecisionDelay(genome),
             TimeSinceLastDecision = 0.0f,
             TimeBelowSpeedThreshold = 0.0f,
@@ -148,33 +154,46 @@ public sealed class Simulation
 
     private void ApplyMovement(Agent agent, float delta)
     {
+        if (agent.Energy <= 0.0f)
+        {
+            agent.CurrentIntent = agent.CurrentIntent with
+            {
+                WorldAccelerationWish = Vector2.Zero,
+                LocalAccelerationWish = Vector2.Zero,
+                TurnWish = 0.0f,
+                BrakeWish = 0.0f
+            };
+        }
+
         var turnRate = Mathf.Clamp(
             agent.CurrentIntent.TurnWish,
             -agent.PhysicsProfile.MaxTurnRate,
             agent.PhysicsProfile.MaxTurnRate);
 
-        agent.Heading = Mathf.Wrap(agent.Heading + (turnRate * delta), 0.0f, Mathf.Tau);
+        var energyLimitedTurnRate = ApplyTurnEnergyBudget(agent, turnRate, delta);
+        agent.Heading = Mathf.Wrap(agent.Heading + (energyLimitedTurnRate * delta), 0.0f, Mathf.Tau);
 
-        var worldAcceleration = ResolveWorldAcceleration(agent);
+        var worldAcceleration = ResolveWorldAcceleration(agent, delta);
         agent.Velocity += worldAcceleration * delta;
 
         var brakeAmount = Mathf.Clamp(agent.CurrentIntent.BrakeWish, 0.0f, 1.0f);
         if (brakeAmount > 0.0f && agent.Velocity.LengthSquared() > 0.0001f)
         {
-            var brakeAcceleration = agent.PhysicsProfile.MaxBrakeAcceleration * brakeAmount;
+            var brakeAcceleration = ApplyBrakeEnergyBudget(agent, brakeAmount, delta);
             agent.Velocity = agent.Velocity.MoveToward(Vector2.Zero, brakeAcceleration * delta);
         }
 
         var dragFactor = Mathf.Clamp(1.0f - (agent.PhysicsProfile.LinearDrag * delta), 0.0f, 1.0f);
         agent.Velocity *= dragFactor;
         agent.Velocity = agent.Velocity.LimitLength(Settings.MaxSpeed);
+        agent.Energy = Mathf.Clamp(agent.Energy - (agent.PhysicsProfile.IdleEnergyDrainPerSecond * delta), 0.0f, agent.PhysicsProfile.MaxEnergy);
 
         var nextPosition = agent.Position + (agent.Velocity * delta);
         agent.Position = ClampToWorld(nextPosition, agent.Radius);
         ClampVelocityAgainstWalls(agent);
     }
 
-    private Vector2 ResolveWorldAcceleration(Agent agent)
+    private Vector2 ResolveWorldAcceleration(Agent agent, float delta)
     {
         var forward = HeadingToVector(agent.Heading);
         var right = forward.Orthogonal();
@@ -193,7 +212,68 @@ public sealed class Simulation
             worldWish = worldWish.Normalized() * maxWorldWish;
         }
 
-        return (localAcceleration + worldWish) / agent.PhysicsProfile.Mass;
+        var requestedAcceleration = localAcceleration + worldWish;
+        var energyLimitedAcceleration = ApplyAccelerationEnergyBudget(agent, requestedAcceleration, delta);
+        return energyLimitedAcceleration / agent.PhysicsProfile.Mass;
+    }
+
+    private Vector2 ApplyAccelerationEnergyBudget(Agent agent, Vector2 requestedAcceleration, float delta)
+    {
+        if (requestedAcceleration.LengthSquared() <= 0.0001f || agent.Energy <= 0.0f)
+        {
+            return Vector2.Zero;
+        }
+
+        var requestedMagnitude = requestedAcceleration.Length();
+        var energyNeeded = requestedMagnitude * agent.PhysicsProfile.AccelerationEnergyCost * delta;
+        if (energyNeeded <= agent.Energy)
+        {
+            agent.Energy -= energyNeeded;
+            return requestedAcceleration;
+        }
+
+        var scale = agent.Energy / Mathf.Max(energyNeeded, 0.0001f);
+        agent.Energy = 0.0f;
+        return requestedAcceleration * scale;
+    }
+
+    private float ApplyBrakeEnergyBudget(Agent agent, float brakeAmount, float delta)
+    {
+        if (brakeAmount <= 0.0f || agent.Energy <= 0.0f)
+        {
+            return 0.0f;
+        }
+
+        var requestedBrake = agent.PhysicsProfile.MaxBrakeAcceleration * brakeAmount;
+        var energyNeeded = requestedBrake * agent.PhysicsProfile.BrakeEnergyCost * delta;
+        if (energyNeeded <= agent.Energy)
+        {
+            agent.Energy -= energyNeeded;
+            return requestedBrake;
+        }
+
+        var scale = agent.Energy / Mathf.Max(energyNeeded, 0.0001f);
+        agent.Energy = 0.0f;
+        return requestedBrake * scale;
+    }
+
+    private float ApplyTurnEnergyBudget(Agent agent, float turnRate, float delta)
+    {
+        if (Mathf.Abs(turnRate) <= 0.0001f || agent.Energy <= 0.0f)
+        {
+            return 0.0f;
+        }
+
+        var energyNeeded = Mathf.Abs(turnRate) * agent.PhysicsProfile.TurnEnergyCost * delta;
+        if (energyNeeded <= agent.Energy)
+        {
+            agent.Energy -= energyNeeded;
+            return turnRate;
+        }
+
+        var scale = agent.Energy / Mathf.Max(energyNeeded, 0.0001f);
+        agent.Energy = 0.0f;
+        return turnRate * scale;
     }
 
     private Vector2 ClampToWorld(Vector2 position, float radius)

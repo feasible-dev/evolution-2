@@ -9,6 +9,9 @@ Run("Brain turns toward open space near a wall", TestBrainTurnsTowardOpenSpaceNe
 Run("Brain adds unstuck turn near a wall at low speed", TestBrainAddsUnstuckTurnNearWallAtLowSpeed);
 Run("Decision timers differ per agent because of jitter", TestDecisionTimersDifferPerAgentBecauseOfJitter);
 Run("Sustained throttle overcomes drag over time", TestSustainedThrottleOvercomesDragOverTime);
+Run("Heavier agent accelerates less with same intent", TestHeavierAgentAcceleratesLessWithSameIntent);
+Run("Brake reduces speed when intent requests it", TestBrakeReducesSpeedWhenIntentRequestsIt);
+Run("No energy prevents active acceleration", TestNoEnergyPreventsActiveAcceleration);
 
 if (failures.Count > 0)
 {
@@ -56,6 +59,7 @@ void TestWallClampStopsOutwardMovementWithoutBounce()
         Velocity = new Vector2(20.0f, 0.0f),
         Heading = 0.0f,
         Radius = 5.0f,
+        Energy = 100.0f,
         DecisionTimer = 999.0f
     };
 
@@ -86,6 +90,7 @@ void TestOverlapResolutionSeparatesAgentsByRadius()
         Velocity = Vector2.Zero,
         Heading = 0.0f,
         Radius = 5.0f,
+        Energy = 100.0f,
         DecisionTimer = 999.0f
     };
 
@@ -97,6 +102,7 @@ void TestOverlapResolutionSeparatesAgentsByRadius()
         Velocity = Vector2.Zero,
         Heading = 0.0f,
         Radius = 5.0f,
+        Energy = 100.0f,
         DecisionTimer = 999.0f
     };
 
@@ -127,6 +133,7 @@ void TestBrainTurnsTowardOpenSpaceNearWall()
         Velocity = Vector2.Zero,
         Heading = 0.0f,
         Radius = 4.0f,
+        Energy = 100.0f,
         BrainClock = 0.0f
     };
 
@@ -166,6 +173,7 @@ void TestBrainAddsUnstuckTurnNearWallAtLowSpeed()
         Velocity = Vector2.Zero,
         Heading = 0.0f,
         Radius = 4.0f,
+        Energy = 100.0f,
         BrainClock = 0.0f
     };
 
@@ -234,6 +242,7 @@ void TestSustainedThrottleOvercomesDragOverTime()
         Velocity = Vector2.Zero,
         Heading = 0.0f,
         Radius = 4.0f,
+        Energy = 100.0f,
         DecisionTimer = 0.0f,
         TimeSinceLastDecision = 0.1f,
         BrainClock = 0.0f
@@ -247,6 +256,90 @@ void TestSustainedThrottleOvercomesDragOverTime()
     }
 
     AssertTrue(agent.Velocity.Length() > 40.0f, "An agent with full throttle should keep meaningful speed instead of damping to near zero.");
+}
+
+void TestHeavierAgentAcceleratesLessWithSameIntent()
+{
+    var lightAgent = new Agent
+    {
+        Genome = AgentGenome.Default,
+        PhysicsProfile = PhysicsProfile.Default with { Mass = 1.0f, MaxForwardAcceleration = 200.0f },
+        Position = Vector2.Zero,
+        Velocity = Vector2.Zero,
+        Heading = 0.0f,
+        Radius = 4.0f,
+        Energy = 100.0f,
+        CurrentIntent = new AgentIntent(Vector2.Zero, new Vector2(0.0f, 1.0f), 0.0f, 0.0f)
+    };
+
+    var heavyAgent = new Agent
+    {
+        Genome = AgentGenome.Default,
+        PhysicsProfile = PhysicsProfile.Default with { Mass = 2.0f, MaxForwardAcceleration = 200.0f },
+        Position = Vector2.Zero,
+        Velocity = Vector2.Zero,
+        Heading = 0.0f,
+        Radius = 4.0f,
+        Energy = 100.0f,
+        CurrentIntent = new AgentIntent(Vector2.Zero, new Vector2(0.0f, 1.0f), 0.0f, 0.0f)
+    };
+
+    var lightVelocity = SimulateSingleStepVelocity(lightAgent, 0.1f);
+    var heavyVelocity = SimulateSingleStepVelocity(heavyAgent, 0.1f);
+
+    AssertTrue(lightVelocity.Length() > heavyVelocity.Length(), "Higher mass should reduce acceleration for the same intent.");
+}
+
+void TestBrakeReducesSpeedWhenIntentRequestsIt()
+{
+    var agent = new Agent
+    {
+        Genome = AgentGenome.Default,
+        PhysicsProfile = PhysicsProfile.Default with { LinearDrag = 0.0f, MaxBrakeAcceleration = 100.0f },
+        Position = Vector2.Zero,
+        Velocity = new Vector2(50.0f, 0.0f),
+        Heading = 0.0f,
+        Radius = 4.0f,
+        Energy = 100.0f,
+        CurrentIntent = new AgentIntent(Vector2.Zero, Vector2.Zero, 0.0f, 1.0f)
+    };
+
+    var velocityAfter = SimulateSingleStepVelocity(agent, 0.1f);
+    AssertTrue(velocityAfter.Length() < 50.0f, "Brake intent should reduce speed.");
+}
+
+void TestNoEnergyPreventsActiveAcceleration()
+{
+    var agent = new Agent
+    {
+        Genome = AgentGenome.Default,
+        PhysicsProfile = PhysicsProfile.Default with { LinearDrag = 0.0f, MaxForwardAcceleration = 200.0f },
+        Position = Vector2.Zero,
+        Velocity = Vector2.Zero,
+        Heading = 0.0f,
+        Radius = 4.0f,
+        Energy = 0.0f,
+        CurrentIntent = new AgentIntent(Vector2.Zero, new Vector2(0.0f, 1.0f), 0.0f, 0.0f)
+    };
+
+    var velocityAfter = SimulateSingleStepVelocity(agent, 0.1f);
+    AssertNearlyEqual(0.0f, velocityAfter.Length(), 0.01f, "An agent without energy should not gain speed from active acceleration.");
+}
+
+Vector2 SimulateSingleStepVelocity(Agent sourceAgent, float delta)
+{
+    var simulation = new Simulation(new SimulationSettings
+    {
+        WorldSize = new Vector2(400.0f, 200.0f),
+        AgentCount = 0,
+        AgentRadius = 4.0f,
+        MaxSpeed = 500.0f
+    }, seed: 1);
+
+    simulation.WorldState.Agents.Add(sourceAgent);
+    sourceAgent.DecisionTimer = 999.0f;
+    simulation.Update(delta);
+    return sourceAgent.Velocity;
 }
 
 void AssertTrue(bool condition, string message)

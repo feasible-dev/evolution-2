@@ -6,7 +6,12 @@ public readonly record struct PhysicsProfile(
     float MaxLateralAcceleration,
     float MaxBrakeAcceleration,
     float MaxTurnRate,
-    float LinearDrag)
+    float LinearDrag,
+    float MaxEnergy,
+    float IdleEnergyDrainPerSecond,
+    float AccelerationEnergyCost,
+    float BrakeEnergyCost,
+    float TurnEnergyCost)
 {
     public static PhysicsProfile Default => new(
         Mass: 1.0f,
@@ -14,5 +19,10 @@ public readonly record struct PhysicsProfile(
         MaxLateralAcceleration: 100.0f,
         MaxBrakeAcceleration: 160.0f,
         MaxTurnRate: 3.2f,
-        LinearDrag: 0.35f);
+        LinearDrag: 0.35f,
+        MaxEnergy: 100.0f,
+        IdleEnergyDrainPerSecond: 0.15f,
+        AccelerationEnergyCost: 0.045f,
+        BrakeEnergyCost: 0.025f,
+        TurnEnergyCost: 0.012f);
 }

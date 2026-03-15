@@ -25,4 +25,6 @@ public sealed class SimulationSettings
     public float MinimumDecisionIntervalSeconds { get; init; } = 0.06f;
 
     public float LowSpeedReconsiderationSeconds { get; init; } = 0.18f;
+
+    public float NeighborBrakeDistance { get; init; } = 18.0f;
 }
