@@ -7,18 +7,15 @@ namespace EvoPrototype.Rendering;
 public partial class SandboxRenderer : Node2D
 {
     private Simulation? _simulation;
-    private RunConfiguration? _runConfiguration;
-
-    public void Bind(Simulation simulation, RunConfiguration runConfiguration)
+    public void Bind(Simulation simulation)
     {
         _simulation = simulation;
-        _runConfiguration = runConfiguration;
         QueueRedraw();
     }
 
     public override void _Draw()
     {
-        if (_simulation is null || _runConfiguration is null)
+        if (_simulation is null)
         {
             return;
         }
@@ -30,7 +27,7 @@ public partial class SandboxRenderer : Node2D
 
         foreach (var agent in _simulation.WorldState.Agents)
         {
-            DrawCircle(agent.Position, _runConfiguration.AgentRadius, agent.Color);
+            DrawCircle(agent.Position, agent.Radius, agent.Color);
         }
     }
 }

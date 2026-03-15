@@ -14,10 +14,10 @@ public partial class SandboxController : Node2D
     {
         _sandboxRenderer = GetNode<SandboxRenderer>("SandboxRenderer");
 
-        _simulation = new Simulation(_runConfiguration.WorldSize);
-        _simulation.InitializeAgents(_runConfiguration.AgentCount);
+        _simulation = new Simulation(_runConfiguration.ToSimulationSettings());
+        _simulation.InitializeAgents();
 
-        _sandboxRenderer.Bind(_simulation, _runConfiguration);
+        _sandboxRenderer.Bind(_simulation);
     }
 
     public override void _Process(double delta)
