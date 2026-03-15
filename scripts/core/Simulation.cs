@@ -3,6 +3,10 @@ using Godot;
 
 namespace EvoPrototype.Core;
 
+/// <summary>
+/// Owns the simulation loop and keeps the engine-facing layer thin.
+/// Each update runs three phases: update decisions, apply continuous physics, resolve overlaps.
+/// </summary>
 public sealed class Simulation
 {
     private readonly Random _random;
@@ -18,6 +22,9 @@ public sealed class Simulation
 
     public WorldState WorldState { get; }
 
+    /// <summary>
+    /// Creates a fresh population using randomized genomes and physical profiles.
+    /// </summary>
     public void InitializeAgents()
     {
         WorldState.Agents.Clear();
@@ -154,6 +161,7 @@ public sealed class Simulation
 
     private void ApplyMovement(Agent agent, float delta)
     {
+        // When an agent runs out of energy, inertia and drag still apply, but active control stops.
         if (agent.Energy <= 0.0f)
         {
             agent.CurrentIntent = agent.CurrentIntent with
@@ -212,6 +220,7 @@ public sealed class Simulation
             worldWish = worldWish.Normalized() * maxWorldWish;
         }
 
+        // Local wishes are relative to heading; world wishes stay in absolute coordinates.
         var requestedAcceleration = localAcceleration + worldWish;
         var energyLimitedAcceleration = ApplyAccelerationEnergyBudget(agent, requestedAcceleration, delta);
         return energyLimitedAcceleration / agent.PhysicsProfile.Mass;
@@ -329,6 +338,8 @@ public sealed class Simulation
 
     private void ResolveOverlaps()
     {
+        // This naive O(n^2) pass is acceptable for the current prototype size.
+        // If agent counts increase substantially, replace this with a spatial partition.
         for (var firstIndex = 0; firstIndex < WorldState.Agents.Count; firstIndex++)
         {
             var firstAgent = WorldState.Agents[firstIndex];

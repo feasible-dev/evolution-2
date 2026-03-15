@@ -4,6 +4,10 @@ namespace EvoPrototype.Core;
 
 public static class AgentBrain
 {
+    /// <summary>
+    /// Converts observations plus agent parameters into a high-level intent.
+    /// The physics layer remains responsible for inertia, drag, walls, and energy budgets.
+    /// </summary>
     public static AgentIntent Decide(Agent agent, AgentObservation observation, SimulationSettings settings)
     {
         var turnRate = agent.Genome.BaseTurnRate;

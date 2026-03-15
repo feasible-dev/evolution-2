@@ -12,6 +12,9 @@ Run("Sustained throttle overcomes drag over time", TestSustainedThrottleOvercome
 Run("Heavier agent accelerates less with same intent", TestHeavierAgentAcceleratesLessWithSameIntent);
 Run("Brake reduces speed when intent requests it", TestBrakeReducesSpeedWhenIntentRequestsIt);
 Run("No energy prevents active acceleration", TestNoEnergyPreventsActiveAcceleration);
+Run("Idle drain reduces energy over time", TestIdleDrainReducesEnergyOverTime);
+Run("World acceleration wish is applied in absolute coordinates", TestWorldAccelerationWishIsAppliedInAbsoluteCoordinates);
+Run("Brain brakes when a neighbor is too close in front", TestBrainBrakesWhenNeighborIsTooCloseInFront);
 
 if (failures.Count > 0)
 {
@@ -326,6 +329,74 @@ void TestNoEnergyPreventsActiveAcceleration()
     AssertNearlyEqual(0.0f, velocityAfter.Length(), 0.01f, "An agent without energy should not gain speed from active acceleration.");
 }
 
+void TestIdleDrainReducesEnergyOverTime()
+{
+    var agent = new Agent
+    {
+        Genome = AgentGenome.Default,
+        PhysicsProfile = PhysicsProfile.Default with { IdleEnergyDrainPerSecond = 2.0f, LinearDrag = 0.0f },
+        Position = Vector2.Zero,
+        Velocity = Vector2.Zero,
+        Heading = 0.0f,
+        Radius = 4.0f,
+        Energy = 10.0f,
+        CurrentIntent = AgentIntent.Neutral
+    };
+
+    SimulateSingleStep(agent, 0.5f);
+    AssertNearlyEqual(9.0f, agent.Energy, 0.02f, "Idle drain should reduce energy continuously even without movement.");
+}
+
+void TestWorldAccelerationWishIsAppliedInAbsoluteCoordinates()
+{
+    var agent = new Agent
+    {
+        Genome = AgentGenome.Default,
+        PhysicsProfile = PhysicsProfile.Default with { LinearDrag = 0.0f, MaxForwardAcceleration = 200.0f },
+        Position = Vector2.Zero,
+        Velocity = Vector2.Zero,
+        Heading = Mathf.Pi / 2.0f,
+        Radius = 4.0f,
+        Energy = 100.0f,
+        CurrentIntent = new AgentIntent(new Vector2(50.0f, 0.0f), Vector2.Zero, 0.0f, 0.0f)
+    };
+
+    SimulateSingleStep(agent, 0.1f);
+    AssertTrue(agent.Velocity.X > 0.1f, "Absolute world acceleration should affect X even if heading points elsewhere.");
+    AssertNearlyEqual(0.0f, agent.Velocity.Y, 0.05f, "Pure world X acceleration should not inject noticeable Y velocity here.");
+}
+
+void TestBrainBrakesWhenNeighborIsTooCloseInFront()
+{
+    var agent = new Agent
+    {
+        Genome = AgentGenome.Default,
+        PhysicsProfile = PhysicsProfile.Default,
+        Position = Vector2.Zero,
+        Velocity = new Vector2(10.0f, 0.0f),
+        Heading = 0.0f,
+        Radius = 4.0f,
+        Energy = 100.0f,
+        BrainClock = 0.0f
+    };
+
+    var observation = new AgentObservation(
+        ForwardWallDistance: 100.0f,
+        LeftWallDistance: 100.0f,
+        RightWallDistance: 100.0f,
+        NearestNeighborLocalOffset: new Vector2(0.0f, 5.0f),
+        HasNeighbor: true,
+        Speed: 10.0f,
+        IsTouchingWall: false);
+
+    var intent = AgentBrain.Decide(agent, observation, new SimulationSettings
+    {
+        NeighborBrakeDistance = 18.0f
+    });
+
+    AssertTrue(intent.BrakeWish > 0.1f, "A close neighbor in front should trigger braking.");
+}
+
 Vector2 SimulateSingleStepVelocity(Agent sourceAgent, float delta)
 {
     var simulation = new Simulation(new SimulationSettings
@@ -340,6 +411,21 @@ Vector2 SimulateSingleStepVelocity(Agent sourceAgent, float delta)
     sourceAgent.DecisionTimer = 999.0f;
     simulation.Update(delta);
     return sourceAgent.Velocity;
+}
+
+void SimulateSingleStep(Agent sourceAgent, float delta)
+{
+    var simulation = new Simulation(new SimulationSettings
+    {
+        WorldSize = new Vector2(400.0f, 200.0f),
+        AgentCount = 0,
+        AgentRadius = 4.0f,
+        MaxSpeed = 500.0f
+    }, seed: 1);
+
+    simulation.WorldState.Agents.Add(sourceAgent);
+    sourceAgent.DecisionTimer = 999.0f;
+    simulation.Update(delta);
 }
 
 void AssertTrue(bool condition, string message)

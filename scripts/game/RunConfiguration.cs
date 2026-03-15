@@ -5,29 +5,33 @@ namespace EvoPrototype.Game;
 
 public sealed class RunConfiguration
 {
-    public int AgentCount { get; init; } = 200;
+    public int AgentCount { get; set; } = 200;
 
-    public Vector2 WorldSize { get; init; } = new(1280.0f, 720.0f);
+    public Vector2 WorldSize { get; set; } = new(1280.0f, 720.0f);
 
-    public float AgentRadius { get; init; } = 4.0f;
+    public Vector2 WorldOrigin { get; set; } = new(32.0f, 104.0f);
 
-    public float MaxSpeed { get; init; } = 110.0f;
+    public Vector2 ViewportSize { get; set; } = new(1680.0f, 900.0f);
 
-    public float Acceleration { get; init; } = 220.0f;
+    public float AgentRadius { get; set; } = 4.0f;
 
-    public float Drag { get; init; } = 0.35f;
+    public float MaxSpeed { get; set; } = 110.0f;
 
-    public float WallAvoidanceDistance { get; init; } = 60.0f;
+    public float Acceleration { get; set; } = 220.0f;
 
-    public float NeighborAwarenessDistance { get; init; } = 32.0f;
+    public float Drag { get; set; } = 0.35f;
 
-    public float StuckSpeedThreshold { get; init; } = 8.0f;
+    public float WallAvoidanceDistance { get; set; } = 60.0f;
 
-    public float MinimumDecisionIntervalSeconds { get; init; } = 0.06f;
+    public float NeighborAwarenessDistance { get; set; } = 32.0f;
 
-    public float LowSpeedReconsiderationSeconds { get; init; } = 0.18f;
+    public float StuckSpeedThreshold { get; set; } = 8.0f;
 
-    public float NeighborBrakeDistance { get; init; } = 18.0f;
+    public float MinimumDecisionIntervalSeconds { get; set; } = 0.06f;
+
+    public float LowSpeedReconsiderationSeconds { get; set; } = 0.18f;
+
+    public float NeighborBrakeDistance { get; set; } = 18.0f;
 
     public SimulationSettings ToSimulationSettings()
     {

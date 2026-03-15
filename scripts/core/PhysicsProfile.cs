@@ -1,5 +1,8 @@
 namespace EvoPrototype.Core;
 
+/// <summary>
+/// Defines the physical limits and energy economy for a single agent.
+/// </summary>
 public readonly record struct PhysicsProfile(
     float Mass,
     float MaxForwardAcceleration,

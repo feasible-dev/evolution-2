@@ -2,6 +2,10 @@ using Godot;
 
 namespace EvoPrototype.Core;
 
+/// <summary>
+/// Describes what an agent wants to do before physics clamps it to what is actually possible.
+/// World and local acceleration wishes can be combined.
+/// </summary>
 public readonly record struct AgentIntent(
     Vector2 WorldAccelerationWish,
     Vector2 LocalAccelerationWish,
