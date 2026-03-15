@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using EvoPrototype.Analytics;
 using EvoPrototype.Core;
 using EvoPrototype.Evolution;
 using EvoPrototype.Rendering;
+using EvoPrototype.Ui;
 using Godot;
 
 namespace EvoPrototype.Game;
@@ -14,6 +16,7 @@ public partial class SandboxController : Node2D
     private EvolutionCycleController? _evolutionCycleController;
     private IReadOnlyList<SurvivalRegion>? _survivalRegions;
     private SandboxRenderer? _sandboxRenderer;
+    private GenerationChart? _generationChart;
     private Label? _timeValueLabel;
     private Label? _generationValueLabel;
     private Label? _lifeValueLabel;
@@ -32,6 +35,11 @@ public partial class SandboxController : Node2D
     private SpinBox? _dragSpinBox;
     private SpinBox? _stuckSpeedSpinBox;
     private Button? _applyButton;
+    private Button? _previousMetricButton;
+    private Button? _nextMetricButton;
+    private Label? _chartMetricValueLabel;
+    private RunHistory _runHistory = new();
+    private int _chartMetricIndex;
     private float _elapsedTimeSeconds;
 
     /// <summary>
@@ -40,6 +48,7 @@ public partial class SandboxController : Node2D
     public override void _Ready()
     {
         _sandboxRenderer = GetNode<SandboxRenderer>("SandboxRenderer");
+        _generationChart = GetNode<GenerationChart>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/Chart");
         _timeValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/TimeValue");
         _generationValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/GenerationValue");
         _lifeValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/LifeValue");
@@ -58,7 +67,12 @@ public partial class SandboxController : Node2D
         _dragSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/PhysicsControls/DragEditor");
         _stuckSpeedSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/PhysicsControls/StuckSpeedEditor");
         _applyButton = GetNode<Button>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/ApplyButton");
+        _previousMetricButton = GetNode<Button>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/ChartHeader/PreviousMetricButton");
+        _nextMetricButton = GetNode<Button>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/ChartHeader/NextMetricButton");
+        _chartMetricValueLabel = GetNode<Label>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/ChartHeader/MetricValue");
         _applyButton.Pressed += OnApplyPressed;
+        _previousMetricButton.Pressed += OnPreviousMetricPressed;
+        _nextMetricButton.Pressed += OnNextMetricPressed;
         SyncEditorsFromConfiguration();
         ApplyWindowSize();
         ResetSimulation();
@@ -69,6 +83,16 @@ public partial class SandboxController : Node2D
         if (_applyButton is not null)
         {
             _applyButton.Pressed -= OnApplyPressed;
+        }
+
+        if (_previousMetricButton is not null)
+        {
+            _previousMetricButton.Pressed -= OnPreviousMetricPressed;
+        }
+
+        if (_nextMetricButton is not null)
+        {
+            _nextMetricButton.Pressed -= OnNextMetricPressed;
         }
     }
 
@@ -105,6 +129,9 @@ public partial class SandboxController : Node2D
         _sandboxRenderer!.Bind(_simulation, _runConfiguration);
         _sandboxRenderer.SetSurvivalRegions(_survivalRegions);
         _sandboxRenderer.SetSelectionState(System.Array.Empty<Agent>(), selectionActive: false, selectionProgress: 0.0f);
+        _runHistory = new RunHistory();
+        _generationChart!.Bind(_runHistory);
+        UpdateChartMetric();
         UpdateHud();
     }
 
@@ -165,6 +192,25 @@ public partial class SandboxController : Node2D
         _speedValueLabel!.Text = $"{averageSpeed:0.0}";
     }
 
+    private void UpdateChartMetric()
+    {
+        var metricId = MetricCatalog.GetByIndex(_chartMetricIndex);
+        _chartMetricValueLabel!.Text = MetricCatalog.GetLabel(metricId);
+        _generationChart!.SetMetric(metricId);
+    }
+
+    private void OnPreviousMetricPressed()
+    {
+        _chartMetricIndex -= 1;
+        UpdateChartMetric();
+    }
+
+    private void OnNextMetricPressed()
+    {
+        _chartMetricIndex += 1;
+        UpdateChartMetric();
+    }
+
     private void ApplyWindowSize()
     {
         DisplayServer.WindowSetSize(new Vector2I(
@@ -185,6 +231,7 @@ public partial class SandboxController : Node2D
         while (remaining > 0.0f && safetyCounter < 120)
         {
             var step = Mathf.Min(remaining, MaxSimulationStepSeconds);
+            var phaseBeforeUpdate = _evolutionCycleController.Phase;
 
             if (_evolutionCycleController.Phase == EvolutionPhase.Running)
             {
@@ -194,6 +241,17 @@ public partial class SandboxController : Node2D
             if (_evolutionCycleController.Update(_simulation.WorldState, step))
             {
                 _simulation.ResolvePopulationLayout();
+            }
+
+            if (phaseBeforeUpdate == EvolutionPhase.Running &&
+                _evolutionCycleController.Phase == EvolutionPhase.Selection)
+            {
+                var snapshot = StatisticsCollector.Capture(
+                    _evolutionCycleController.GenerationIndex,
+                    _simulation.WorldState.Agents,
+                    _evolutionCycleController.SelectedSurvivors);
+                _runHistory.Add(snapshot);
+                _generationChart!.QueueRedraw();
             }
 
             remaining -= step;

@@ -12,7 +12,7 @@ public sealed class RunConfiguration
 
     public Vector2 WorldOrigin { get; set; } = new(32.0f, 104.0f);
 
-    public Vector2 ViewportSize { get; set; } = new(1680.0f, 900.0f);
+    public Vector2 ViewportSize { get; set; } = new(1680.0f, 1240.0f);
 
     public float AgentRadius { get; set; } = 4.0f;
 
@@ -20,7 +20,7 @@ public sealed class RunConfiguration
 
     public float Acceleration { get; set; } = 220.0f;
 
-    public float Drag { get; set; } = 0.35f;
+    public float Drag { get; set; } = 0.08f;
 
     public float WallAvoidanceDistance { get; set; } = 60.0f;
 
@@ -34,15 +34,15 @@ public sealed class RunConfiguration
 
     public float NeighborBrakeDistance { get; set; } = 18.0f;
 
-    public float GenerationDurationSeconds { get; set; } = 20.0f;
+    public float GenerationDurationSeconds { get; set; } = 10.0f;
 
     public float SelectionDurationSeconds { get; set; } = 1.5f;
 
-    public float TimeScale { get; set; } = 1.0f;
+    public float TimeScale { get; set; } = 8.0f;
 
-    public float SurvivalBandThickness { get; set; } = 64.0f;
+    public float SurvivalBandThickness { get; set; } = 12.0f;
 
-    public float MutationStrength { get; set; } = 0.12f;
+    public float MutationStrength { get; set; } = 0.03f;
 
     public SimulationSettings ToSimulationSettings()
     {

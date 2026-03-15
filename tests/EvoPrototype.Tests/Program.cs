@@ -1,3 +1,4 @@
+using EvoPrototype.Analytics;
 using EvoPrototype.Core;
 using EvoPrototype.Evolution;
 using Godot;
@@ -21,6 +22,8 @@ Run("Region survival rule keeps agents inside configured zones", TestRegionSurvi
 Run("Reproduction system restores target population from survivors", TestReproductionSystemRestoresTargetPopulationFromSurvivors);
 Run("Reproduction system falls back when no survivor exists", TestReproductionSystemFallsBackWhenNoSurvivorExists);
 Run("Evolution cycle advances generation after duration", TestEvolutionCycleAdvancesGenerationAfterDuration);
+Run("Statistics collector captures deaths and averages", TestStatisticsCollectorCapturesDeathsAndAverages);
+Run("Run history keeps snapshots in generation order", TestRunHistoryKeepsSnapshotsInGenerationOrder);
 
 if (failures.Count > 0)
 {
@@ -564,6 +567,51 @@ void TestEvolutionCycleAdvancesGenerationAfterDuration()
     AssertTrue(cycleController.GenerationIndex == 1, "Generation index should increment after a full cycle.");
     AssertTrue(cycleController.Phase == EvolutionPhase.Running, "Controller should return to the running phase after reproduction.");
     AssertTrue(worldState.Agents.Count == 6, "Next generation should restore the target population size.");
+}
+
+void TestStatisticsCollectorCapturesDeathsAndAverages()
+{
+    var firstAgent = CreateAnalyticsAgent(new Vector2(5.0f, 10.0f), 1.2f, 0.4f);
+    var secondAgent = CreateAnalyticsAgent(new Vector2(10.0f, 10.0f), 1.8f, 0.8f);
+    var thirdAgent = CreateAnalyticsAgent(new Vector2(15.0f, 10.0f), 0.9f, 0.6f);
+
+    var population = new[] { firstAgent, secondAgent, thirdAgent };
+    var survivors = new[] { firstAgent, thirdAgent };
+
+    var snapshot = StatisticsCollector.Capture(7, population, survivors);
+
+    AssertTrue(snapshot.GenerationIndex == 7, "Snapshot should preserve the current generation index.");
+    AssertTrue(snapshot.DeathCount == 1, "One agent should be counted as dead.");
+    AssertNearlyEqual(2.0f / 3.0f, snapshot.SurvivalRate, 0.001f, "Survival rate should match survivor ratio.");
+    AssertNearlyEqual((1.2f + 1.8f + 0.9f) / 3.0f, snapshot.AverageMass, 0.001f, "Average mass should be computed on the full evaluated population.");
+    AssertNearlyEqual((0.4f + 0.8f + 0.6f) / 3.0f, snapshot.AverageBaseThrottle, 0.001f, "Average base throttle should be computed on the full evaluated population.");
+}
+
+void TestRunHistoryKeepsSnapshotsInGenerationOrder()
+{
+    var runHistory = new RunHistory();
+    runHistory.Add(new GenerationStatistics(0, 200, 100, 100, 0.5f, 1.0f, 0.8f));
+    runHistory.Add(new GenerationStatistics(1, 200, 120, 80, 0.6f, 1.1f, 0.85f));
+
+    AssertTrue(runHistory.Snapshots.Count == 2, "Run history should store each appended snapshot.");
+    AssertTrue(runHistory.Snapshots[0].GenerationIndex == 0, "Run history should preserve insertion order.");
+    AssertTrue(runHistory.Snapshots[1].GenerationIndex == 1, "Later generations should stay at the end of the history.");
+}
+
+Agent CreateAnalyticsAgent(Vector2 position, float mass, float baseThrottle)
+{
+    return new Agent
+    {
+        Genome = AgentGenome.Default with { BaseThrottle = baseThrottle },
+        PhysicsProfile = PhysicsProfile.Default with { Mass = mass },
+        Position = position,
+        Velocity = Vector2.Zero,
+        Heading = 0.0f,
+        Radius = 4.0f,
+        Energy = 100.0f,
+        DecisionTimer = 999.0f,
+        CurrentIntent = AgentIntent.Neutral
+    };
 }
 
 Vector2 SimulateSingleStepVelocity(Agent sourceAgent, float delta)
