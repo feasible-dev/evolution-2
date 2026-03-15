@@ -1,17 +1,17 @@
 # Evolution Game Prototype
 
-Prototype Godot 4 + C# d'une simulation 2D simple.
+Godot 4 + C# prototype for a simple 2D simulation.
 
-## Etat actuel
+## Current Status
 
-Le projet contient maintenant un MVP de base:
+The project now contains a basic MVP:
 
-- une scene sandbox
-- une simulation pure C#
+- a sandbox scene
+- a pure C# simulation
 - 200 agents
-- deplacement continu
-- rebond sur les bords du monde
-- rendu 2D simple dans Godot
+- continuous movement
+- bouncing at world boundaries
+- simple 2D rendering in Godot
 
 ## Structure
 
@@ -24,27 +24,27 @@ prototype/
   scripts/ui/
 ```
 
-## Premier lancement
+## First Run
 
-1. Ouvrir le dossier `prototype/` dans Godot 4 avec support .NET/C#.
-2. Si Godot demande de generer les fichiers C#, accepter.
-3. Attendre la generation du projet C#.
-4. Lancer le projet.
+1. Open the `prototype/` folder in Godot 4 with .NET/C# support.
+2. If Godot asks to generate the C# project files, accept.
+3. Wait for the C# project generation to finish.
+4. Run the project.
 
-La scene principale est:
+The main scene is:
 
 `res://scenes/sandbox/SandboxScene.tscn`
 
-## Fichiers importants
+## Important Files
 
-- `scripts/core/Simulation.cs`: boucle principale de simulation
-- `scripts/core/Agent.cs`: donnees d'un agent
-- `scripts/game/SandboxController.cs`: orchestration Godot
-- `scripts/rendering/SandboxRenderer.cs`: dessin des agents
+- `scripts/core/Simulation.cs`: main simulation loop
+- `scripts/core/Agent.cs`: agent data
+- `scripts/game/SandboxController.cs`: Godot orchestration
+- `scripts/rendering/SandboxRenderer.cs`: agent rendering
 
-## Etapes suivantes
+## Next Steps
 
-- ajouter pause / reset
-- afficher quelques stats a l'ecran
-- introduire energie
-- ajouter reproduction et mutation
+- add pause / reset
+- display a few on-screen stats
+- introduce energy
+- add reproduction and mutation
