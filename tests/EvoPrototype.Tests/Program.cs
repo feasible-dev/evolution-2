@@ -24,6 +24,9 @@ Run("Reproduction system falls back when no survivor exists", TestReproductionSy
 Run("Evolution cycle advances generation after duration", TestEvolutionCycleAdvancesGenerationAfterDuration);
 Run("Statistics collector captures deaths and averages", TestStatisticsCollectorCapturesDeathsAndAverages);
 Run("Run history keeps snapshots in generation order", TestRunHistoryKeepsSnapshotsInGenerationOrder);
+Run("Statistics collector handles empty populations", TestStatisticsCollectorHandlesEmptyPopulations);
+Run("Metric catalog wraps metric indices", TestMetricCatalogWrapsMetricIndices);
+Run("Metric catalog ranges stay fixed and include zero", TestMetricCatalogRangesStayFixedAndIncludeZero);
 
 if (failures.Count > 0)
 {
@@ -596,6 +599,45 @@ void TestRunHistoryKeepsSnapshotsInGenerationOrder()
     AssertTrue(runHistory.Snapshots.Count == 2, "Run history should store each appended snapshot.");
     AssertTrue(runHistory.Snapshots[0].GenerationIndex == 0, "Run history should preserve insertion order.");
     AssertTrue(runHistory.Snapshots[1].GenerationIndex == 1, "Later generations should stay at the end of the history.");
+}
+
+void TestStatisticsCollectorHandlesEmptyPopulations()
+{
+    var snapshot = StatisticsCollector.Capture(
+        generationIndex: 3,
+        population: Array.Empty<Agent>(),
+        survivors: Array.Empty<Agent>());
+
+    AssertTrue(snapshot.GenerationIndex == 3, "Empty-population snapshots should still preserve generation index.");
+    AssertTrue(snapshot.PopulationSize == 0, "Population size should stay zero for an empty input.");
+    AssertTrue(snapshot.DeathCount == 0, "Empty populations should not report phantom deaths.");
+    AssertNearlyEqual(0.0f, snapshot.SurvivalRate, 0.0001f, "Empty populations should report a zero survival rate.");
+    AssertNearlyEqual(0.0f, snapshot.AverageMass, 0.0001f, "Empty populations should report zero-valued averages.");
+    AssertNearlyEqual(0.0f, snapshot.AverageBaseThrottle, 0.0001f, "Empty populations should report zero-valued averages.");
+}
+
+void TestMetricCatalogWrapsMetricIndices()
+{
+    AssertTrue(
+        MetricCatalog.GetByIndex(-1) == MetricId.AverageBaseThrottle,
+        "Negative metric indices should wrap to the end of the catalog.");
+    AssertTrue(
+        MetricCatalog.GetByIndex(MetricCatalog.Count) == MetricId.DeathCount,
+        "Indices at catalog length should wrap back to the first metric.");
+}
+
+void TestMetricCatalogRangesStayFixedAndIncludeZero()
+{
+    var deathRange = MetricCatalog.GetDefaultRange(MetricId.DeathCount);
+    var survivalRange = MetricCatalog.GetDefaultRange(MetricId.SurvivalRate);
+    var massRange = MetricCatalog.GetDefaultRange(MetricId.AverageMass);
+
+    AssertNearlyEqual(0.0f, deathRange.X, 0.0001f, "Death count range should start at zero.");
+    AssertNearlyEqual(200.0f, deathRange.Y, 0.0001f, "Death count range should cover the full default population.");
+    AssertNearlyEqual(0.0f, survivalRange.X, 0.0001f, "Survival range should start at zero.");
+    AssertNearlyEqual(1.0f, survivalRange.Y, 0.0001f, "Survival range should stay normalized to one.");
+    AssertNearlyEqual(0.0f, massRange.X, 0.0001f, "Mass range should start at zero.");
+    AssertTrue(massRange.Y >= 3.0f, "Mass range should leave headroom for mutated agents.");
 }
 
 Agent CreateAnalyticsAgent(Vector2 position, float mass, float baseThrottle)
