@@ -340,38 +340,41 @@ public sealed class Simulation
     {
         // This naive O(n^2) pass is acceptable for the current prototype size.
         // If agent counts increase substantially, replace this with a spatial partition.
-        for (var firstIndex = 0; firstIndex < WorldState.Agents.Count; firstIndex++)
+        for (var iteration = 0; iteration < Settings.OverlapSolverIterations; iteration++)
         {
-            var firstAgent = WorldState.Agents[firstIndex];
-
-            for (var secondIndex = firstIndex + 1; secondIndex < WorldState.Agents.Count; secondIndex++)
+            for (var firstIndex = 0; firstIndex < WorldState.Agents.Count; firstIndex++)
             {
-                var secondAgent = WorldState.Agents[secondIndex];
-                var offset = secondAgent.Position - firstAgent.Position;
-                var distance = offset.Length();
-                var minimumDistance = firstAgent.Radius + secondAgent.Radius;
+                var firstAgent = WorldState.Agents[firstIndex];
 
-                if (distance >= minimumDistance)
+                for (var secondIndex = firstIndex + 1; secondIndex < WorldState.Agents.Count; secondIndex++)
                 {
-                    continue;
-                }
+                    var secondAgent = WorldState.Agents[secondIndex];
+                    var offset = secondAgent.Position - firstAgent.Position;
+                    var distance = offset.Length();
+                    var minimumDistance = firstAgent.Radius + secondAgent.Radius;
 
-                Vector2 normal;
-                if (distance <= 0.001f)
-                {
-                    normal = new Vector2(1.0f, 0.0f);
-                    distance = 0.0f;
-                }
-                else
-                {
-                    normal = offset / distance;
-                }
+                    if (distance >= minimumDistance)
+                    {
+                        continue;
+                    }
 
-                var penetration = minimumDistance - distance;
-                var correction = normal * (penetration * 0.5f);
+                    Vector2 normal;
+                    if (distance <= 0.001f)
+                    {
+                        normal = new Vector2(1.0f, 0.0f);
+                        distance = 0.0f;
+                    }
+                    else
+                    {
+                        normal = offset / distance;
+                    }
 
-                firstAgent.Position = ClampToWorld(firstAgent.Position - correction, firstAgent.Radius);
-                secondAgent.Position = ClampToWorld(secondAgent.Position + correction, secondAgent.Radius);
+                    var penetration = minimumDistance - distance;
+                    var correction = normal * (penetration * 0.5f);
+
+                    firstAgent.Position = ClampToWorld(firstAgent.Position - correction, firstAgent.Radius);
+                    secondAgent.Position = ClampToWorld(secondAgent.Position + correction, secondAgent.Radius);
+                }
             }
         }
     }

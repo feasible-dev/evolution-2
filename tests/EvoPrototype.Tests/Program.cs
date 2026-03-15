@@ -5,6 +5,7 @@ var failures = new List<string>();
 
 Run("Wall clamp stops outward movement without bounce", TestWallClampStopsOutwardMovementWithoutBounce);
 Run("Overlap resolution separates agents by radius", TestOverlapResolutionSeparatesAgentsByRadius);
+Run("Overlap solver resolves dense chains of agents", TestOverlapSolverResolvesDenseChainsOfAgents);
 Run("Brain turns toward open space near a wall", TestBrainTurnsTowardOpenSpaceNearWall);
 Run("Brain adds unstuck turn near a wall at low speed", TestBrainAddsUnstuckTurnNearWallAtLowSpeed);
 Run("Decision timers differ per agent because of jitter", TestDecisionTimersDifferPerAgentBecauseOfJitter);
@@ -115,6 +116,68 @@ void TestOverlapResolutionSeparatesAgentsByRadius()
 
     var distance = firstAgent.Position.DistanceTo(secondAgent.Position);
     AssertTrue(distance >= 9.99f, "Agents should be separated to at least the sum of their radii.");
+}
+
+void TestOverlapSolverResolvesDenseChainsOfAgents()
+{
+    var simulation = new Simulation(new SimulationSettings
+    {
+        WorldSize = new Vector2(120.0f, 120.0f),
+        AgentCount = 0,
+        AgentRadius = 6.0f,
+        Acceleration = 0.0f,
+        Drag = 0.0f,
+        MaxSpeed = 0.0f,
+        OverlapSolverIterations = 6
+    });
+
+    simulation.WorldState.Agents.Add(new Agent
+    {
+        Genome = AgentGenome.Default,
+        PhysicsProfile = PhysicsProfile.Default,
+        Position = new Vector2(50.0f, 60.0f),
+        Velocity = Vector2.Zero,
+        Heading = 0.0f,
+        Radius = 6.0f,
+        Energy = 100.0f,
+        DecisionTimer = 999.0f
+    });
+
+    simulation.WorldState.Agents.Add(new Agent
+    {
+        Genome = AgentGenome.Default,
+        PhysicsProfile = PhysicsProfile.Default,
+        Position = new Vector2(56.0f, 60.0f),
+        Velocity = Vector2.Zero,
+        Heading = 0.0f,
+        Radius = 6.0f,
+        Energy = 100.0f,
+        DecisionTimer = 999.0f
+    });
+
+    simulation.WorldState.Agents.Add(new Agent
+    {
+        Genome = AgentGenome.Default,
+        PhysicsProfile = PhysicsProfile.Default,
+        Position = new Vector2(62.0f, 60.0f),
+        Velocity = Vector2.Zero,
+        Heading = 0.0f,
+        Radius = 6.0f,
+        Energy = 100.0f,
+        DecisionTimer = 999.0f
+    });
+
+    simulation.Update(0.0f);
+
+    var agents = simulation.WorldState.Agents;
+    for (var firstIndex = 0; firstIndex < agents.Count; firstIndex++)
+    {
+        for (var secondIndex = firstIndex + 1; secondIndex < agents.Count; secondIndex++)
+        {
+            var distance = agents[firstIndex].Position.DistanceTo(agents[secondIndex].Position);
+            AssertTrue(distance >= 11.99f, "Dense overlap chains should also be fully separated.");
+        }
+    }
 }
 
 void TestBrainTurnsTowardOpenSpaceNearWall()
