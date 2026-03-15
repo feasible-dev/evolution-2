@@ -8,6 +8,7 @@ Run("Overlap resolution separates agents by radius", TestOverlapResolutionSepara
 Run("Brain turns toward open space near a wall", TestBrainTurnsTowardOpenSpaceNearWall);
 Run("Brain adds unstuck turn near a wall at low speed", TestBrainAddsUnstuckTurnNearWallAtLowSpeed);
 Run("Decision timers differ per agent because of jitter", TestDecisionTimersDifferPerAgentBecauseOfJitter);
+Run("Sustained throttle overcomes drag over time", TestSustainedThrottleOvercomesDragOverTime);
 
 if (failures.Count > 0)
 {
@@ -196,6 +197,50 @@ void TestDecisionTimersDifferPerAgentBecauseOfJitter()
     var secondTimer = simulation.WorldState.Agents[1].DecisionTimer;
 
     AssertTrue(MathF.Abs(firstTimer - secondTimer) > 0.0001f, "Agents should not share the exact same next decision time.");
+}
+
+void TestSustainedThrottleOvercomesDragOverTime()
+{
+    var simulation = new Simulation(new SimulationSettings
+    {
+        WorldSize = new Vector2(400.0f, 200.0f),
+        AgentCount = 0,
+        AgentRadius = 4.0f,
+        MaxSpeed = 110.0f,
+        Acceleration = 220.0f,
+        Drag = 0.35f,
+        MinimumDecisionIntervalSeconds = 0.05f
+    }, seed: 42);
+
+    var agent = new Agent
+    {
+        Genome = new AgentGenome(
+            BaseThrottle: 1.0f,
+            BaseTurnRate: 0.0f,
+            WallAvoidanceWeight: 0.0f,
+            NeighborAvoidanceWeight: 0.0f,
+            DecisionIntervalSeconds: 0.1f,
+            DecisionIntervalJitterSeconds: 0.0f,
+            WanderAmplitude: 0.0f,
+            WanderFrequency: 1.0f,
+            StuckTurnBias: 0.0f),
+        Position = new Vector2(100.0f, 100.0f),
+        Velocity = Vector2.Zero,
+        Heading = 0.0f,
+        Radius = 4.0f,
+        DecisionTimer = 0.0f,
+        TimeSinceLastDecision = 0.1f,
+        BrainClock = 0.0f
+    };
+
+    simulation.WorldState.Agents.Add(agent);
+
+    for (var index = 0; index < 20; index++)
+    {
+        simulation.Update(0.1f);
+    }
+
+    AssertTrue(agent.Velocity.Length() > 40.0f, "An agent with full throttle should keep meaningful speed instead of damping to near zero.");
 }
 
 void AssertTrue(bool condition, string message)

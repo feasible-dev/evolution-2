@@ -143,7 +143,8 @@ public sealed class Simulation
 
         var forward = HeadingToVector(agent.Heading);
         agent.Velocity += forward * (CurrentThrottleAcceleration(agent) * delta);
-        agent.Velocity = agent.Velocity.MoveToward(Vector2.Zero, Settings.Drag * Settings.MaxSpeed * delta);
+        var dragFactor = Mathf.Clamp(1.0f - (Settings.Drag * delta), 0.0f, 1.0f);
+        agent.Velocity *= dragFactor;
         agent.Velocity = agent.Velocity.LimitLength(Settings.MaxSpeed);
 
         var nextPosition = agent.Position + (agent.Velocity * delta);

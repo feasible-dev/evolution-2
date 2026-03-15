@@ -10,11 +10,11 @@ public sealed class SimulationSettings
 
     public float AgentRadius { get; init; } = 4.0f;
 
-    public float MaxSpeed { get; init; } = 90.0f;
+    public float MaxSpeed { get; init; } = 110.0f;
 
-    public float Acceleration { get; init; } = 140.0f;
+    public float Acceleration { get; init; } = 220.0f;
 
-    public float Drag { get; init; } = 1.8f;
+    public float Drag { get; init; } = 0.35f;
 
     public float WallAvoidanceDistance { get; init; } = 60.0f;
 
