@@ -26,7 +26,9 @@ public sealed class Agent
 
     public float BrainClock { get; set; }
 
-    public AgentDecision CurrentDecision { get; set; } = AgentDecision.Neutral;
+    public required PhysicsProfile PhysicsProfile { get; init; }
+
+    public AgentIntent CurrentIntent { get; set; } = AgentIntent.Neutral;
 
     public Color Color { get; set; } = Colors.White;
 }

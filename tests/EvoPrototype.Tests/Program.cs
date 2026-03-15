@@ -51,6 +51,7 @@ void TestWallClampStopsOutwardMovementWithoutBounce()
     var agent = new Agent
     {
         Genome = AgentGenome.Default,
+        PhysicsProfile = PhysicsProfile.Default,
         Position = new Vector2(95.0f, 50.0f),
         Velocity = new Vector2(20.0f, 0.0f),
         Heading = 0.0f,
@@ -80,6 +81,7 @@ void TestOverlapResolutionSeparatesAgentsByRadius()
     var firstAgent = new Agent
     {
         Genome = AgentGenome.Default,
+        PhysicsProfile = PhysicsProfile.Default,
         Position = new Vector2(50.0f, 50.0f),
         Velocity = Vector2.Zero,
         Heading = 0.0f,
@@ -90,6 +92,7 @@ void TestOverlapResolutionSeparatesAgentsByRadius()
     var secondAgent = new Agent
     {
         Genome = AgentGenome.Default,
+        PhysicsProfile = PhysicsProfile.Default,
         Position = new Vector2(53.0f, 50.0f),
         Velocity = Vector2.Zero,
         Heading = 0.0f,
@@ -119,6 +122,7 @@ void TestBrainTurnsTowardOpenSpaceNearWall()
             WanderAmplitude: 0.0f,
             WanderFrequency: 1.0f,
             StuckTurnBias: 2.0f),
+        PhysicsProfile = PhysicsProfile.Default,
         Position = Vector2.Zero,
         Velocity = Vector2.Zero,
         Heading = 0.0f,
@@ -140,7 +144,7 @@ void TestBrainTurnsTowardOpenSpaceNearWall()
         WallAvoidanceDistance = 60.0f
     });
 
-    AssertTrue(decision.TurnRate > 0.0f, "Agent should turn toward the side with more clearance.");
+    AssertTrue(decision.TurnWish > 0.0f, "Agent should turn toward the side with more clearance.");
 }
 
 void TestBrainAddsUnstuckTurnNearWallAtLowSpeed()
@@ -157,6 +161,7 @@ void TestBrainAddsUnstuckTurnNearWallAtLowSpeed()
             WanderAmplitude: 0.0f,
             WanderFrequency: 1.0f,
             StuckTurnBias: 2.5f),
+        PhysicsProfile = PhysicsProfile.Default,
         Position = Vector2.Zero,
         Velocity = Vector2.Zero,
         Heading = 0.0f,
@@ -179,7 +184,7 @@ void TestBrainAddsUnstuckTurnNearWallAtLowSpeed()
         StuckSpeedThreshold = 8.0f
     });
 
-    AssertTrue(decision.TurnRate > 2.0f, "Agent should get a strong unstuck turn when slow and pressed against a wall.");
+    AssertTrue(decision.TurnWish > 2.0f, "Agent should get a strong unstuck turn when slow and pressed against a wall.");
 }
 
 void TestDecisionTimersDifferPerAgentBecauseOfJitter()
@@ -224,6 +229,7 @@ void TestSustainedThrottleOvercomesDragOverTime()
             WanderAmplitude: 0.0f,
             WanderFrequency: 1.0f,
             StuckTurnBias: 0.0f),
+        PhysicsProfile = PhysicsProfile.Default,
         Position = new Vector2(100.0f, 100.0f),
         Velocity = Vector2.Zero,
         Heading = 0.0f,

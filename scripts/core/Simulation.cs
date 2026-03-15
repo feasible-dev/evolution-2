@@ -63,6 +63,15 @@ public sealed class Simulation
         return new Agent
         {
             Genome = genome,
+            PhysicsProfile = PhysicsProfile.Default with
+            {
+                Mass = NextFloat(0.8f, 1.4f),
+                MaxForwardAcceleration = NextFloat(180.0f, 260.0f),
+                MaxLateralAcceleration = NextFloat(80.0f, 130.0f),
+                MaxBrakeAcceleration = NextFloat(140.0f, 210.0f),
+                MaxTurnRate = NextFloat(2.2f, 4.2f),
+                LinearDrag = NextFloat(0.25f, 0.45f)
+            },
             Position = position,
             Velocity = HeadingToVector(heading) * (NextFloat(0.2f, 0.8f) * Settings.MaxSpeed),
             Heading = heading,
@@ -98,7 +107,7 @@ public sealed class Simulation
         }
 
         var observation = BuildObservation(agent);
-        agent.CurrentDecision = AgentBrain.Decide(agent, observation, Settings);
+        agent.CurrentIntent = AgentBrain.Decide(agent, observation, Settings);
         agent.DecisionTimer = NextDecisionDelay(agent.Genome);
         agent.TimeSinceLastDecision = 0.0f;
     }
@@ -139,11 +148,24 @@ public sealed class Simulation
 
     private void ApplyMovement(Agent agent, float delta)
     {
-        agent.Heading = Mathf.Wrap(agent.Heading + (agent.CurrentDecision.TurnRate * delta), 0.0f, Mathf.Tau);
+        var turnRate = Mathf.Clamp(
+            agent.CurrentIntent.TurnWish,
+            -agent.PhysicsProfile.MaxTurnRate,
+            agent.PhysicsProfile.MaxTurnRate);
 
-        var forward = HeadingToVector(agent.Heading);
-        agent.Velocity += forward * (CurrentThrottleAcceleration(agent) * delta);
-        var dragFactor = Mathf.Clamp(1.0f - (Settings.Drag * delta), 0.0f, 1.0f);
+        agent.Heading = Mathf.Wrap(agent.Heading + (turnRate * delta), 0.0f, Mathf.Tau);
+
+        var worldAcceleration = ResolveWorldAcceleration(agent);
+        agent.Velocity += worldAcceleration * delta;
+
+        var brakeAmount = Mathf.Clamp(agent.CurrentIntent.BrakeWish, 0.0f, 1.0f);
+        if (brakeAmount > 0.0f && agent.Velocity.LengthSquared() > 0.0001f)
+        {
+            var brakeAcceleration = agent.PhysicsProfile.MaxBrakeAcceleration * brakeAmount;
+            agent.Velocity = agent.Velocity.MoveToward(Vector2.Zero, brakeAcceleration * delta);
+        }
+
+        var dragFactor = Mathf.Clamp(1.0f - (agent.PhysicsProfile.LinearDrag * delta), 0.0f, 1.0f);
         agent.Velocity *= dragFactor;
         agent.Velocity = agent.Velocity.LimitLength(Settings.MaxSpeed);
 
@@ -152,9 +174,26 @@ public sealed class Simulation
         ClampVelocityAgainstWalls(agent);
     }
 
-    private float CurrentThrottleAcceleration(Agent agent)
+    private Vector2 ResolveWorldAcceleration(Agent agent)
     {
-        return Mathf.Clamp(agent.CurrentDecision.Throttle, 0.0f, 1.0f) * Settings.Acceleration;
+        var forward = HeadingToVector(agent.Heading);
+        var right = forward.Orthogonal();
+        var clampedLocalWish = new Vector2(
+            Mathf.Clamp(agent.CurrentIntent.LocalAccelerationWish.X, -1.0f, 1.0f),
+            Mathf.Clamp(agent.CurrentIntent.LocalAccelerationWish.Y, -1.0f, 1.0f));
+
+        var localAcceleration =
+            (right * (clampedLocalWish.X * agent.PhysicsProfile.MaxLateralAcceleration)) +
+            (forward * (clampedLocalWish.Y * agent.PhysicsProfile.MaxForwardAcceleration));
+
+        var worldWish = agent.CurrentIntent.WorldAccelerationWish;
+        var maxWorldWish = agent.PhysicsProfile.MaxForwardAcceleration;
+        if (worldWish.Length() > maxWorldWish)
+        {
+            worldWish = worldWish.Normalized() * maxWorldWish;
+        }
+
+        return (localAcceleration + worldWish) / agent.PhysicsProfile.Mass;
     }
 
     private Vector2 ClampToWorld(Vector2 position, float radius)

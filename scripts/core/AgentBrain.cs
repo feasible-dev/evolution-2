@@ -4,7 +4,7 @@ namespace EvoPrototype.Core;
 
 public static class AgentBrain
 {
-    public static AgentDecision Decide(Agent agent, AgentObservation observation, SimulationSettings settings)
+    public static AgentIntent Decide(Agent agent, AgentObservation observation, SimulationSettings settings)
     {
         var turnRate = agent.Genome.BaseTurnRate;
         turnRate += Mathf.Sin(agent.BrainClock * agent.Genome.WanderFrequency) * agent.Genome.WanderAmplitude;
@@ -40,6 +40,12 @@ public static class AgentBrain
         }
 
         var throttle = Mathf.Clamp(agent.Genome.BaseThrottle, 0.0f, 1.0f);
-        return new AgentDecision(turnRate, throttle);
+        var localAccelerationWish = new Vector2(0.0f, throttle);
+
+        return new AgentIntent(
+            WorldAccelerationWish: Vector2.Zero,
+            LocalAccelerationWish: localAccelerationWish,
+            TurnWish: turnRate,
+            BrakeWish: 0.0f);
     }
 }
