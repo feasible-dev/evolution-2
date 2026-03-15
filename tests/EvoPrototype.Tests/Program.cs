@@ -27,6 +27,8 @@ Run("Run history keeps snapshots in generation order", TestRunHistoryKeepsSnapsh
 Run("Statistics collector handles empty populations", TestStatisticsCollectorHandlesEmptyPopulations);
 Run("Metric catalog wraps metric indices", TestMetricCatalogWrapsMetricIndices);
 Run("Metric catalog ranges stay fixed and include zero", TestMetricCatalogRangesStayFixedAndIncludeZero);
+Run("Live metrics handle averages and empty worlds", TestLiveMetricsHandleAveragesAndEmptyWorlds);
+Run("Survival region factory builds four border bands", TestSurvivalRegionFactoryBuildsFourBorderBands);
 
 if (failures.Count > 0)
 {
@@ -638,6 +640,37 @@ void TestMetricCatalogRangesStayFixedAndIncludeZero()
     AssertNearlyEqual(1.0f, survivalRange.Y, 0.0001f, "Survival range should stay normalized to one.");
     AssertNearlyEqual(0.0f, massRange.X, 0.0001f, "Mass range should start at zero.");
     AssertTrue(massRange.Y >= 3.0f, "Mass range should leave headroom for mutated agents.");
+}
+
+void TestLiveMetricsHandleAveragesAndEmptyWorlds()
+{
+    var emptyMetrics = LiveMetrics.FromAgents(Array.Empty<Agent>());
+    AssertTrue(emptyMetrics.AgentCount == 0, "Empty worlds should report zero agents.");
+    AssertNearlyEqual(0.0f, emptyMetrics.AverageEnergy, 0.0001f, "Empty worlds should report zero average energy.");
+    AssertNearlyEqual(0.0f, emptyMetrics.AverageSpeed, 0.0001f, "Empty worlds should report zero average speed.");
+
+    var firstAgent = CreateTestAgent(new Vector2(0.0f, 0.0f));
+    firstAgent.Energy = 50.0f;
+    firstAgent.Velocity = new Vector2(3.0f, 4.0f);
+    var secondAgent = CreateTestAgent(new Vector2(1.0f, 1.0f));
+    secondAgent.Energy = 70.0f;
+    secondAgent.Velocity = new Vector2(0.0f, 10.0f);
+
+    var metrics = LiveMetrics.FromAgents(new[] { firstAgent, secondAgent });
+    AssertTrue(metrics.AgentCount == 2, "Live metrics should keep the current population count.");
+    AssertNearlyEqual(60.0f, metrics.AverageEnergy, 0.0001f, "Average energy should be computed across agents.");
+    AssertNearlyEqual(7.5f, metrics.AverageSpeed, 0.0001f, "Average speed should use vector length.");
+}
+
+void TestSurvivalRegionFactoryBuildsFourBorderBands()
+{
+    var regions = SurvivalRegionFactory.CreateBorderBands(new Vector2(200.0f, 100.0f), 12.0f);
+
+    AssertTrue(regions.Count == 4, "Border band factory should create four regions.");
+    AssertNearlyEqual(12.0f, regions[0].Bounds.Size.X, 0.0001f, "Left border band should use the configured thickness.");
+    AssertNearlyEqual(188.0f, regions[1].Bounds.Position.X, 0.0001f, "Right border band should start at world width minus thickness.");
+    AssertNearlyEqual(12.0f, regions[2].Bounds.Size.Y, 0.0001f, "Top border band should use the configured thickness.");
+    AssertNearlyEqual(88.0f, regions[3].Bounds.Position.Y, 0.0001f, "Bottom border band should start at world height minus thickness.");
 }
 
 Agent CreateAnalyticsAgent(Vector2 position, float mass, float baseThrottle)

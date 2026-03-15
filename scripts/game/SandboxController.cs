@@ -47,6 +47,35 @@ public partial class SandboxController : Node2D
     /// </summary>
     public override void _Ready()
     {
+        BindUiNodes();
+        ConnectSignals();
+        SyncEditorsFromConfiguration();
+        ApplyWindowSize();
+        ResetSimulation();
+    }
+
+    public override void _ExitTree()
+    {
+        DisconnectSignals();
+    }
+
+    public override void _Process(double delta)
+    {
+        if (_simulation is null || _sandboxRenderer is null || _evolutionCycleController is null)
+        {
+            return;
+        }
+
+        var scaledDelta = (float)delta * _runConfiguration.TimeScale;
+        _elapsedTimeSeconds += scaledDelta;
+        StepSimulation(scaledDelta);
+
+        UpdateRendering();
+        UpdateHud();
+    }
+
+    private void BindUiNodes()
+    {
         _sandboxRenderer = GetNode<SandboxRenderer>("SandboxRenderer");
         _generationChart = GetNode<GenerationChart>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/Chart");
         _timeValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/TimeValue");
@@ -70,15 +99,16 @@ public partial class SandboxController : Node2D
         _previousMetricButton = GetNode<Button>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/ChartHeader/PreviousMetricButton");
         _nextMetricButton = GetNode<Button>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/ChartHeader/NextMetricButton");
         _chartMetricValueLabel = GetNode<Label>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/ChartHeader/MetricValue");
-        _applyButton.Pressed += OnApplyPressed;
-        _previousMetricButton.Pressed += OnPreviousMetricPressed;
-        _nextMetricButton.Pressed += OnNextMetricPressed;
-        SyncEditorsFromConfiguration();
-        ApplyWindowSize();
-        ResetSimulation();
     }
 
-    public override void _ExitTree()
+    private void ConnectSignals()
+    {
+        _applyButton!.Pressed += OnApplyPressed;
+        _previousMetricButton!.Pressed += OnPreviousMetricPressed;
+        _nextMetricButton!.Pressed += OnNextMetricPressed;
+    }
+
+    private void DisconnectSignals()
     {
         if (_applyButton is not null)
         {
@@ -96,31 +126,14 @@ public partial class SandboxController : Node2D
         }
     }
 
-    public override void _Process(double delta)
-    {
-        if (_simulation is null || _sandboxRenderer is null || _evolutionCycleController is null)
-        {
-            return;
-        }
-
-        var scaledDelta = (float)delta * _runConfiguration.TimeScale;
-        _elapsedTimeSeconds += scaledDelta;
-        StepSimulation(scaledDelta);
-
-        _sandboxRenderer.SetSelectionState(
-            _evolutionCycleController.SelectedSurvivors,
-            _evolutionCycleController.Phase == EvolutionPhase.Selection,
-            _evolutionCycleController.SelectionProgress);
-        _sandboxRenderer.QueueRedraw();
-        UpdateHud();
-    }
-
     private void ResetSimulation()
     {
         _elapsedTimeSeconds = 0.0f;
         _simulation = new Simulation(_runConfiguration.ToSimulationSettings());
         _simulation.InitializeAgents();
-        _survivalRegions = BuildSurvivalRegions(_runConfiguration.ToEvolutionSettings());
+        _survivalRegions = SurvivalRegionFactory.CreateBorderBands(
+            _runConfiguration.WorldSize,
+            _runConfiguration.SurvivalBandThickness);
         _evolutionCycleController = new EvolutionCycleController(
             new RegionSurvivalRule(_survivalRegions),
             new ReproductionSystem(new MutationSystem(), seed: null),
@@ -168,28 +181,16 @@ public partial class SandboxController : Node2D
         {
             return;
         }
-
-        var agentCount = _simulation.WorldState.Agents.Count;
-        var totalEnergy = 0.0f;
-        var totalSpeed = 0.0f;
-
-        foreach (var agent in _simulation.WorldState.Agents)
-        {
-            totalEnergy += agent.Energy;
-            totalSpeed += agent.Velocity.Length();
-        }
-
-        var averageEnergy = agentCount > 0 ? totalEnergy / agentCount : 0.0f;
-        var averageSpeed = agentCount > 0 ? totalSpeed / agentCount : 0.0f;
+        var liveMetrics = LiveMetrics.FromAgents(_simulation.WorldState.Agents);
 
         _timeValueLabel!.Text = $"{_elapsedTimeSeconds:0.0}s";
         _generationValueLabel!.Text = _evolutionCycleController.GenerationIndex.ToString();
         _lifeValueLabel!.Text = $"{_evolutionCycleController.GenerationElapsedSeconds:0.0}/{_runConfiguration.GenerationDurationSeconds:0.0}s";
-        _agentValueLabel!.Text = agentCount.ToString();
+        _agentValueLabel!.Text = liveMetrics.AgentCount.ToString();
         _survivorValueLabel!.Text = _evolutionCycleController.LastSurvivorCount.ToString();
         _phaseValueLabel!.Text = _evolutionCycleController.Phase.ToString();
-        _energyValueLabel!.Text = $"{averageEnergy:0.0}";
-        _speedValueLabel!.Text = $"{averageSpeed:0.0}";
+        _energyValueLabel!.Text = $"{liveMetrics.AverageEnergy:0.0}";
+        _speedValueLabel!.Text = $"{liveMetrics.AverageSpeed:0.0}";
     }
 
     private void UpdateChartMetric()
@@ -209,6 +210,15 @@ public partial class SandboxController : Node2D
     {
         _chartMetricIndex += 1;
         UpdateChartMetric();
+    }
+
+    private void UpdateRendering()
+    {
+        _sandboxRenderer!.SetSelectionState(
+            _evolutionCycleController!.SelectedSurvivors,
+            _evolutionCycleController.Phase == EvolutionPhase.Selection,
+            _evolutionCycleController.SelectionProgress);
+        _sandboxRenderer.QueueRedraw();
     }
 
     private void ApplyWindowSize()
@@ -259,17 +269,4 @@ public partial class SandboxController : Node2D
         }
     }
 
-    private IReadOnlyList<SurvivalRegion> BuildSurvivalRegions(EvolutionSettings evolutionSettings)
-    {
-        var thickness = evolutionSettings.SurvivalBandThickness;
-        var worldSize = _runConfiguration.WorldSize;
-
-        return new[]
-        {
-            new SurvivalRegion(new Rect2(0.0f, 0.0f, thickness, worldSize.Y)),
-            new SurvivalRegion(new Rect2(worldSize.X - thickness, 0.0f, thickness, worldSize.Y)),
-            new SurvivalRegion(new Rect2(0.0f, 0.0f, worldSize.X, thickness)),
-            new SurvivalRegion(new Rect2(0.0f, worldSize.Y - thickness, worldSize.X, thickness))
-        };
-    }
 }
