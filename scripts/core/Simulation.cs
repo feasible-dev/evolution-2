@@ -54,7 +54,11 @@ public sealed class Simulation
             BaseTurnRate: NextFloat(-1.6f, 1.6f),
             WallAvoidanceWeight: NextFloat(0.4f, 1.8f),
             NeighborAvoidanceWeight: NextFloat(0.2f, 1.2f),
-            DecisionIntervalSeconds: NextFloat(0.08f, 0.3f));
+            DecisionIntervalSeconds: NextFloat(0.08f, 0.3f),
+            DecisionIntervalJitterSeconds: NextFloat(0.03f, 0.12f),
+            WanderAmplitude: NextFloat(0.3f, 0.9f),
+            WanderFrequency: NextFloat(0.6f, 2.4f),
+            StuckTurnBias: NextFloat(1.6f, 3.2f));
 
         return new Agent
         {
@@ -64,22 +68,39 @@ public sealed class Simulation
             Heading = heading,
             Radius = radius,
             Energy = 100.0f,
-            DecisionTimer = 0.0f,
+            DecisionTimer = NextDecisionDelay(genome),
+            TimeSinceLastDecision = 0.0f,
+            TimeBelowSpeedThreshold = 0.0f,
+            IsTouchingWall = false,
+            BrainClock = NextFloat(0.0f, Mathf.Tau),
             Color = Color.FromHsv(NextFloat(0.0f, 1.0f), 0.65f, 0.95f)
         };
     }
 
     private void UpdateDecision(Agent agent, float delta)
     {
+        agent.BrainClock += delta;
         agent.DecisionTimer -= delta;
-        if (agent.DecisionTimer > 0.0f)
+        agent.TimeSinceLastDecision += delta;
+
+        if (agent.Velocity.Length() < Settings.StuckSpeedThreshold)
+        {
+            agent.TimeBelowSpeedThreshold += delta;
+        }
+        else
+        {
+            agent.TimeBelowSpeedThreshold = 0.0f;
+        }
+
+        if (!ShouldReevaluateDecision(agent))
         {
             return;
         }
 
         var observation = BuildObservation(agent);
         agent.CurrentDecision = AgentBrain.Decide(agent, observation, Settings);
-        agent.DecisionTimer = Mathf.Max(0.01f, agent.Genome.DecisionIntervalSeconds);
+        agent.DecisionTimer = NextDecisionDelay(agent.Genome);
+        agent.TimeSinceLastDecision = 0.0f;
     }
 
     private AgentObservation BuildObservation(Agent agent)
@@ -111,7 +132,9 @@ public sealed class Simulation
             LeftWallDistance: DistanceToBoundary(agent.Position, -right),
             RightWallDistance: DistanceToBoundary(agent.Position, right),
             NearestNeighborLocalOffset: nearestNeighborLocalOffset,
-            HasNeighbor: nearestNeighborDistance < float.MaxValue);
+            HasNeighbor: nearestNeighborDistance < float.MaxValue,
+            Speed: agent.Velocity.Length(),
+            IsTouchingWall: agent.IsTouchingWall);
     }
 
     private void ApplyMovement(Agent agent, float delta)
@@ -146,26 +169,42 @@ public sealed class Simulation
         var rightLimit = Settings.WorldSize.X - agent.Radius;
         var topLimit = agent.Radius;
         var bottomLimit = Settings.WorldSize.Y - agent.Radius;
+        var isTouchingWall = false;
 
         if (agent.Position.X <= leftLimit && agent.Velocity.X < 0.0f)
         {
             agent.Velocity = new Vector2(0.0f, agent.Velocity.Y);
+            isTouchingWall = true;
         }
 
         if (agent.Position.X >= rightLimit && agent.Velocity.X > 0.0f)
         {
             agent.Velocity = new Vector2(0.0f, agent.Velocity.Y);
+            isTouchingWall = true;
         }
 
         if (agent.Position.Y <= topLimit && agent.Velocity.Y < 0.0f)
         {
             agent.Velocity = new Vector2(agent.Velocity.X, 0.0f);
+            isTouchingWall = true;
         }
 
         if (agent.Position.Y >= bottomLimit && agent.Velocity.Y > 0.0f)
         {
             agent.Velocity = new Vector2(agent.Velocity.X, 0.0f);
+            isTouchingWall = true;
         }
+
+        if (!isTouchingWall)
+        {
+            isTouchingWall =
+                agent.Position.X <= leftLimit ||
+                agent.Position.X >= rightLimit ||
+                agent.Position.Y <= topLimit ||
+                agent.Position.Y >= bottomLimit;
+        }
+
+        agent.IsTouchingWall = isTouchingWall;
     }
 
     private void ResolveOverlaps()
@@ -242,6 +281,37 @@ public sealed class Simulation
     private static Vector2 HeadingToVector(float heading)
     {
         return Vector2.FromAngle(heading);
+    }
+
+    private bool ShouldReevaluateDecision(Agent agent)
+    {
+        if (agent.DecisionTimer > 0.0f)
+        {
+            return false;
+        }
+
+        if (agent.TimeSinceLastDecision < Settings.MinimumDecisionIntervalSeconds)
+        {
+            return false;
+        }
+
+        if (agent.IsTouchingWall)
+        {
+            return true;
+        }
+
+        if (agent.TimeBelowSpeedThreshold >= Settings.LowSpeedReconsiderationSeconds)
+        {
+            return true;
+        }
+
+        return true;
+    }
+
+    private float NextDecisionDelay(AgentGenome genome)
+    {
+        var jitter = NextFloat(-genome.DecisionIntervalJitterSeconds, genome.DecisionIntervalJitterSeconds);
+        return Mathf.Max(Settings.MinimumDecisionIntervalSeconds, genome.DecisionIntervalSeconds + jitter);
     }
 
     private float NextFloat(float minValue, float maxValue)

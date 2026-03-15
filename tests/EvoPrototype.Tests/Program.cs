@@ -6,6 +6,8 @@ var failures = new List<string>();
 Run("Wall clamp stops outward movement without bounce", TestWallClampStopsOutwardMovementWithoutBounce);
 Run("Overlap resolution separates agents by radius", TestOverlapResolutionSeparatesAgentsByRadius);
 Run("Brain turns toward open space near a wall", TestBrainTurnsTowardOpenSpaceNearWall);
+Run("Brain adds unstuck turn near a wall at low speed", TestBrainAddsUnstuckTurnNearWallAtLowSpeed);
+Run("Decision timers differ per agent because of jitter", TestDecisionTimersDifferPerAgentBecauseOfJitter);
 
 if (failures.Count > 0)
 {
@@ -111,11 +113,16 @@ void TestBrainTurnsTowardOpenSpaceNearWall()
             BaseTurnRate: 0.0f,
             WallAvoidanceWeight: 1.5f,
             NeighborAvoidanceWeight: 0.0f,
-            DecisionIntervalSeconds: 0.2f),
+            DecisionIntervalSeconds: 0.2f,
+            DecisionIntervalJitterSeconds: 0.0f,
+            WanderAmplitude: 0.0f,
+            WanderFrequency: 1.0f,
+            StuckTurnBias: 2.0f),
         Position = Vector2.Zero,
         Velocity = Vector2.Zero,
         Heading = 0.0f,
-        Radius = 4.0f
+        Radius = 4.0f,
+        BrainClock = 0.0f
     };
 
     var observation = new AgentObservation(
@@ -123,7 +130,9 @@ void TestBrainTurnsTowardOpenSpaceNearWall()
         LeftWallDistance: 10.0f,
         RightWallDistance: 40.0f,
         NearestNeighborLocalOffset: Vector2.Zero,
-        HasNeighbor: false);
+        HasNeighbor: false,
+        Speed: 12.0f,
+        IsTouchingWall: false);
 
     var decision = AgentBrain.Decide(agent, observation, new SimulationSettings
     {
@@ -131,6 +140,62 @@ void TestBrainTurnsTowardOpenSpaceNearWall()
     });
 
     AssertTrue(decision.TurnRate > 0.0f, "Agent should turn toward the side with more clearance.");
+}
+
+void TestBrainAddsUnstuckTurnNearWallAtLowSpeed()
+{
+    var agent = new Agent
+    {
+        Genome = new AgentGenome(
+            BaseThrottle: 0.8f,
+            BaseTurnRate: 0.0f,
+            WallAvoidanceWeight: 0.0f,
+            NeighborAvoidanceWeight: 0.0f,
+            DecisionIntervalSeconds: 0.2f,
+            DecisionIntervalJitterSeconds: 0.0f,
+            WanderAmplitude: 0.0f,
+            WanderFrequency: 1.0f,
+            StuckTurnBias: 2.5f),
+        Position = Vector2.Zero,
+        Velocity = Vector2.Zero,
+        Heading = 0.0f,
+        Radius = 4.0f,
+        BrainClock = 0.0f
+    };
+
+    var observation = new AgentObservation(
+        ForwardWallDistance: 5.5f,
+        LeftWallDistance: 8.0f,
+        RightWallDistance: 25.0f,
+        NearestNeighborLocalOffset: Vector2.Zero,
+        HasNeighbor: false,
+        Speed: 1.0f,
+        IsTouchingWall: true);
+
+    var decision = AgentBrain.Decide(agent, observation, new SimulationSettings
+    {
+        WallAvoidanceDistance = 60.0f,
+        StuckSpeedThreshold = 8.0f
+    });
+
+    AssertTrue(decision.TurnRate > 2.0f, "Agent should get a strong unstuck turn when slow and pressed against a wall.");
+}
+
+void TestDecisionTimersDifferPerAgentBecauseOfJitter()
+{
+    var simulation = new Simulation(new SimulationSettings
+    {
+        WorldSize = new Vector2(200.0f, 120.0f),
+        AgentCount = 2,
+        AgentRadius = 4.0f
+    }, seed: 123);
+
+    simulation.InitializeAgents();
+
+    var firstTimer = simulation.WorldState.Agents[0].DecisionTimer;
+    var secondTimer = simulation.WorldState.Agents[1].DecisionTimer;
+
+    AssertTrue(MathF.Abs(firstTimer - secondTimer) > 0.0001f, "Agents should not share the exact same next decision time.");
 }
 
 void AssertTrue(bool condition, string message)

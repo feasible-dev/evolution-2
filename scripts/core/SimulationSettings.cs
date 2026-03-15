@@ -19,4 +19,10 @@ public sealed class SimulationSettings
     public float WallAvoidanceDistance { get; init; } = 60.0f;
 
     public float NeighborAwarenessDistance { get; init; } = 32.0f;
+
+    public float StuckSpeedThreshold { get; init; } = 8.0f;
+
+    public float MinimumDecisionIntervalSeconds { get; init; } = 0.06f;
+
+    public float LowSpeedReconsiderationSeconds { get; init; } = 0.18f;
 }

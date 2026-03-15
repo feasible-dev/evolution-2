@@ -21,6 +21,12 @@ public sealed class RunConfiguration
 
     public float NeighborAwarenessDistance { get; init; } = 32.0f;
 
+    public float StuckSpeedThreshold { get; init; } = 8.0f;
+
+    public float MinimumDecisionIntervalSeconds { get; init; } = 0.06f;
+
+    public float LowSpeedReconsiderationSeconds { get; init; } = 0.18f;
+
     public SimulationSettings ToSimulationSettings()
     {
         return new SimulationSettings
@@ -32,7 +38,10 @@ public sealed class RunConfiguration
             Acceleration = Acceleration,
             Drag = Drag,
             WallAvoidanceDistance = WallAvoidanceDistance,
-            NeighborAwarenessDistance = NeighborAwarenessDistance
+            NeighborAwarenessDistance = NeighborAwarenessDistance,
+            StuckSpeedThreshold = StuckSpeedThreshold,
+            MinimumDecisionIntervalSeconds = MinimumDecisionIntervalSeconds,
+            LowSpeedReconsiderationSeconds = LowSpeedReconsiderationSeconds
         };
     }
 }

@@ -7,6 +7,7 @@ public static class AgentBrain
     public static AgentDecision Decide(Agent agent, AgentObservation observation, SimulationSettings settings)
     {
         var turnRate = agent.Genome.BaseTurnRate;
+        turnRate += Mathf.Sin(agent.BrainClock * agent.Genome.WanderFrequency) * agent.Genome.WanderAmplitude;
 
         if (observation.ForwardWallDistance < settings.WallAvoidanceDistance)
         {
@@ -16,6 +17,12 @@ public static class AgentBrain
                 1.0f);
 
             turnRate += wallBias * agent.Genome.WallAvoidanceWeight;
+        }
+
+        if (observation.IsTouchingWall && observation.Speed < settings.StuckSpeedThreshold)
+        {
+            var unstuckDirection = observation.RightWallDistance >= observation.LeftWallDistance ? 1.0f : -1.0f;
+            turnRate += unstuckDirection * agent.Genome.StuckTurnBias;
         }
 
         if (observation.HasNeighbor)

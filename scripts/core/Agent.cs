@@ -18,6 +18,14 @@ public sealed class Agent
 
     public float DecisionTimer { get; set; }
 
+    public float TimeSinceLastDecision { get; set; }
+
+    public float TimeBelowSpeedThreshold { get; set; }
+
+    public bool IsTouchingWall { get; set; }
+
+    public float BrainClock { get; set; }
+
     public AgentDecision CurrentDecision { get; set; } = AgentDecision.Neutral;
 
     public Color Color { get; set; } = Colors.White;
