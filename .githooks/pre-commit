@@ -1,0 +1,10 @@
+#!/bin/sh
+
+branch="$(git rev-parse --abbrev-ref HEAD)"
+
+if [ "$branch" = "master" ]; then
+  echo "Committing directly on master is blocked. Create or switch to a development branch."
+  exit 1
+fi
+
+exit 0
