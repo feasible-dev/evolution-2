@@ -3,6 +3,7 @@ using EvoPrototype.Analytics;
 using EvoPrototype.Core;
 using EvoPrototype.Evolution;
 using EvoPrototype.Rendering;
+using EvoPrototype.Setup;
 using EvoPrototype.Ui;
 using Godot;
 
@@ -12,11 +13,19 @@ public partial class SandboxController : Node2D
 {
     private const float MaxSimulationStepSeconds = 1.0f / 30.0f;
     private readonly RunConfiguration _runConfiguration = new();
+    private readonly GameSessionState _sessionState = new();
     private Simulation? _simulation;
     private EvolutionCycleController? _evolutionCycleController;
-    private IReadOnlyList<SurvivalRegion>? _survivalRegions;
+    private IReadOnlyList<ISurvivalZone>? _survivalZones;
     private SandboxRenderer? _sandboxRenderer;
+    private SetupOverlay? _setupOverlay;
     private GenerationChart? _generationChart;
+    private Control? _setupScreen;
+    private Control? _topBar;
+    private Control? _bottomPanel;
+    private Control? _metricsSection;
+    private Control? _evolutionControlsSection;
+    private Control? _physicsControlsSection;
     private Label? _timeValueLabel;
     private Label? _generationValueLabel;
     private Label? _lifeValueLabel;
@@ -30,10 +39,13 @@ public partial class SandboxController : Node2D
     private SpinBox? _selectionDurationSpinBox;
     private SpinBox? _timeScaleSpinBox;
     private SpinBox? _mutationStrengthSpinBox;
-    private SpinBox? _bandThicknessSpinBox;
     private SpinBox? _accelerationSpinBox;
     private SpinBox? _dragSpinBox;
     private SpinBox? _stuckSpeedSpinBox;
+    private Label? _setupHintLabel;
+    private Label? _setupSubtitleLabel;
+    private Button? _startRunButton;
+    private Button? _editZoneButton;
     private Button? _applyButton;
     private Button? _previousMetricButton;
     private Button? _nextMetricButton;
@@ -51,7 +63,8 @@ public partial class SandboxController : Node2D
         ConnectSignals();
         SyncEditorsFromConfiguration();
         ApplyWindowSize();
-        ResetSimulation();
+        _sessionState.SurvivalZoneDefinition = _runConfiguration.SurvivalZoneDefinition;
+        EnterSetupPhase();
     }
 
     public override void _ExitTree()
@@ -61,6 +74,12 @@ public partial class SandboxController : Node2D
 
     public override void _Process(double delta)
     {
+        if (_sessionState.CurrentPhase == GamePhase.Setup)
+        {
+            UpdateHud();
+            return;
+        }
+
         if (_simulation is null || _sandboxRenderer is null || _evolutionCycleController is null)
         {
             return;
@@ -77,6 +96,13 @@ public partial class SandboxController : Node2D
     private void BindUiNodes()
     {
         _sandboxRenderer = GetNode<SandboxRenderer>("SandboxRenderer");
+        _setupOverlay = GetNode<SetupOverlay>("SetupOverlay");
+        _setupScreen = GetNode<Control>("CanvasLayer/UiRoot/SetupScreen");
+        _topBar = GetNode<Control>("CanvasLayer/UiRoot/TopBar");
+        _bottomPanel = GetNode<Control>("CanvasLayer/UiRoot/BottomPanel");
+        _metricsSection = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/Metrics");
+        _evolutionControlsSection = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls");
+        _physicsControlsSection = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/PhysicsControls");
         _generationChart = GetNode<GenerationChart>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/Chart");
         _timeValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/TimeValue");
         _generationValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/GenerationValue");
@@ -91,18 +117,25 @@ public partial class SandboxController : Node2D
         _selectionDurationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls/SelectionDurationEditor");
         _timeScaleSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls/TimeScaleEditor");
         _mutationStrengthSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls/MutationStrengthEditor");
-        _bandThicknessSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls/BandThicknessEditor");
         _accelerationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/PhysicsControls/AccelerationEditor");
         _dragSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/PhysicsControls/DragEditor");
         _stuckSpeedSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/PhysicsControls/StuckSpeedEditor");
+        _setupHintLabel = GetNode<Label>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/SetupHint");
+        _setupSubtitleLabel = GetNode<Label>("CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack/SetupSubtitle");
+        _startRunButton = GetNode<Button>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/StartRunButton");
+        _editZoneButton = GetNode<Button>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/EditZoneButton");
         _applyButton = GetNode<Button>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/ApplyButton");
         _previousMetricButton = GetNode<Button>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/ChartHeader/PreviousMetricButton");
         _nextMetricButton = GetNode<Button>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/ChartHeader/NextMetricButton");
         _chartMetricValueLabel = GetNode<Label>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/ChartHeader/MetricValue");
+        _setupOverlay.Bind(_runConfiguration);
+        _setupOverlay.DefinitionChanged += OnSetupDefinitionChanged;
     }
 
     private void ConnectSignals()
     {
+        _startRunButton!.Pressed += OnStartRunPressed;
+        _editZoneButton!.Pressed += OnEditZonePressed;
         _applyButton!.Pressed += OnApplyPressed;
         _previousMetricButton!.Pressed += OnPreviousMetricPressed;
         _nextMetricButton!.Pressed += OnNextMetricPressed;
@@ -110,6 +143,21 @@ public partial class SandboxController : Node2D
 
     private void DisconnectSignals()
     {
+        if (_setupOverlay is not null)
+        {
+            _setupOverlay.DefinitionChanged -= OnSetupDefinitionChanged;
+        }
+
+        if (_startRunButton is not null)
+        {
+            _startRunButton.Pressed -= OnStartRunPressed;
+        }
+
+        if (_editZoneButton is not null)
+        {
+            _editZoneButton.Pressed -= OnEditZonePressed;
+        }
+
         if (_applyButton is not null)
         {
             _applyButton.Pressed -= OnApplyPressed;
@@ -131,20 +179,47 @@ public partial class SandboxController : Node2D
         _elapsedTimeSeconds = 0.0f;
         _simulation = new Simulation(_runConfiguration.ToSimulationSettings());
         _simulation.InitializeAgents();
-        _survivalRegions = SurvivalRegionFactory.CreateBorderBands(
+        _survivalZones = SurvivalRegionFactory.CreateZones(
             _runConfiguration.WorldSize,
-            _runConfiguration.SurvivalBandThickness);
+            _runConfiguration.SurvivalZoneDefinition);
         _evolutionCycleController = new EvolutionCycleController(
-            new RegionSurvivalRule(_survivalRegions),
+            new RegionSurvivalRule(_survivalZones),
             new ReproductionSystem(new MutationSystem(), seed: null),
             _runConfiguration.ToEvolutionSettings(),
             _runConfiguration.ToSimulationSettings());
         _sandboxRenderer!.Bind(_simulation, _runConfiguration);
-        _sandboxRenderer.SetSurvivalRegions(_survivalRegions);
+        _sandboxRenderer.SetSurvivalZones(_survivalZones);
         _sandboxRenderer.SetSelectionState(System.Array.Empty<Agent>(), selectionActive: false, selectionProgress: 0.0f);
         _runHistory = new RunHistory();
         _generationChart!.Bind(_runHistory);
         UpdateChartMetric();
+        UpdateHud();
+    }
+
+    private void EnterSetupPhase()
+    {
+        _sessionState.CurrentPhase = GamePhase.Setup;
+        _simulation = null;
+        _evolutionCycleController = null;
+        _survivalZones = SurvivalRegionFactory.CreateZones(_runConfiguration.WorldSize, _sessionState.SurvivalZoneDefinition);
+        _setupOverlay!.SetDefinition(_sessionState.SurvivalZoneDefinition);
+        _setupOverlay.SetEditingEnabled(true);
+        _setupOverlay.Visible = true;
+        _sandboxRenderer!.Visible = false;
+        UpdateSetupUi();
+        UpdateHud();
+    }
+
+    private void StartRun()
+    {
+        _runConfiguration.SurvivalZoneDefinition = _sessionState.SurvivalZoneDefinition;
+        ResetSimulation();
+        _sessionState.CurrentPhase = GamePhase.Running;
+        _setupOverlay!.SetEditingEnabled(false);
+        _setupOverlay.Visible = false;
+        _sandboxRenderer!.Visible = true;
+        UpdateSetupUi();
+        UpdateRendering();
         UpdateHud();
     }
 
@@ -155,11 +230,13 @@ public partial class SandboxController : Node2D
         _runConfiguration.SelectionDurationSeconds = (float)_selectionDurationSpinBox!.Value;
         _runConfiguration.TimeScale = (float)_timeScaleSpinBox!.Value;
         _runConfiguration.MutationStrength = (float)_mutationStrengthSpinBox!.Value;
-        _runConfiguration.SurvivalBandThickness = (float)_bandThicknessSpinBox!.Value;
         _runConfiguration.Acceleration = (float)_accelerationSpinBox!.Value;
         _runConfiguration.Drag = (float)_dragSpinBox!.Value;
         _runConfiguration.StuckSpeedThreshold = (float)_stuckSpeedSpinBox!.Value;
-        ResetSimulation();
+        if (_sessionState.CurrentPhase == GamePhase.Running)
+        {
+            StartRun();
+        }
     }
 
     private void SyncEditorsFromConfiguration()
@@ -169,7 +246,6 @@ public partial class SandboxController : Node2D
         _selectionDurationSpinBox!.Value = _runConfiguration.SelectionDurationSeconds;
         _timeScaleSpinBox!.Value = _runConfiguration.TimeScale;
         _mutationStrengthSpinBox!.Value = _runConfiguration.MutationStrength;
-        _bandThicknessSpinBox!.Value = _runConfiguration.SurvivalBandThickness;
         _accelerationSpinBox!.Value = _runConfiguration.Acceleration;
         _dragSpinBox!.Value = _runConfiguration.Drag;
         _stuckSpeedSpinBox!.Value = _runConfiguration.StuckSpeedThreshold;
@@ -177,6 +253,19 @@ public partial class SandboxController : Node2D
 
     private void UpdateHud()
     {
+        if (_sessionState.CurrentPhase == GamePhase.Setup)
+        {
+            _timeValueLabel!.Text = "0.0s";
+            _generationValueLabel!.Text = "-";
+            _lifeValueLabel!.Text = "Setup";
+            _agentValueLabel!.Text = _runConfiguration.AgentCount.ToString();
+            _survivorValueLabel!.Text = "-";
+            _phaseValueLabel!.Text = "Setup";
+            _energyValueLabel!.Text = "-";
+            _speedValueLabel!.Text = "-";
+            return;
+        }
+
         if (_simulation is null || _evolutionCycleController is null)
         {
             return;
@@ -210,6 +299,40 @@ public partial class SandboxController : Node2D
     {
         _chartMetricIndex += 1;
         UpdateChartMetric();
+    }
+
+    private void OnStartRunPressed()
+    {
+        StartRun();
+    }
+
+    private void OnEditZonePressed()
+    {
+        EnterSetupPhase();
+    }
+
+    private void OnSetupDefinitionChanged(SurvivalZoneDefinition definition)
+    {
+        _sessionState.SurvivalZoneDefinition = definition;
+        _survivalZones = SurvivalRegionFactory.CreateZones(_runConfiguration.WorldSize, definition);
+    }
+
+    private void UpdateSetupUi()
+    {
+        var inSetup = _sessionState.CurrentPhase == GamePhase.Setup;
+        _setupScreen!.Visible = inSetup;
+        _topBar!.Visible = !inSetup;
+        _bottomPanel!.Visible = !inSetup;
+        _metricsSection!.Visible = !inSetup;
+        _evolutionControlsSection!.Visible = !inSetup;
+        _physicsControlsSection!.Visible = !inSetup;
+        _setupHintLabel!.Text = inSetup
+            ? "Drag inside the circle to move it. Drag its edge handle to resize it, then start the run."
+            : "The current run uses the configured survival zone. Return to setup to edit it.";
+        _setupSubtitleLabel!.Text = "Phase 1: Build the survival zone";
+        _startRunButton!.Disabled = !inSetup;
+        _editZoneButton!.Disabled = inSetup;
+        _applyButton!.Disabled = inSetup;
     }
 
     private void UpdateRendering()

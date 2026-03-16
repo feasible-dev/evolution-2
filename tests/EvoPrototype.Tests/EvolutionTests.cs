@@ -9,10 +9,14 @@ public static class EvolutionTests
     public static void Register(TestHarness harness)
     {
         harness.Run("Region survival rule keeps agents inside configured zones", TestRegionSurvivalRuleKeepsAgentsInsideConfiguredZones);
+        harness.Run("Circle survival zone accepts only positions inside radius", TestCircleSurvivalZoneAcceptsOnlyPositionsInsideRadius);
         harness.Run("Reproduction system restores target population from survivors", TestReproductionSystemRestoresTargetPopulationFromSurvivors);
         harness.Run("Reproduction system falls back when no survivor exists", TestReproductionSystemFallsBackWhenNoSurvivorExists);
         harness.Run("Evolution cycle advances generation after duration", TestEvolutionCycleAdvancesGenerationAfterDuration);
         harness.Run("Survival region factory builds four border bands", TestSurvivalRegionFactoryBuildsFourBorderBands);
+        harness.Run("Survival region factory builds a centered circle", TestSurvivalRegionFactoryBuildsCenteredCircle);
+        harness.Run("Survival region factory respects zone definitions", TestSurvivalRegionFactoryRespectsZoneDefinitions);
+        harness.Run("Survival region factory uses normalized circle centers", TestSurvivalRegionFactoryUsesNormalizedCircleCenter);
     }
 
     private static void TestRegionSurvivalRuleKeepsAgentsInsideConfiguredZones()
@@ -20,8 +24,8 @@ public static class EvolutionTests
         var worldState = new WorldState(new Vector2(100.0f, 100.0f));
         var rule = new RegionSurvivalRule(new[]
         {
-            new SurvivalRegion(new Rect2(0.0f, 0.0f, 10.0f, 100.0f)),
-            new SurvivalRegion(new Rect2(90.0f, 0.0f, 10.0f, 100.0f))
+            (ISurvivalZone)new RectangleSurvivalZone(new Rect2(0.0f, 0.0f, 10.0f, 100.0f)),
+            new RectangleSurvivalZone(new Rect2(90.0f, 0.0f, 10.0f, 100.0f))
         });
 
         var insideAgent = CreateTestAgent(new Vector2(5.0f, 50.0f));
@@ -29,6 +33,15 @@ public static class EvolutionTests
 
         AssertTrue(rule.Survives(insideAgent, worldState, new EvolutionSettings()), "Agent inside a survival region should survive.");
         AssertTrue(!rule.Survives(outsideAgent, worldState, new EvolutionSettings()), "Agent outside all survival regions should die.");
+    }
+
+    private static void TestCircleSurvivalZoneAcceptsOnlyPositionsInsideRadius()
+    {
+        var zone = new CircleSurvivalZone(new Vector2(50.0f, 50.0f), 10.0f);
+
+        AssertTrue(zone.Contains(new Vector2(50.0f, 50.0f)), "Circle zone should contain its center.");
+        AssertTrue(zone.Contains(new Vector2(56.0f, 58.0f)), "Circle zone should contain nearby points within radius.");
+        AssertTrue(!zone.Contains(new Vector2(70.0f, 50.0f)), "Circle zone should reject points outside radius.");
     }
 
     private static void TestReproductionSystemRestoresTargetPopulationFromSurvivors()
@@ -94,7 +107,7 @@ public static class EvolutionTests
         var cycleController = new EvolutionCycleController(
             new RegionSurvivalRule(new[]
             {
-                new SurvivalRegion(new Rect2(0.0f, 0.0f, 10.0f, 100.0f))
+                (ISurvivalZone)new RectangleSurvivalZone(new Rect2(0.0f, 0.0f, 10.0f, 100.0f))
             }),
             new ReproductionSystem(new MutationSystem(seed: 5), seed: 6),
             evolutionSettings,
@@ -121,9 +134,53 @@ public static class EvolutionTests
         var regions = SurvivalRegionFactory.CreateBorderBands(new Vector2(200.0f, 100.0f), 12.0f);
 
         AssertTrue(regions.Count == 4, "Border band factory should create four regions.");
-        AssertNearlyEqual(12.0f, regions[0].Bounds.Size.X, 0.0001f, "Left border band should use the configured thickness.");
-        AssertNearlyEqual(188.0f, regions[1].Bounds.Position.X, 0.0001f, "Right border band should start at world width minus thickness.");
-        AssertNearlyEqual(12.0f, regions[2].Bounds.Size.Y, 0.0001f, "Top border band should use the configured thickness.");
-        AssertNearlyEqual(88.0f, regions[3].Bounds.Position.Y, 0.0001f, "Bottom border band should start at world height minus thickness.");
+        var leftBand = (RectangleSurvivalZone)regions[0];
+        var rightBand = (RectangleSurvivalZone)regions[1];
+        var topBand = (RectangleSurvivalZone)regions[2];
+        var bottomBand = (RectangleSurvivalZone)regions[3];
+
+        AssertNearlyEqual(12.0f, leftBand.Bounds.Size.X, 0.0001f, "Left border band should use the configured thickness.");
+        AssertNearlyEqual(188.0f, rightBand.Bounds.Position.X, 0.0001f, "Right border band should start at world width minus thickness.");
+        AssertNearlyEqual(12.0f, topBand.Bounds.Size.Y, 0.0001f, "Top border band should use the configured thickness.");
+        AssertNearlyEqual(88.0f, bottomBand.Bounds.Position.Y, 0.0001f, "Bottom border band should start at world height minus thickness.");
+    }
+
+    private static void TestSurvivalRegionFactoryBuildsCenteredCircle()
+    {
+        var zones = SurvivalRegionFactory.CreateCenteredCircle(new Vector2(200.0f, 100.0f), 24.0f);
+        var circleZone = (CircleSurvivalZone)zones[0];
+
+        AssertTrue(zones.Count == 1, "Centered circle factory should create exactly one zone.");
+        AssertNearlyEqual(100.0f, circleZone.Center.X, 0.0001f, "Centered circle should use half the world width.");
+        AssertNearlyEqual(50.0f, circleZone.Center.Y, 0.0001f, "Centered circle should use half the world height.");
+        AssertNearlyEqual(24.0f, circleZone.Radius, 0.0001f, "Centered circle should preserve the requested radius.");
+    }
+
+    private static void TestSurvivalRegionFactoryRespectsZoneDefinitions()
+    {
+        var circleZones = SurvivalRegionFactory.CreateZones(
+            new Vector2(200.0f, 100.0f),
+            new SurvivalZoneDefinition(SurvivalZoneLayout.CenterCircle, new Vector2(0.5f, 0.5f), 0.2f, 12.0f));
+        var bandZones = SurvivalRegionFactory.CreateZones(
+            new Vector2(200.0f, 100.0f),
+            new SurvivalZoneDefinition(SurvivalZoneLayout.BorderBands, new Vector2(0.5f, 0.5f), 0.2f, 16.0f));
+
+        var circleZone = (CircleSurvivalZone)circleZones[0];
+        var leftBand = (RectangleSurvivalZone)bandZones[0];
+
+        AssertNearlyEqual(20.0f, circleZone.Radius, 0.0001f, "Zone definitions should scale centered circles from the smaller world side.");
+        AssertNearlyEqual(16.0f, leftBand.Bounds.Size.X, 0.0001f, "Zone definitions should pass through border-band thickness.");
+    }
+
+    private static void TestSurvivalRegionFactoryUsesNormalizedCircleCenter()
+    {
+        var zones = SurvivalRegionFactory.CreateZones(
+            new Vector2(200.0f, 100.0f),
+            new SurvivalZoneDefinition(SurvivalZoneLayout.CenterCircle, new Vector2(0.25f, 0.75f), 0.1f, 12.0f));
+        var circleZone = (CircleSurvivalZone)zones[0];
+
+        AssertNearlyEqual(50.0f, circleZone.Center.X, 0.0001f, "Circle center X should scale from the normalized setup value.");
+        AssertNearlyEqual(75.0f, circleZone.Center.Y, 0.0001f, "Circle center Y should scale from the normalized setup value.");
+        AssertNearlyEqual(10.0f, circleZone.Radius, 0.0001f, "Circle radius should still scale from the smaller world side.");
     }
 }

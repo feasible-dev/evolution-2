@@ -63,6 +63,7 @@ public sealed class Simulation
         var heading = NextFloat(0.0f, Mathf.Tau);
         var genome = new AgentGenome(
             BaseThrottle: NextFloat(0.55f, 1.0f),
+            PreferredSpeedFraction: NextFloat(0.20f, 1.0f),
             BaseTurnRate: NextFloat(-1.6f, 1.6f),
             WallAvoidanceWeight: NextFloat(0.4f, 1.8f),
             NeighborAvoidanceWeight: NextFloat(0.2f, 1.2f),
@@ -70,7 +71,11 @@ public sealed class Simulation
             DecisionIntervalJitterSeconds: NextFloat(0.03f, 0.12f),
             WanderAmplitude: NextFloat(0.3f, 0.9f),
             WanderFrequency: NextFloat(0.6f, 2.4f),
-            StuckTurnBias: NextFloat(1.6f, 3.2f));
+            StuckTurnBias: NextFloat(1.6f, 3.2f),
+            RandomTurnStrength: NextFloat(0.0f, 1.0f),
+            RandomThrottleBias: NextFloat(-0.3f, 0.3f),
+            TargetPointNormalized: new Vector2(NextFloat(0.0f, 1.0f), NextFloat(0.0f, 1.0f)),
+            TargetPointWeight: NextFloat(0.0f, 1.6f));
         var physicsProfile = PhysicsProfile.Default with
         {
             Mass = NextFloat(0.8f, 1.4f),
@@ -100,6 +105,8 @@ public sealed class Simulation
             TimeBelowSpeedThreshold = 0.0f,
             IsTouchingWall = false,
             BrainClock = NextFloat(0.0f, Mathf.Tau),
+            DecisionTurnNoise = NextFloat(-1.0f, 1.0f),
+            DecisionThrottleNoise = NextFloat(-1.0f, 1.0f),
             Color = Color.FromHsv(NextFloat(0.0f, 1.0f), 0.65f, 0.95f)
         };
     }
@@ -125,6 +132,8 @@ public sealed class Simulation
         }
 
         var observation = BuildObservation(agent);
+        agent.DecisionTurnNoise = NextFloat(-1.0f, 1.0f);
+        agent.DecisionThrottleNoise = NextFloat(-1.0f, 1.0f);
         agent.CurrentIntent = AgentBrain.Decide(agent, observation, Settings);
         agent.DecisionTimer = NextDecisionDelay(agent.Genome);
         agent.TimeSinceLastDecision = 0.0f;

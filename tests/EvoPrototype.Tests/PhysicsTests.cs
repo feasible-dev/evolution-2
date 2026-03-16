@@ -20,6 +20,8 @@ public static class PhysicsTests
         harness.Run("Idle drain reduces energy over time", TestIdleDrainReducesEnergyOverTime);
         harness.Run("World acceleration wish is applied in absolute coordinates", TestWorldAccelerationWishIsAppliedInAbsoluteCoordinates);
         harness.Run("Brain brakes when a neighbor is too close in front", TestBrainBrakesWhenNeighborIsTooCloseInFront);
+        harness.Run("Brain steers toward configured world target", TestBrainSteersTowardConfiguredWorldTarget);
+        harness.Run("Preferred speed fraction changes throttle response", TestPreferredSpeedFractionChangesThrottleResponse);
     }
 
     private static void TestWallClampStopsOutwardMovementWithoutBounce()
@@ -163,7 +165,22 @@ public static class PhysicsTests
     {
         var agent = new Agent
         {
-            Genome = new AgentGenome(0.8f, 0.0f, 1.5f, 0.0f, 0.2f, 0.0f, 0.0f, 1.0f, 2.0f),
+            Genome = AgentGenome.Default with
+            {
+                BaseThrottle = 0.8f,
+                PreferredSpeedFraction = 0.7f,
+                BaseTurnRate = 0.0f,
+                WallAvoidanceWeight = 1.5f,
+                NeighborAvoidanceWeight = 0.0f,
+                DecisionIntervalSeconds = 0.2f,
+                DecisionIntervalJitterSeconds = 0.0f,
+                WanderAmplitude = 0.0f,
+                WanderFrequency = 1.0f,
+                StuckTurnBias = 2.0f,
+                RandomTurnStrength = 0.0f,
+                RandomThrottleBias = 0.0f,
+                TargetPointWeight = 0.0f
+            },
             PhysicsProfile = PhysicsProfile.Default,
             Position = Vector2.Zero,
             Velocity = Vector2.Zero,
@@ -182,7 +199,22 @@ public static class PhysicsTests
     {
         var agent = new Agent
         {
-            Genome = new AgentGenome(0.8f, 0.0f, 0.0f, 0.0f, 0.2f, 0.0f, 0.0f, 1.0f, 2.5f),
+            Genome = AgentGenome.Default with
+            {
+                BaseThrottle = 0.8f,
+                PreferredSpeedFraction = 0.7f,
+                BaseTurnRate = 0.0f,
+                WallAvoidanceWeight = 0.0f,
+                NeighborAvoidanceWeight = 0.0f,
+                DecisionIntervalSeconds = 0.2f,
+                DecisionIntervalJitterSeconds = 0.0f,
+                WanderAmplitude = 0.0f,
+                WanderFrequency = 1.0f,
+                StuckTurnBias = 2.5f,
+                RandomTurnStrength = 0.0f,
+                RandomThrottleBias = 0.0f,
+                TargetPointWeight = 0.0f
+            },
             PhysicsProfile = PhysicsProfile.Default,
             Position = Vector2.Zero,
             Velocity = Vector2.Zero,
@@ -233,7 +265,22 @@ public static class PhysicsTests
 
         var agent = new Agent
         {
-            Genome = new AgentGenome(1.0f, 0.0f, 0.0f, 0.0f, 0.1f, 0.0f, 0.0f, 1.0f, 0.0f),
+            Genome = AgentGenome.Default with
+            {
+                BaseThrottle = 1.0f,
+                PreferredSpeedFraction = 1.0f,
+                BaseTurnRate = 0.0f,
+                WallAvoidanceWeight = 0.0f,
+                NeighborAvoidanceWeight = 0.0f,
+                DecisionIntervalSeconds = 0.1f,
+                DecisionIntervalJitterSeconds = 0.0f,
+                WanderAmplitude = 0.0f,
+                WanderFrequency = 1.0f,
+                StuckTurnBias = 0.0f,
+                RandomTurnStrength = 0.0f,
+                RandomThrottleBias = 0.0f,
+                TargetPointWeight = 0.0f
+            },
             PhysicsProfile = PhysicsProfile.Default,
             Position = new Vector2(100.0f, 100.0f),
             Velocity = Vector2.Zero,
@@ -383,5 +430,76 @@ public static class PhysicsTests
 
         var intent = AgentBrain.Decide(agent, observation, new SimulationSettings { NeighborBrakeDistance = 18.0f });
         AssertTrue(intent.BrakeWish > 0.1f, "A close neighbor in front should trigger braking.");
+    }
+
+    private static void TestBrainSteersTowardConfiguredWorldTarget()
+    {
+        var agent = new Agent
+        {
+            Genome = AgentGenome.Default with
+            {
+                BaseThrottle = 0.0f,
+                PreferredSpeedFraction = 0.0f,
+                WanderAmplitude = 0.0f,
+                RandomTurnStrength = 0.0f,
+                RandomThrottleBias = 0.0f,
+                WallAvoidanceWeight = 0.0f,
+                NeighborAvoidanceWeight = 0.0f,
+                TargetPointNormalized = new Vector2(1.0f, 0.5f),
+                TargetPointWeight = 1.4f
+            },
+            PhysicsProfile = PhysicsProfile.Default,
+            Position = new Vector2(20.0f, 50.0f),
+            Velocity = Vector2.Zero,
+            Heading = 0.0f,
+            Radius = 4.0f,
+            Energy = 100.0f
+        };
+
+        var settings = new SimulationSettings { WorldSize = new Vector2(100.0f, 100.0f), Acceleration = 200.0f };
+        var observation = new AgentObservation(100.0f, 100.0f, 100.0f, Vector2.Zero, false, 0.0f, false);
+        var intent = AgentBrain.Decide(agent, observation, settings);
+
+        AssertTrue(intent.WorldAccelerationWish.X > 0.1f, "Target-seeking genes should add a world-space acceleration toward the configured point.");
+    }
+
+    private static void TestPreferredSpeedFractionChangesThrottleResponse()
+    {
+        var fastAgent = new Agent
+        {
+            Genome = AgentGenome.Default with
+            {
+                BaseThrottle = 0.4f,
+                PreferredSpeedFraction = 1.0f,
+                WanderAmplitude = 0.0f,
+                RandomTurnStrength = 0.0f,
+                RandomThrottleBias = 0.0f,
+                TargetPointWeight = 0.0f
+            },
+            PhysicsProfile = PhysicsProfile.Default,
+            Position = Vector2.Zero,
+            Velocity = new Vector2(10.0f, 0.0f),
+            Heading = 0.0f,
+            Radius = 4.0f,
+            Energy = 100.0f
+        };
+
+        var slowAgent = new Agent
+        {
+            Genome = fastAgent.Genome with { PreferredSpeedFraction = 0.1f },
+            PhysicsProfile = PhysicsProfile.Default,
+            Position = Vector2.Zero,
+            Velocity = new Vector2(10.0f, 0.0f),
+            Heading = 0.0f,
+            Radius = 4.0f,
+            Energy = 100.0f
+        };
+
+        var settings = new SimulationSettings { MaxSpeed = 100.0f };
+        var observation = new AgentObservation(100.0f, 100.0f, 100.0f, Vector2.Zero, false, 10.0f, false);
+        var fastIntent = AgentBrain.Decide(fastAgent, observation, settings);
+        var slowIntent = AgentBrain.Decide(slowAgent, observation, settings);
+
+        AssertTrue(fastIntent.LocalAccelerationWish.Y > slowIntent.LocalAccelerationWish.Y, "Preferred speed should diversify throttle behavior across agents.");
     }
 }

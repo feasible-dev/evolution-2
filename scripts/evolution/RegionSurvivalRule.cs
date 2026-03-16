@@ -8,18 +8,18 @@ namespace EvoPrototype.Evolution;
 /// </summary>
 public sealed class RegionSurvivalRule : ISurvivalRule
 {
-    private readonly IReadOnlyList<SurvivalRegion> _regions;
+    private readonly IReadOnlyList<ISurvivalZone> _zones;
 
-    public RegionSurvivalRule(IReadOnlyList<SurvivalRegion> regions)
+    public RegionSurvivalRule(IReadOnlyList<ISurvivalZone> zones)
     {
-        _regions = regions;
+        _zones = zones;
     }
 
     public bool Survives(Agent agent, WorldState worldState, EvolutionSettings settings)
     {
-        foreach (var region in _regions)
+        foreach (var zone in _zones)
         {
-            if (region.Contains(agent.Position))
+            if (zone.Contains(agent.Position))
             {
                 return true;
             }

@@ -40,9 +40,9 @@ public sealed class RunConfiguration
 
     public float TimeScale { get; set; } = 8.0f;
 
-    public float SurvivalBandThickness { get; set; } = 12.0f;
-
     public float MutationStrength { get; set; } = 0.03f;
+
+    public SurvivalZoneDefinition SurvivalZoneDefinition { get; set; } = SurvivalZoneDefinition.Default;
 
     public SimulationSettings ToSimulationSettings()
     {
@@ -71,7 +71,7 @@ public sealed class RunConfiguration
             SelectionDurationSeconds = SelectionDurationSeconds,
             TargetPopulationSize = AgentCount,
             MutationStrength = MutationStrength,
-            SurvivalBandThickness = SurvivalBandThickness
+            SurvivalZoneDefinition = SurvivalZoneDefinition
         };
     }
 }
