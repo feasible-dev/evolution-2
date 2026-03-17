@@ -24,7 +24,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="SetupScreen" type="PanelContainer" parent="CanvasLayer/UiRoot"]
+[node name="SetupScreen" type="Control" parent="CanvasLayer/UiRoot"]
 visible = false
 offset_left = 120.0
 offset_top = 96.0
@@ -50,12 +50,12 @@ text = "Evolution"
 [node name="SetupSubtitle" type="Label" parent="CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "Phase 1: Build the survival zone"
+text = "Phase 1: Design the survival zone"
 
 [node name="SetupDescription" type="Label" parent="CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack"]
 layout_mode = 2
 autowrap_mode = 3
-text = "Place the survival circle before the creatures start evolving. Drag inside the circle to move it. Drag the bright handle on its rim to resize it."
+text = "Place the first safe zone before the creatures start evolving. Drag inside the circle to move it. Drag the bright handle on its rim to resize it."
 
 [node name="SetupSpacer" type="Control" parent="CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack"]
 custom_minimum_size = Vector2(0, 12)
@@ -64,7 +64,22 @@ layout_mode = 2
 [node name="SetupCallout" type="Label" parent="CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "When you are ready, press Start Run on the right."
+text = "Build the zone, then launch the first run."
+
+[node name="SetupButtonRow" type="HBoxContainer" parent="CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SetupStartRunButton" type="Button" parent="CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack/SetupButtonRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(180, 44)
+text = "Start Run"
+
+[node name="SetupSecondaryHint" type="Label" parent="CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack/SetupButtonRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+vertical_alignment = 1
+text = "The circle can be moved and resized directly on the board."
 
 [node name="TopBar" type="PanelContainer" parent="CanvasLayer/UiRoot"]
 offset_left = 32.0
@@ -171,7 +186,8 @@ text = "Evolution Controls"
 
 [node name="SetupTitle" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
 layout_mode = 2
-text = "Setup"
+theme_override_font_sizes/font_size = 20
+text = "Evolution"
 
 [node name="SetupControls" type="VBoxContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
 layout_mode = 2
@@ -180,7 +196,7 @@ theme_override_constants/separation = 10
 [node name="SetupHint" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls"]
 layout_mode = 2
 autowrap_mode = 3
-text = "Drag inside the circle to move it. Drag its edge handle to resize it, then start the run."
+text = "Phase 1: Design the survival zone.\n\nDrag inside the circle to move it. Drag the bright edge handle to resize it.\n\nWhen the zone feels right, start the first run."
 
 [node name="StartRunButton" type="Button" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls"]
 layout_mode = 2

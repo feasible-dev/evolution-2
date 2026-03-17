@@ -29,4 +29,8 @@ public sealed class SimulationSettings
     public float NeighborBrakeDistance { get; init; } = 18.0f;
 
     public int OverlapSolverIterations { get; init; } = 4;
+
+    public GenePoolDefinition GenePool { get; init; } = GenePoolDefinition.Default;
+
+    public float GenerationDurationSeconds { get; init; } = 10.0f;
 }

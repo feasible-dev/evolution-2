@@ -44,6 +44,35 @@ public sealed class RunConfiguration
 
     public SurvivalZoneDefinition SurvivalZoneDefinition { get; set; } = SurvivalZoneDefinition.Default;
 
+    public GenePoolDefinition GenePool { get; set; } = GenePoolDefinition.Default;
+
+    public RunConfiguration Clone()
+    {
+        return new RunConfiguration
+        {
+            AgentCount = AgentCount,
+            WorldSize = WorldSize,
+            WorldOrigin = WorldOrigin,
+            ViewportSize = ViewportSize,
+            AgentRadius = AgentRadius,
+            MaxSpeed = MaxSpeed,
+            Acceleration = Acceleration,
+            Drag = Drag,
+            WallAvoidanceDistance = WallAvoidanceDistance,
+            NeighborAwarenessDistance = NeighborAwarenessDistance,
+            StuckSpeedThreshold = StuckSpeedThreshold,
+            MinimumDecisionIntervalSeconds = MinimumDecisionIntervalSeconds,
+            LowSpeedReconsiderationSeconds = LowSpeedReconsiderationSeconds,
+            NeighborBrakeDistance = NeighborBrakeDistance,
+            GenerationDurationSeconds = GenerationDurationSeconds,
+            SelectionDurationSeconds = SelectionDurationSeconds,
+            TimeScale = TimeScale,
+            MutationStrength = MutationStrength,
+            SurvivalZoneDefinition = SurvivalZoneDefinition,
+            GenePool = GenePool
+        };
+    }
+
     public SimulationSettings ToSimulationSettings()
     {
         return new SimulationSettings
@@ -59,7 +88,9 @@ public sealed class RunConfiguration
             StuckSpeedThreshold = StuckSpeedThreshold,
             MinimumDecisionIntervalSeconds = MinimumDecisionIntervalSeconds,
             LowSpeedReconsiderationSeconds = LowSpeedReconsiderationSeconds,
-            NeighborBrakeDistance = NeighborBrakeDistance
+            NeighborBrakeDistance = NeighborBrakeDistance,
+            GenePool = GenePool,
+            GenerationDurationSeconds = GenerationDurationSeconds
         };
     }
 

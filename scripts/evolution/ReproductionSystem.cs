@@ -33,7 +33,11 @@ public sealed class ReproductionSystem
         for (var index = 0; index < evolutionSettings.TargetPopulationSize; index++)
         {
             var parent = survivors[_random.Next(survivors.Count)];
-            var genome = _mutationSystem.MutateGenome(parent.Genome, evolutionSettings.MutationStrength);
+            var genome = _mutationSystem.MutateGenome(
+                parent.Genome,
+                evolutionSettings.MutationStrength,
+                simulationSettings.GenePool,
+                simulationSettings.GenerationDurationSeconds);
             var physicsProfile = _mutationSystem.MutatePhysicsProfile(parent.PhysicsProfile, evolutionSettings.MutationStrength);
             var heading = NextFloat(0.0f, Mathf.Tau);
             var radius = simulationSettings.AgentRadius;
@@ -65,7 +69,18 @@ public sealed class ReproductionSystem
 
         for (var index = 0; index < evolutionSettings.TargetPopulationSize; index++)
         {
-            var genome = _mutationSystem.MutateGenome(AgentGenome.Default, evolutionSettings.MutationStrength);
+            var seededGenome = AgentGenome.Default with
+            {
+                Program = GeneRuleFactory.CreateRandomProgram(
+                    _random,
+                    simulationSettings.GenePool,
+                    simulationSettings.GenerationDurationSeconds)
+            };
+            var genome = _mutationSystem.MutateGenome(
+                seededGenome,
+                evolutionSettings.MutationStrength,
+                simulationSettings.GenePool,
+                simulationSettings.GenerationDurationSeconds);
             var physicsProfile = _mutationSystem.MutatePhysicsProfile(PhysicsProfile.Default, evolutionSettings.MutationStrength);
             var heading = NextFloat(0.0f, Mathf.Tau);
             var radius = simulationSettings.AgentRadius;

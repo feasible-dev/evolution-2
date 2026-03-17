@@ -22,6 +22,9 @@ public static class PhysicsTests
         harness.Run("Brain brakes when a neighbor is too close in front", TestBrainBrakesWhenNeighborIsTooCloseInFront);
         harness.Run("Brain steers toward configured world target", TestBrainSteersTowardConfiguredWorldTarget);
         harness.Run("Preferred speed fraction changes throttle response", TestPreferredSpeedFractionChangesThrottleResponse);
+        harness.Run("Action resolver sums weighted contributions by channel", TestActionResolverSumsWeightedContributionsByChannel);
+        harness.Run("Time-based gene rule activates only after its threshold", TestTimeBasedGeneRuleActivatesOnlyAfterThreshold);
+        harness.Run("Gene steer-to-target rule adds world acceleration", TestGeneSteerToTargetRuleAddsWorldAcceleration);
     }
 
     private static void TestWallClampStopsOutwardMovementWithoutBounce()
@@ -501,5 +504,120 @@ public static class PhysicsTests
         var slowIntent = AgentBrain.Decide(slowAgent, observation, settings);
 
         AssertTrue(fastIntent.LocalAccelerationWish.Y > slowIntent.LocalAccelerationWish.Y, "Preferred speed should diversify throttle behavior across agents.");
+    }
+
+    private static void TestActionResolverSumsWeightedContributionsByChannel()
+    {
+        var resolved = ActionSetResolver.Resolve(new[]
+        {
+            ActionContribution.WorldAcceleration(new Vector2(10.0f, 0.0f)),
+            ActionContribution.WorldAcceleration(new Vector2(0.0f, 4.0f), weight: 0.5f),
+            ActionContribution.LocalAcceleration(new Vector2(0.0f, 1.0f)),
+            ActionContribution.Turn(1.5f),
+            ActionContribution.Turn(-0.25f, weight: 2.0f),
+            ActionContribution.Brake(0.3f),
+            ActionContribution.Brake(0.2f, weight: 0.5f)
+        });
+
+        AssertNearlyEqual(10.0f, resolved.WorldAccelerationWish.X, 0.001f, "World X contributions should be accumulated.");
+        AssertNearlyEqual(2.0f, resolved.WorldAccelerationWish.Y, 0.001f, "World Y contributions should respect weights.");
+        AssertNearlyEqual(1.0f, resolved.LocalAccelerationWish.Y, 0.001f, "Local acceleration should accumulate separately.");
+        AssertNearlyEqual(1.0f, resolved.TurnWish, 0.001f, "Turn contributions should be summed with weights.");
+        AssertNearlyEqual(0.4f, resolved.BrakeWish, 0.001f, "Brake contributions should be summed with weights.");
+    }
+
+    private static void TestTimeBasedGeneRuleActivatesOnlyAfterThreshold()
+    {
+        var genome = AgentGenome.Default with
+        {
+            BaseTurnRate = 0.0f,
+            WanderAmplitude = 0.0f,
+            RandomTurnStrength = 0.0f,
+            TargetPointWeight = 0.0f,
+            WallAvoidanceWeight = 0.0f,
+            NeighborAvoidanceWeight = 0.0f,
+            Program = new GeneProgram(
+                new GeneRule(
+                    Enabled: true,
+                    ConditionKind: GeneConditionKind.TimeGreaterOrEqual,
+                    ConditionThreshold: 5.0f,
+                    ActionKind: GeneActionKind.AddTurnBias,
+                    Scalar: 1.25f,
+                    TargetPointNormalized: new Vector2(0.5f, 0.5f)),
+                GeneRule.Disabled)
+        };
+
+        var earlyAgent = new Agent
+        {
+            Genome = genome,
+            PhysicsProfile = PhysicsProfile.Default,
+            Position = Vector2.Zero,
+            Velocity = Vector2.Zero,
+            Heading = 0.0f,
+            Radius = 4.0f,
+            Energy = 100.0f,
+            BrainClock = 2.0f
+        };
+
+        var lateAgent = new Agent
+        {
+            Genome = genome,
+            PhysicsProfile = PhysicsProfile.Default,
+            Position = Vector2.Zero,
+            Velocity = Vector2.Zero,
+            Heading = 0.0f,
+            Radius = 4.0f,
+            Energy = 100.0f,
+            BrainClock = 6.0f
+        };
+        var observation = new AgentObservation(100.0f, 100.0f, 100.0f, Vector2.Zero, false, 0.0f, false);
+        var settings = new SimulationSettings();
+
+        var earlyIntent = AgentBrain.Decide(earlyAgent, observation, settings);
+        var lateIntent = AgentBrain.Decide(lateAgent, observation, settings);
+
+        AssertTrue(Mathf.Abs(earlyIntent.TurnWish) < 0.01f, "Time-gated rule should stay inactive before its threshold.");
+        AssertTrue(lateIntent.TurnWish > 1.0f, "Time-gated rule should activate after its threshold.");
+    }
+
+    private static void TestGeneSteerToTargetRuleAddsWorldAcceleration()
+    {
+        var agent = new Agent
+        {
+            Genome = AgentGenome.Default with
+            {
+                BaseThrottle = 0.0f,
+                PreferredSpeedFraction = 0.0f,
+                BaseTurnRate = 0.0f,
+                WanderAmplitude = 0.0f,
+                RandomTurnStrength = 0.0f,
+                RandomThrottleBias = 0.0f,
+                TargetPointWeight = 0.0f,
+                WallAvoidanceWeight = 0.0f,
+                NeighborAvoidanceWeight = 0.0f,
+                Program = new GeneProgram(
+                    new GeneRule(
+                        Enabled: true,
+                        ConditionKind: GeneConditionKind.Always,
+                        ConditionThreshold: 0.0f,
+                        ActionKind: GeneActionKind.SteerToTarget,
+                        Scalar: 1.0f,
+                        TargetPointNormalized: new Vector2(1.0f, 0.5f)),
+                    GeneRule.Disabled)
+            },
+            PhysicsProfile = PhysicsProfile.Default,
+            Position = new Vector2(10.0f, 50.0f),
+            Velocity = Vector2.Zero,
+            Heading = 0.0f,
+            Radius = 4.0f,
+            Energy = 100.0f,
+            BrainClock = 0.0f
+        };
+
+        var settings = new SimulationSettings { WorldSize = new Vector2(100.0f, 100.0f), Acceleration = 200.0f };
+        var observation = new AgentObservation(100.0f, 100.0f, 100.0f, Vector2.Zero, false, 0.0f, false);
+        var intent = AgentBrain.Decide(agent, observation, settings);
+
+        AssertTrue(intent.WorldAccelerationWish.X > 0.1f, "Steer-to-target gene rules should produce world acceleration toward their target.");
     }
 }

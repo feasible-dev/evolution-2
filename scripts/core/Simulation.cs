@@ -75,7 +75,8 @@ public sealed class Simulation
             RandomTurnStrength: NextFloat(0.0f, 1.0f),
             RandomThrottleBias: NextFloat(-0.3f, 0.3f),
             TargetPointNormalized: new Vector2(NextFloat(0.0f, 1.0f), NextFloat(0.0f, 1.0f)),
-            TargetPointWeight: NextFloat(0.0f, 1.6f));
+            TargetPointWeight: NextFloat(0.0f, 1.6f),
+            Program: GeneRuleFactory.CreateRandomProgram(_random, Settings.GenePool, Settings.GenerationDurationSeconds));
         var physicsProfile = PhysicsProfile.Default with
         {
             Mass = NextFloat(0.8f, 1.4f),

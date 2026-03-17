@@ -1,4 +1,5 @@
 using Godot;
+using System.Collections.Generic;
 
 namespace EvoPrototype.Core;
 
@@ -9,6 +10,15 @@ public static class AgentBrain
     /// The physics layer remains responsible for inertia, drag, walls, and energy budgets.
     /// </summary>
     public static AgentIntent Decide(Agent agent, AgentObservation observation, SimulationSettings settings)
+    {
+        var contributions = DecideContributions(agent, observation, settings);
+        return ActionSetResolver.Resolve(contributions);
+    }
+
+    /// <summary>
+    /// Produces rule-level action contributions so future channels can evolve independently from locomotion.
+    /// </summary>
+    public static List<ActionContribution> DecideContributions(Agent agent, AgentObservation observation, SimulationSettings settings)
     {
         var turnRate = agent.Genome.BaseTurnRate;
         turnRate += Mathf.Sin(agent.BrainClock * agent.Genome.WanderFrequency) * agent.Genome.WanderAmplitude;
@@ -93,10 +103,15 @@ public static class AgentBrain
             worldAccelerationWish = targetOffset.Normalized() * (agent.Genome.TargetPointWeight * settings.Acceleration * 0.18f);
         }
 
-        return new AgentIntent(
-            WorldAccelerationWish: worldAccelerationWish,
-            LocalAccelerationWish: localAccelerationWish,
-            TurnWish: turnRate,
-            BrakeWish: brakeWish);
+        var contributions = new List<ActionContribution>
+        {
+            ActionContribution.WorldAcceleration(worldAccelerationWish),
+            ActionContribution.LocalAcceleration(localAccelerationWish),
+            ActionContribution.Turn(turnRate),
+            ActionContribution.Brake(brakeWish)
+        };
+
+        GeneRuleEvaluator.AppendContributions(contributions, agent, observation, settings);
+        return contributions;
     }
 }

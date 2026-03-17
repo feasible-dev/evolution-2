@@ -16,7 +16,8 @@ public readonly record struct AgentGenome(
     float RandomTurnStrength,
     float RandomThrottleBias,
     Vector2 TargetPointNormalized,
-    float TargetPointWeight)
+    float TargetPointWeight,
+    GeneProgram Program)
 {
     public static AgentGenome Default => new(
         BaseThrottle: 0.8f,
@@ -32,5 +33,6 @@ public readonly record struct AgentGenome(
         RandomTurnStrength: 0.35f,
         RandomThrottleBias: 0.12f,
         TargetPointNormalized: new Vector2(0.5f, 0.5f),
-        TargetPointWeight: 0.8f);
+        TargetPointWeight: 0.8f,
+        Program: GeneProgram.Empty);
 }

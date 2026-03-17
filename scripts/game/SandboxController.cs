@@ -23,8 +23,14 @@ public partial class SandboxController : Node2D
     private Control? _setupScreen;
     private Control? _topBar;
     private Control? _bottomPanel;
+    private Control? _rightPanel;
+    private Control? _metricsTitle;
     private Control? _metricsSection;
+    private Control? _evolutionTitle;
+    private Control? _setupTitle;
+    private Control? _setupControlsSection;
     private Control? _evolutionControlsSection;
+    private Control? _physicsTitle;
     private Control? _physicsControlsSection;
     private Label? _timeValueLabel;
     private Label? _generationValueLabel;
@@ -44,6 +50,7 @@ public partial class SandboxController : Node2D
     private SpinBox? _stuckSpeedSpinBox;
     private Label? _setupHintLabel;
     private Label? _setupSubtitleLabel;
+    private Button? _setupStartRunButton;
     private Button? _startRunButton;
     private Button? _editZoneButton;
     private Button? _applyButton;
@@ -100,8 +107,14 @@ public partial class SandboxController : Node2D
         _setupScreen = GetNode<Control>("CanvasLayer/UiRoot/SetupScreen");
         _topBar = GetNode<Control>("CanvasLayer/UiRoot/TopBar");
         _bottomPanel = GetNode<Control>("CanvasLayer/UiRoot/BottomPanel");
+        _rightPanel = GetNode<Control>("CanvasLayer/UiRoot/RightPanel");
+        _metricsTitle = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/MetricsTitle");
         _metricsSection = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/Metrics");
+        _evolutionTitle = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionTitle");
+        _setupTitle = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupTitle");
+        _setupControlsSection = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls");
         _evolutionControlsSection = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls");
+        _physicsTitle = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/PhysicsTitle");
         _physicsControlsSection = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/PhysicsControls");
         _generationChart = GetNode<GenerationChart>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/Chart");
         _timeValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/TimeValue");
@@ -122,6 +135,7 @@ public partial class SandboxController : Node2D
         _stuckSpeedSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/PhysicsControls/StuckSpeedEditor");
         _setupHintLabel = GetNode<Label>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/SetupHint");
         _setupSubtitleLabel = GetNode<Label>("CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack/SetupSubtitle");
+        _setupStartRunButton = GetNode<Button>("CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack/SetupButtonRow/SetupStartRunButton");
         _startRunButton = GetNode<Button>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/StartRunButton");
         _editZoneButton = GetNode<Button>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/EditZoneButton");
         _applyButton = GetNode<Button>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/ApplyButton");
@@ -134,6 +148,7 @@ public partial class SandboxController : Node2D
 
     private void ConnectSignals()
     {
+        _setupStartRunButton!.Pressed += OnStartRunPressed;
         _startRunButton!.Pressed += OnStartRunPressed;
         _editZoneButton!.Pressed += OnEditZonePressed;
         _applyButton!.Pressed += OnApplyPressed;
@@ -151,6 +166,11 @@ public partial class SandboxController : Node2D
         if (_startRunButton is not null)
         {
             _startRunButton.Pressed -= OnStartRunPressed;
+        }
+
+        if (_setupStartRunButton is not null)
+        {
+            _setupStartRunButton.Pressed -= OnStartRunPressed;
         }
 
         if (_editZoneButton is not null)
@@ -320,19 +340,29 @@ public partial class SandboxController : Node2D
     private void UpdateSetupUi()
     {
         var inSetup = _sessionState.CurrentPhase == GamePhase.Setup;
-        _setupScreen!.Visible = inSetup;
+        _setupScreen!.Visible = false;
         _topBar!.Visible = !inSetup;
         _bottomPanel!.Visible = !inSetup;
+        _rightPanel!.Visible = true;
+        _metricsTitle!.Visible = !inSetup;
         _metricsSection!.Visible = !inSetup;
+        _evolutionTitle!.Visible = !inSetup;
+        _setupTitle!.Visible = inSetup;
+        _setupControlsSection!.Visible = true;
         _evolutionControlsSection!.Visible = !inSetup;
+        _physicsTitle!.Visible = !inSetup;
         _physicsControlsSection!.Visible = !inSetup;
         _setupHintLabel!.Text = inSetup
             ? "Drag inside the circle to move it. Drag its edge handle to resize it, then start the run."
             : "The current run uses the configured survival zone. Return to setup to edit it.";
-        _setupSubtitleLabel!.Text = "Phase 1: Build the survival zone";
+        _setupSubtitleLabel!.Text = "Phase 1: Design the survival zone";
+        _setupStartRunButton!.Visible = false;
+        _startRunButton!.Visible = inSetup;
+        _editZoneButton!.Visible = !inSetup;
         _startRunButton!.Disabled = !inSetup;
         _editZoneButton!.Disabled = inSetup;
         _applyButton!.Disabled = inSetup;
+        _applyButton.Visible = !inSetup;
     }
 
     private void UpdateRendering()
