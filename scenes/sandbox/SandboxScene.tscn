@@ -207,16 +207,82 @@ max_value = 1.0
 step = 0.01
 value = 0.03
 
-[node name="TrailAlphaLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+[node name="ProgramMutationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
 layout_mode = 2
-text = "Trail alpha"
+text = "Program mutation"
 
-[node name="TrailAlphaEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+[node name="ProgramMutationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
 layout_mode = 2
 min_value = 0.0
-max_value = 0.5
+max_value = 1.0
 step = 0.01
-value = 0.0
+value = 0.1
+
+[node name="AddRuleMutationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Add rule"
+
+[node name="AddRuleMutationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.04
+
+[node name="RemoveRuleMutationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Remove rule"
+
+[node name="RemoveRuleMutationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.03
+
+[node name="ConditionKindMutationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Condition kind"
+
+[node name="ConditionKindMutationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.08
+
+[node name="ActionKindMutationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Action kind"
+
+[node name="ActionKindMutationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.1
+
+[node name="ConditionParameterMutationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Condition params"
+
+[node name="ConditionParameterMutationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.28
+
+[node name="ActionParameterMutationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Action params"
+
+[node name="ActionParameterMutationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.32
 
 [node name="PhysicsTitle" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack"]
 layout_mode = 2
@@ -484,17 +550,6 @@ min_value = 0.01
 max_value = 1.0
 step = 0.01
 value = 0.03
-
-[node name="TrailAlphaLabel" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls"]
-layout_mode = 2
-text = "Trail alpha"
-
-[node name="TrailAlphaEditor" type="SpinBox" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls"]
-layout_mode = 2
-min_value = 0.0
-max_value = 0.5
-step = 0.01
-value = 0.0
 
 [node name="PhysicsTitle" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
 visible = false

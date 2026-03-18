@@ -1,5 +1,7 @@
+using System;
 using EvoPrototype.Cards;
 using EvoPrototype.Core;
+using EvoPrototype.Evolution;
 using EvoPrototype.Game;
 using EvoPrototype.Gameplay;
 using Godot;
@@ -12,6 +14,8 @@ public static class CardsTests
         harness.Run("Starter sandbox cards activate the baseline movement language", TestStarterSandboxCardsActivateBaselineMovementLanguage);
         harness.Run("Card selection state activates and deactivates cards without duplicates", TestCardSelectionStateActivatesAndDeactivatesCardsWithoutDuplicates);
         harness.Run("Cards compile into a build and modify mutation strength", TestCardsCompileIntoBuildAndModifyMutationStrength);
+        harness.Run("Compiled builds preserve mutation policy", TestCompiledBuildPreservesMutationPolicy);
+        harness.Run("Run configuration forwards mutation policy to evolution settings", TestRunConfigurationForwardsMutationPolicyToEvolutionSettings);
         harness.Run("Cards can enable relative and absolute rule actions", TestCardsCanEnableRelativeAndAbsoluteRuleActions);
         harness.Run("Cards can increase the maximum number of rules", TestCardsCanIncreaseMaximumNumberOfRules);
         harness.Run("Compiled build preserves unrelated run configuration values", TestCompiledBuildPreservesUnrelatedRunConfigurationValues);
@@ -87,6 +91,51 @@ public static class CardsTests
         AssertTrue(build.GenePool.AllowTurnBiasAction, "Relative-turn cards should enable turn-bias actions.");
         AssertTrue(build.GenePool.AllowThrottleBiasAction, "Relative-impulse cards should enable throttle-bias actions.");
         AssertTrue(build.GenePool.AllowSteerToTargetAction, "Target-steering cards should enable absolute target actions.");
+    }
+
+    private static void TestCompiledBuildPreservesMutationPolicy()
+    {
+        var baseConfiguration = new RunConfiguration
+        {
+            MutationPolicy = MutationPolicy.Default with
+            {
+                ProgramMutationChance = 0.42f,
+                AddRuleChance = 0.11f,
+                RemoveRuleChance = 0.09f,
+                ConditionKindMutationChance = 0.21f,
+                ActionKindMutationChance = 0.34f,
+                ConditionParameterMutationChance = 0.55f,
+                ActionParameterMutationChance = 0.67f
+            }
+        };
+
+        var build = EvolutionBuildCompiler.CreateFromBase(baseConfiguration, Array.Empty<CardDefinition>());
+        var compiled = EvolutionBuildCompiler.Compile(baseConfiguration, build);
+
+        AssertNearlyEqual(0.42f, compiled.MutationPolicy.ProgramMutationChance, 0.0001f, "Compiled builds should preserve program mutation chance.");
+        AssertNearlyEqual(0.67f, compiled.MutationPolicy.ActionParameterMutationChance, 0.0001f, "Compiled builds should preserve action-parameter mutation chance.");
+    }
+
+    private static void TestRunConfigurationForwardsMutationPolicyToEvolutionSettings()
+    {
+        var runConfiguration = new RunConfiguration
+        {
+            MutationPolicy = MutationPolicy.Default with
+            {
+                ProgramMutationChance = 0.31f,
+                AddRuleChance = 0.12f,
+                RemoveRuleChance = 0.07f,
+                ConditionKindMutationChance = 0.18f,
+                ActionKindMutationChance = 0.27f,
+                ConditionParameterMutationChance = 0.49f,
+                ActionParameterMutationChance = 0.58f
+            }
+        };
+
+        var evolutionSettings = runConfiguration.ToEvolutionSettings();
+
+        AssertNearlyEqual(0.31f, evolutionSettings.MutationPolicy.ProgramMutationChance, 0.0001f, "Evolution settings should receive the configured program mutation chance.");
+        AssertNearlyEqual(0.58f, evolutionSettings.MutationPolicy.ActionParameterMutationChance, 0.0001f, "Evolution settings should receive the configured action-parameter mutation chance.");
     }
 
     private static void TestCardsCanIncreaseMaximumNumberOfRules()

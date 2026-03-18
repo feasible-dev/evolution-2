@@ -53,7 +53,13 @@ public partial class SandboxController : Node2D
     private SpinBox? _selectionDurationSpinBox;
     private SpinBox? _timeScaleSpinBox;
     private SpinBox? _mutationStrengthSpinBox;
-    private SpinBox? _trailAlphaSpinBox;
+    private SpinBox? _programMutationSpinBox;
+    private SpinBox? _addRuleMutationSpinBox;
+    private SpinBox? _removeRuleMutationSpinBox;
+    private SpinBox? _conditionKindMutationSpinBox;
+    private SpinBox? _actionKindMutationSpinBox;
+    private SpinBox? _conditionParameterMutationSpinBox;
+    private SpinBox? _actionParameterMutationSpinBox;
     private SpinBox? _accelerationSpinBox;
     private SpinBox? _dragSpinBox;
     private SpinBox? _stuckSpeedSpinBox;
@@ -148,7 +154,13 @@ public partial class SandboxController : Node2D
         _selectionDurationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/SelectionDurationEditor");
         _timeScaleSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/TimeScaleEditor");
         _mutationStrengthSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/MutationStrengthEditor");
-        _trailAlphaSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/TrailAlphaEditor");
+        _programMutationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/ProgramMutationEditor");
+        _addRuleMutationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/AddRuleMutationEditor");
+        _removeRuleMutationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/RemoveRuleMutationEditor");
+        _conditionKindMutationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/ConditionKindMutationEditor");
+        _actionKindMutationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/ActionKindMutationEditor");
+        _conditionParameterMutationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/ConditionParameterMutationEditor");
+        _actionParameterMutationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/ActionParameterMutationEditor");
         _accelerationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls/AccelerationEditor");
         _dragSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls/DragEditor");
         _stuckSpeedSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls/StuckSpeedEditor");
@@ -287,7 +299,16 @@ public partial class SandboxController : Node2D
         _runConfiguration.SelectionDurationSeconds = (float)_selectionDurationSpinBox!.Value;
         _runConfiguration.TimeScale = (float)_timeScaleSpinBox!.Value;
         _runConfiguration.MutationStrength = (float)_mutationStrengthSpinBox!.Value;
-        _runConfiguration.TrailAlpha = (float)_trailAlphaSpinBox!.Value;
+        _runConfiguration.MutationPolicy = _runConfiguration.MutationPolicy with
+        {
+            ProgramMutationChance = (float)_programMutationSpinBox!.Value,
+            AddRuleChance = (float)_addRuleMutationSpinBox!.Value,
+            RemoveRuleChance = (float)_removeRuleMutationSpinBox!.Value,
+            ConditionKindMutationChance = (float)_conditionKindMutationSpinBox!.Value,
+            ActionKindMutationChance = (float)_actionKindMutationSpinBox!.Value,
+            ConditionParameterMutationChance = (float)_conditionParameterMutationSpinBox!.Value,
+            ActionParameterMutationChance = (float)_actionParameterMutationSpinBox!.Value
+        };
         _runConfiguration.Acceleration = (float)_accelerationSpinBox!.Value;
         _runConfiguration.Drag = (float)_dragSpinBox!.Value;
         _runConfiguration.StuckSpeedThreshold = (float)_stuckSpeedSpinBox!.Value;
@@ -304,7 +325,13 @@ public partial class SandboxController : Node2D
         _selectionDurationSpinBox!.Value = _runConfiguration.SelectionDurationSeconds;
         _timeScaleSpinBox!.Value = _runConfiguration.TimeScale;
         _mutationStrengthSpinBox!.Value = _runConfiguration.MutationStrength;
-        _trailAlphaSpinBox!.Value = _runConfiguration.TrailAlpha;
+        _programMutationSpinBox!.Value = _runConfiguration.MutationPolicy.ProgramMutationChance;
+        _addRuleMutationSpinBox!.Value = _runConfiguration.MutationPolicy.AddRuleChance;
+        _removeRuleMutationSpinBox!.Value = _runConfiguration.MutationPolicy.RemoveRuleChance;
+        _conditionKindMutationSpinBox!.Value = _runConfiguration.MutationPolicy.ConditionKindMutationChance;
+        _actionKindMutationSpinBox!.Value = _runConfiguration.MutationPolicy.ActionKindMutationChance;
+        _conditionParameterMutationSpinBox!.Value = _runConfiguration.MutationPolicy.ConditionParameterMutationChance;
+        _actionParameterMutationSpinBox!.Value = _runConfiguration.MutationPolicy.ActionParameterMutationChance;
         _accelerationSpinBox!.Value = _runConfiguration.Acceleration;
         _dragSpinBox!.Value = _runConfiguration.Drag;
         _stuckSpeedSpinBox!.Value = _runConfiguration.StuckSpeedThreshold;

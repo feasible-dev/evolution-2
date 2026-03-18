@@ -6,6 +6,9 @@ namespace EvoPrototype.Cards;
 public enum CardEffectKind
 {
     IncreaseMutationStrength,
+    IncreaseProgramMutationChance,
+    IncreaseActionParameterMutationChance,
+    IncreaseConditionParameterMutationChance,
     EnableTurnBiasAction,
     EnableThrottleBiasAction,
     EnableTimeCondition,

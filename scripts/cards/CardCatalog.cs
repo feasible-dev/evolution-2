@@ -24,10 +24,34 @@ public static class CardCatalog
     public static readonly CardDefinition MutationBoost = new(
         Id: "mutation_boost",
         Name: "Mutation Boost",
-        Description: "Increase mutation strength for the current build.",
+        Description: "Increase numeric mutation amplitude for the current build.",
         Category: CardCategory.Mutation,
         EffectKind: CardEffectKind.IncreaseMutationStrength,
         ScalarValue: 0.02f);
+
+    public static readonly CardDefinition ProgramMutation = new(
+        Id: "program_mutation",
+        Name: "Program Mutation",
+        Description: "Increase the chance that full rule programs mutate each generation.",
+        Category: CardCategory.Mutation,
+        EffectKind: CardEffectKind.IncreaseProgramMutationChance,
+        ScalarValue: 0.08f);
+
+    public static readonly CardDefinition ActionParameterMutation = new(
+        Id: "action_parameter_mutation",
+        Name: "Action Parameter Mutation",
+        Description: "Increase mutation on rule action parameters.",
+        Category: CardCategory.Mutation,
+        EffectKind: CardEffectKind.IncreaseActionParameterMutationChance,
+        ScalarValue: 0.10f);
+
+    public static readonly CardDefinition ConditionParameterMutation = new(
+        Id: "condition_parameter_mutation",
+        Name: "Condition Parameter Mutation",
+        Description: "Increase mutation on rule condition parameters.",
+        Category: CardCategory.Mutation,
+        EffectKind: CardEffectKind.IncreaseConditionParameterMutationChance,
+        ScalarValue: 0.10f);
 
     public static readonly CardDefinition TemporalLogic = new(
         Id: "temporal_logic",
@@ -56,6 +80,9 @@ public static class CardCatalog
         RelativeTurn,
         RelativeImpulse,
         MutationBoost,
+        ProgramMutation,
+        ActionParameterMutation,
+        ConditionParameterMutation,
         TemporalLogic,
         ExtraRuleSlot,
         TargetSteering

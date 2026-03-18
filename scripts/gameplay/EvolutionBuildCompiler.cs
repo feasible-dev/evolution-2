@@ -45,6 +45,27 @@ public static class EvolutionBuildCompiler
                 build.MutationStrength += card.ScalarValue;
                 break;
 
+            case CardEffectKind.IncreaseProgramMutationChance:
+                build.MutationPolicy = build.MutationPolicy with
+                {
+                    ProgramMutationChance = Clamp01(build.MutationPolicy.ProgramMutationChance + card.ScalarValue)
+                };
+                break;
+
+            case CardEffectKind.IncreaseActionParameterMutationChance:
+                build.MutationPolicy = build.MutationPolicy with
+                {
+                    ActionParameterMutationChance = Clamp01(build.MutationPolicy.ActionParameterMutationChance + card.ScalarValue)
+                };
+                break;
+
+            case CardEffectKind.IncreaseConditionParameterMutationChance:
+                build.MutationPolicy = build.MutationPolicy with
+                {
+                    ConditionParameterMutationChance = Clamp01(build.MutationPolicy.ConditionParameterMutationChance + card.ScalarValue)
+                };
+                break;
+
             case CardEffectKind.EnableTurnBiasAction:
                 build.GenePool = build.GenePool with { AllowTurnBiasAction = true };
                 break;
@@ -68,5 +89,10 @@ public static class EvolutionBuildCompiler
                 build.GenePool = build.GenePool with { AllowSteerToTargetAction = true };
                 break;
         }
+    }
+
+    private static float Clamp01(float value)
+    {
+        return value < 0.0f ? 0.0f : value > 1.0f ? 1.0f : value;
     }
 }
