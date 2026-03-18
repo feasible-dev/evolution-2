@@ -52,6 +52,34 @@ public static class EvolutionBuildCompiler
                 };
                 break;
 
+            case CardEffectKind.IncreaseAddRuleChance:
+                build.MutationPolicy = build.MutationPolicy with
+                {
+                    AddRuleChance = Clamp01(build.MutationPolicy.AddRuleChance + card.ScalarValue)
+                };
+                break;
+
+            case CardEffectKind.IncreaseRemoveRuleChance:
+                build.MutationPolicy = build.MutationPolicy with
+                {
+                    RemoveRuleChance = Clamp01(build.MutationPolicy.RemoveRuleChance + card.ScalarValue)
+                };
+                break;
+
+            case CardEffectKind.IncreaseConditionKindMutationChance:
+                build.MutationPolicy = build.MutationPolicy with
+                {
+                    ConditionKindMutationChance = Clamp01(build.MutationPolicy.ConditionKindMutationChance + card.ScalarValue)
+                };
+                break;
+
+            case CardEffectKind.IncreaseActionKindMutationChance:
+                build.MutationPolicy = build.MutationPolicy with
+                {
+                    ActionKindMutationChance = Clamp01(build.MutationPolicy.ActionKindMutationChance + card.ScalarValue)
+                };
+                break;
+
             case CardEffectKind.IncreaseActionParameterMutationChance:
                 build.MutationPolicy = build.MutationPolicy with
                 {

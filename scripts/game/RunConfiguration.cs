@@ -12,7 +12,7 @@ public sealed class RunConfiguration
 
     public Vector2 WorldOrigin { get; set; } = new(344.0f, 104.0f);
 
-    public Vector2 ViewportSize { get; set; } = new(1980.0f, 1240.0f);
+    public Vector2 ViewportSize { get; set; } = new(2560.0f, 1280.0f);
 
     public float AgentRadius { get; set; } = 4.0f;
 

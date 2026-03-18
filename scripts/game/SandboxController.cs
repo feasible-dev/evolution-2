@@ -560,7 +560,7 @@ public partial class SandboxController : Node2D
     {
         var panel = new PanelContainer
         {
-            CustomMinimumSize = new Vector2(0.0f, 96.0f)
+            CustomMinimumSize = new Vector2(0.0f, 124.0f)
         };
         panel.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
 
@@ -593,9 +593,10 @@ public partial class SandboxController : Node2D
 
         var title = new Label
         {
-            Text = card.Name
+            Text = card.Name,
+            AutowrapMode = TextServer.AutowrapMode.WordSmart
         };
-        title.AddThemeFontSizeOverride("font_size", 16);
+        title.AddThemeFontSizeOverride("font_size", 14);
         title.Modulate = contentColor;
         stack.AddChild(title);
 
@@ -604,14 +605,16 @@ public partial class SandboxController : Node2D
             Text = card.Description,
             AutowrapMode = TextServer.AutowrapMode.WordSmart
         };
-        description.AddThemeFontSizeOverride("font_size", 12);
+        description.AddThemeFontSizeOverride("font_size", 11);
         description.Modulate = contentColor with { A = activeList ? 0.92f : 0.72f };
+        description.SizeFlagsVertical = Control.SizeFlags.ExpandFill;
         stack.AddChild(description);
 
         var button = new Button
         {
             Text = activeList ? "Remove" : "Add"
         };
+        button.CustomMinimumSize = new Vector2(0.0f, 30.0f);
         button.Pressed += () =>
         {
             if (activeList)

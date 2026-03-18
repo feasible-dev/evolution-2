@@ -37,6 +37,38 @@ public static class CardCatalog
         EffectKind: CardEffectKind.IncreaseProgramMutationChance,
         ScalarValue: 0.08f);
 
+    public static readonly CardDefinition RuleGrowth = new(
+        Id: "rule_growth",
+        Name: "Rule Growth",
+        Description: "Increase the chance that mutation adds a new rule to a program.",
+        Category: CardCategory.Mutation,
+        EffectKind: CardEffectKind.IncreaseAddRuleChance,
+        ScalarValue: 0.05f);
+
+    public static readonly CardDefinition RulePruning = new(
+        Id: "rule_pruning",
+        Name: "Rule Pruning",
+        Description: "Increase the chance that mutation removes an existing rule.",
+        Category: CardCategory.Mutation,
+        EffectKind: CardEffectKind.IncreaseRemoveRuleChance,
+        ScalarValue: 0.03f);
+
+    public static readonly CardDefinition ConditionShift = new(
+        Id: "condition_shift",
+        Name: "Condition Shift",
+        Description: "Increase the chance that a rule changes its condition kind.",
+        Category: CardCategory.Mutation,
+        EffectKind: CardEffectKind.IncreaseConditionKindMutationChance,
+        ScalarValue: 0.08f);
+
+    public static readonly CardDefinition ActionShift = new(
+        Id: "action_shift",
+        Name: "Action Shift",
+        Description: "Increase the chance that a rule changes its action kind.",
+        Category: CardCategory.Mutation,
+        EffectKind: CardEffectKind.IncreaseActionKindMutationChance,
+        ScalarValue: 0.08f);
+
     public static readonly CardDefinition ActionParameterMutation = new(
         Id: "action_parameter_mutation",
         Name: "Action Parameter Mutation",
@@ -81,6 +113,10 @@ public static class CardCatalog
         RelativeImpulse,
         MutationBoost,
         ProgramMutation,
+        RuleGrowth,
+        RulePruning,
+        ConditionShift,
+        ActionShift,
         ActionParameterMutation,
         ConditionParameterMutation,
         TemporalLogic,

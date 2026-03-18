@@ -18,6 +18,8 @@ public static class CardsTests
         harness.Run("Run configuration forwards mutation policy to evolution settings", TestRunConfigurationForwardsMutationPolicyToEvolutionSettings);
         harness.Run("Cards can enable relative and absolute rule actions", TestCardsCanEnableRelativeAndAbsoluteRuleActions);
         harness.Run("Cards can increase the maximum number of rules", TestCardsCanIncreaseMaximumNumberOfRules);
+        harness.Run("Mutation cards can target structural mutation policy", TestMutationCardsCanTargetStructuralMutationPolicy);
+        harness.Run("Mutation cards can target rule kind mutation policy", TestMutationCardsCanTargetRuleKindMutationPolicy);
         harness.Run("Compiled build preserves unrelated run configuration values", TestCompiledBuildPreservesUnrelatedRunConfigurationValues);
     }
 
@@ -154,6 +156,52 @@ public static class CardsTests
             });
 
         AssertTrue(build.GenePool.MaxRulesPerAgent == 4, "Extra-rule cards should increase the rule budget additively.");
+    }
+
+    private static void TestMutationCardsCanTargetStructuralMutationPolicy()
+    {
+        var baseConfiguration = new RunConfiguration
+        {
+            MutationPolicy = MutationPolicy.Default with
+            {
+                AddRuleChance = 0.10f,
+                RemoveRuleChance = 0.04f
+            }
+        };
+
+        var build = EvolutionBuildCompiler.CreateFromBase(
+            baseConfiguration,
+            new[]
+            {
+                CardCatalog.RuleGrowth,
+                CardCatalog.RulePruning
+            });
+
+        AssertNearlyEqual(0.15f, build.MutationPolicy.AddRuleChance, 0.0001f, "Rule-growth cards should boost add-rule mutation chance.");
+        AssertNearlyEqual(0.07f, build.MutationPolicy.RemoveRuleChance, 0.0001f, "Rule-pruning cards should boost remove-rule mutation chance.");
+    }
+
+    private static void TestMutationCardsCanTargetRuleKindMutationPolicy()
+    {
+        var baseConfiguration = new RunConfiguration
+        {
+            MutationPolicy = MutationPolicy.Default with
+            {
+                ConditionKindMutationChance = 0.12f,
+                ActionKindMutationChance = 0.18f
+            }
+        };
+
+        var build = EvolutionBuildCompiler.CreateFromBase(
+            baseConfiguration,
+            new[]
+            {
+                CardCatalog.ConditionShift,
+                CardCatalog.ActionShift
+            });
+
+        AssertNearlyEqual(0.20f, build.MutationPolicy.ConditionKindMutationChance, 0.0001f, "Condition-shift cards should boost condition-kind mutation chance.");
+        AssertNearlyEqual(0.26f, build.MutationPolicy.ActionKindMutationChance, 0.0001f, "Action-shift cards should boost action-kind mutation chance.");
     }
 
     private static void TestCompiledBuildPreservesUnrelatedRunConfigurationValues()

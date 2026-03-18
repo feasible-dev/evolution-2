@@ -7,6 +7,10 @@ public enum CardEffectKind
 {
     IncreaseMutationStrength,
     IncreaseProgramMutationChance,
+    IncreaseAddRuleChance,
+    IncreaseRemoveRuleChance,
+    IncreaseConditionKindMutationChance,
+    IncreaseActionKindMutationChance,
     IncreaseActionParameterMutationChance,
     IncreaseConditionParameterMutationChance,
     EnableTurnBiasAction,
