@@ -82,10 +82,186 @@ vertical_alignment = 1
 text = "The circle can be moved and resized directly on the board."
 
 [node name="TopBar" type="PanelContainer" parent="CanvasLayer/UiRoot"]
-offset_left = 32.0
+offset_left = 344.0
 offset_top = 24.0
-offset_right = 1328.0
+offset_right = 1640.0
 offset_bottom = 88.0
+
+[node name="LeftPanel" type="PanelContainer" parent="CanvasLayer/UiRoot"]
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 312.0
+offset_bottom = 1164.0
+
+[node name="PanelMargin" type="MarginContainer" parent="CanvasLayer/UiRoot/LeftPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="PanelStack" type="VBoxContainer" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="MetricsTitle" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+text = "Live Metrics"
+
+[node name="Metrics" type="GridContainer" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+columns = 2
+
+[node name="PhaseLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics"]
+layout_mode = 2
+text = "Phase"
+
+[node name="PhaseValue" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics"]
+layout_mode = 2
+text = "Running"
+
+[node name="SurvivorLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics"]
+layout_mode = 2
+text = "Last survivors"
+
+[node name="SurvivorValue" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics"]
+layout_mode = 2
+text = "0"
+
+[node name="EnergyLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics"]
+layout_mode = 2
+text = "Avg energy"
+
+[node name="EnergyValue" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics"]
+layout_mode = 2
+text = "0.0"
+
+[node name="SpeedLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics"]
+layout_mode = 2
+text = "Avg speed"
+
+[node name="SpeedValue" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics"]
+layout_mode = 2
+text = "0.0"
+
+[node name="EvolutionTitle" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+text = "Development Controls"
+
+[node name="EvolutionControls" type="GridContainer" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+columns = 2
+
+[node name="AgentCountLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Agent count"
+
+[node name="AgentCountEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 10.0
+max_value = 1000.0
+step = 10.0
+value = 200.0
+
+[node name="LifeDurationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Life duration"
+
+[node name="LifeDurationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 1.0
+max_value = 120.0
+step = 1.0
+value = 10.0
+
+[node name="SelectionDurationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Selection time"
+
+[node name="SelectionDurationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.1
+max_value = 10.0
+step = 0.1
+value = 1.5
+
+[node name="TimeScaleLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Speed"
+
+[node name="TimeScaleEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.1
+max_value = 50.0
+step = 0.1
+value = 8.0
+
+[node name="MutationStrengthLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Mutation strength"
+
+[node name="MutationStrengthEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.01
+max_value = 1.0
+step = 0.01
+value = 0.03
+
+[node name="TrailAlphaLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Trail alpha"
+
+[node name="TrailAlphaEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 0.5
+step = 0.01
+value = 0.0
+
+[node name="PhysicsTitle" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+text = "Physics Controls"
+
+[node name="PhysicsControls" type="GridContainer" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+columns = 2
+
+[node name="AccelerationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls"]
+layout_mode = 2
+text = "Acceleration"
+
+[node name="AccelerationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls"]
+layout_mode = 2
+min_value = 20.0
+max_value = 600.0
+step = 5.0
+value = 220.0
+
+[node name="DragLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls"]
+layout_mode = 2
+text = "Drag"
+
+[node name="DragEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 2.0
+step = 0.01
+value = 0.08
+
+[node name="StuckSpeedLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls"]
+layout_mode = 2
+text = "Stuck speed"
+
+[node name="StuckSpeedEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 40.0
+step = 0.5
+value = 8.0
+
+[node name="ApplyButton" type="Button" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+text = "Apply + Reset"
 
 [node name="StatsRow" type="HBoxContainer" parent="CanvasLayer/UiRoot/TopBar"]
 layout_mode = 2
@@ -124,9 +300,9 @@ layout_mode = 2
 text = "0.0/10.0s"
 
 [node name="RightPanel" type="PanelContainer" parent="CanvasLayer/UiRoot"]
-offset_left = 1360.0
+offset_left = 1660.0
 offset_top = 24.0
-offset_right = 1648.0
+offset_right = 1956.0
 offset_bottom = 1164.0
 
 [node name="PanelMargin" type="MarginContainer" parent="CanvasLayer/UiRoot/RightPanel"]
@@ -141,10 +317,12 @@ layout_mode = 2
 theme_override_constants/separation = 18
 
 [node name="MetricsTitle" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+visible = false
 layout_mode = 2
 text = "Live Metrics"
 
 [node name="Metrics" type="GridContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+visible = false
 layout_mode = 2
 columns = 2
 
@@ -181,6 +359,7 @@ layout_mode = 2
 text = "0.0"
 
 [node name="EvolutionTitle" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+visible = false
 layout_mode = 2
 text = "Development Controls"
 
@@ -207,7 +386,47 @@ layout_mode = 2
 disabled = true
 text = "Edit Survival Zone"
 
+[node name="CardsTitle" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+text = "Cards"
+
+[node name="CardsSection" type="VBoxContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="CardsHint" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection"]
+layout_mode = 2
+autowrap_mode = 3
+text = "Choose which genetic possibilities are available before the run starts."
+
+[node name="ActiveCardsBlock" type="VBoxContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ActiveCardsLabel" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection/ActiveCardsBlock"]
+layout_mode = 2
+text = "Active cards"
+
+[node name="ActiveCardsList" type="GridContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection/ActiveCardsBlock"]
+layout_mode = 2
+columns = 1
+theme_override_constants/separation = 8
+
+[node name="AvailableCardsBlock" type="VBoxContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AvailableCardsLabel" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection/AvailableCardsBlock"]
+layout_mode = 2
+text = "Available cards"
+
+[node name="AvailableCardsList" type="GridContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection/AvailableCardsBlock"]
+layout_mode = 2
+columns = 1
+theme_override_constants/separation = 8
+
 [node name="EvolutionControls" type="GridContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+visible = false
 layout_mode = 2
 columns = 2
 
@@ -278,10 +497,12 @@ step = 0.01
 value = 0.0
 
 [node name="PhysicsTitle" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+visible = false
 layout_mode = 2
 text = "Physics Controls"
 
 [node name="PhysicsControls" type="GridContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+visible = false
 layout_mode = 2
 columns = 2
 
@@ -319,13 +540,14 @@ step = 0.5
 value = 8.0
 
 [node name="ApplyButton" type="Button" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+visible = false
 layout_mode = 2
 text = "Apply + Reset"
 
 [node name="BottomPanel" type="PanelContainer" parent="CanvasLayer/UiRoot"]
-offset_left = 32.0
+offset_left = 344.0
 offset_top = 840.0
-offset_right = 1312.0
+offset_right = 1624.0
 offset_bottom = 1200.0
 
 [node name="BottomMargin" type="MarginContainer" parent="CanvasLayer/UiRoot/BottomPanel"]

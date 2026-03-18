@@ -17,8 +17,8 @@ public sealed class EvolutionCycleController
 {
     private readonly ISurvivalRule _survivalRule;
     private readonly ReproductionSystem _reproductionSystem;
-    private readonly EvolutionSettings _evolutionSettings;
-    private readonly SimulationSettings _simulationSettings;
+    private EvolutionSettings _evolutionSettings;
+    private SimulationSettings _simulationSettings;
 
     public EvolutionCycleController(
         ISurvivalRule survivalRule,
@@ -102,5 +102,11 @@ public sealed class EvolutionCycleController
         }
 
         return survivors;
+    }
+
+    public void UpdateSettings(EvolutionSettings evolutionSettings, SimulationSettings simulationSettings)
+    {
+        _evolutionSettings = evolutionSettings;
+        _simulationSettings = simulationSettings;
     }
 }

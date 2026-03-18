@@ -20,16 +20,20 @@ public static class AgentBrain
     /// </summary>
     public static List<ActionContribution> DecideContributions(Agent agent, AgentObservation observation, SimulationSettings settings)
     {
-        var turnRate = agent.Genome.BaseTurnRate;
-        turnRate += Mathf.Sin(agent.BrainClock * agent.Genome.WanderFrequency) * agent.Genome.WanderAmplitude;
-        turnRate += agent.DecisionTurnNoise * agent.Genome.RandomTurnStrength;
+        var turnRate = 0.0f;
+        if (settings.GenePool.AllowTurnBiasAction)
+        {
+            turnRate = agent.Genome.BaseTurnRate;
+            turnRate += Mathf.Sin(agent.BrainClock * agent.Genome.WanderFrequency) * agent.Genome.WanderAmplitude;
+            turnRate += agent.DecisionTurnNoise * agent.Genome.RandomTurnStrength;
+        }
 
         var targetWorld = new Vector2(
             agent.Genome.TargetPointNormalized.X * settings.WorldSize.X,
             agent.Genome.TargetPointNormalized.Y * settings.WorldSize.Y);
         var targetOffset = targetWorld - agent.Position;
 
-        if (targetOffset.LengthSquared() > 0.001f)
+        if (settings.GenePool.AllowSteerToTargetAction && targetOffset.LengthSquared() > 0.001f)
         {
             var forward = Vector2.FromAngle(agent.Heading);
             var right = forward.Orthogonal();
@@ -38,7 +42,7 @@ public static class AgentBrain
             turnRate += targetLateralBias * agent.Genome.TargetPointWeight;
         }
 
-        if (observation.ForwardWallDistance < settings.WallAvoidanceDistance)
+        if (settings.GenePool.AllowTurnBiasAction && observation.ForwardWallDistance < settings.WallAvoidanceDistance)
         {
             var wallBias = Mathf.Clamp(
                 (observation.RightWallDistance - observation.LeftWallDistance) / settings.WallAvoidanceDistance,
@@ -48,13 +52,13 @@ public static class AgentBrain
             turnRate += wallBias * agent.Genome.WallAvoidanceWeight;
         }
 
-        if (observation.IsTouchingWall && observation.Speed < settings.StuckSpeedThreshold)
+        if (settings.GenePool.AllowTurnBiasAction && observation.IsTouchingWall && observation.Speed < settings.StuckSpeedThreshold)
         {
             var unstuckDirection = observation.RightWallDistance >= observation.LeftWallDistance ? 1.0f : -1.0f;
             turnRate += unstuckDirection * agent.Genome.StuckTurnBias;
         }
 
-        if (observation.HasNeighbor)
+        if (settings.GenePool.AllowTurnBiasAction && observation.HasNeighbor)
         {
             var distance = observation.NearestNeighborLocalOffset.Length();
             if (distance > 0.001f && distance < settings.NeighborAwarenessDistance)
@@ -70,18 +74,20 @@ public static class AgentBrain
 
         var targetSpeed = settings.MaxSpeed * agent.Genome.PreferredSpeedFraction;
         var speedError = targetSpeed - observation.Speed;
-        var throttle = Mathf.Clamp(
-            agent.Genome.BaseThrottle + agent.DecisionThrottleNoise * agent.Genome.RandomThrottleBias + (speedError / Mathf.Max(settings.MaxSpeed, 0.001f)),
-            0.0f,
-            1.0f);
+        var throttle = settings.GenePool.AllowThrottleBiasAction
+            ? Mathf.Clamp(
+                agent.Genome.BaseThrottle + agent.DecisionThrottleNoise * agent.Genome.RandomThrottleBias + (speedError / Mathf.Max(settings.MaxSpeed, 0.001f)),
+                0.0f,
+                1.0f)
+            : 0.0f;
         var brakeWish = 0.0f;
 
-        if (speedError < 0.0f)
+        if (settings.GenePool.AllowThrottleBiasAction && speedError < 0.0f)
         {
             brakeWish = Mathf.Clamp(-speedError / Mathf.Max(targetSpeed + 1.0f, 1.0f), 0.0f, 1.0f);
         }
 
-        if (observation.HasNeighbor && observation.NearestNeighborLocalOffset.Y > 0.0f)
+        if (settings.GenePool.AllowThrottleBiasAction && observation.HasNeighbor && observation.NearestNeighborLocalOffset.Y > 0.0f)
         {
             var distance = observation.NearestNeighborLocalOffset.Length();
             if (distance < settings.NeighborBrakeDistance)
@@ -90,15 +96,17 @@ public static class AgentBrain
             }
         }
 
-        if (observation.IsTouchingWall && observation.Speed > settings.StuckSpeedThreshold)
+        if (settings.GenePool.AllowThrottleBiasAction && observation.IsTouchingWall && observation.Speed > settings.StuckSpeedThreshold)
         {
             brakeWish = Mathf.Max(brakeWish, 0.6f);
         }
 
-        var localAccelerationWish = new Vector2(0.0f, throttle);
+        var localAccelerationWish = settings.GenePool.AllowThrottleBiasAction
+            ? new Vector2(0.0f, throttle)
+            : Vector2.Zero;
         var worldAccelerationWish = Vector2.Zero;
 
-        if (targetOffset.LengthSquared() > 0.001f)
+        if (settings.GenePool.AllowSteerToTargetAction && targetOffset.LengthSquared() > 0.001f)
         {
             worldAccelerationWish = targetOffset.Normalized() * (agent.Genome.TargetPointWeight * settings.Acceleration * 0.18f);
         }

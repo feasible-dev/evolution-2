@@ -18,9 +18,14 @@ public sealed class Simulation
         _random = seed.HasValue ? new Random(seed.Value) : new Random();
     }
 
-    public SimulationSettings Settings { get; }
+    public SimulationSettings Settings { get; private set; }
 
     public WorldState WorldState { get; }
+
+    public void UpdateSettings(SimulationSettings settings)
+    {
+        Settings = settings;
+    }
 
     /// <summary>
     /// Creates a fresh population using randomized genomes and physical profiles.

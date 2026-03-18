@@ -43,6 +43,14 @@ public static class EvolutionBuildCompiler
                 build.MutationStrength += card.ScalarValue;
                 break;
 
+            case CardEffectKind.EnableTurnBiasAction:
+                build.GenePool = build.GenePool with { AllowTurnBiasAction = true };
+                break;
+
+            case CardEffectKind.EnableThrottleBiasAction:
+                build.GenePool = build.GenePool with { AllowThrottleBiasAction = true };
+                break;
+
             case CardEffectKind.EnableTimeCondition:
                 build.GenePool = build.GenePool with { AllowTimeCondition = true };
                 break;

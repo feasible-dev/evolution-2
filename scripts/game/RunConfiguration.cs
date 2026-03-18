@@ -10,9 +10,9 @@ public sealed class RunConfiguration
 
     public Vector2 WorldSize { get; set; } = new(1280.0f, 720.0f);
 
-    public Vector2 WorldOrigin { get; set; } = new(32.0f, 104.0f);
+    public Vector2 WorldOrigin { get; set; } = new(344.0f, 104.0f);
 
-    public Vector2 ViewportSize { get; set; } = new(1680.0f, 1240.0f);
+    public Vector2 ViewportSize { get; set; } = new(1980.0f, 1240.0f);
 
     public float AgentRadius { get; set; } = 4.0f;
 
@@ -44,7 +44,12 @@ public sealed class RunConfiguration
 
     public SurvivalZoneDefinition SurvivalZoneDefinition { get; set; } = SurvivalZoneDefinition.Default;
 
-    public GenePoolDefinition GenePool { get; set; } = GenePoolDefinition.Default;
+    public GenePoolDefinition GenePool { get; set; } = new(
+        AllowTimeCondition: false,
+        AllowTurnBiasAction: false,
+        AllowThrottleBiasAction: false,
+        AllowSteerToTargetAction: false,
+        MaxRulesPerAgent: 1);
 
     public int TrailPointCount { get; set; } = 10;
 

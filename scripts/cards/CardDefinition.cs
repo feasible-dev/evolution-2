@@ -7,6 +7,7 @@ public readonly record struct CardDefinition(
     string Id,
     string Name,
     string Description,
+    CardCategory Category,
     CardEffectKind EffectKind,
     float ScalarValue = 0.0f,
     int IntValue = 0);
