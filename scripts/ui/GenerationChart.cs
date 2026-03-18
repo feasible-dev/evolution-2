@@ -1,4 +1,5 @@
 using EvoPrototype.Analytics;
+using EvoPrototype.Game;
 using Godot;
 
 namespace EvoPrototype.Ui;

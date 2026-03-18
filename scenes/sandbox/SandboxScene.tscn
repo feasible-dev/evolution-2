@@ -182,7 +182,7 @@ text = "0.0"
 
 [node name="EvolutionTitle" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
 layout_mode = 2
-text = "Evolution Controls"
+text = "Development Controls"
 
 [node name="SetupTitle" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
 layout_mode = 2
@@ -265,6 +265,17 @@ min_value = 0.01
 max_value = 1.0
 step = 0.01
 value = 0.03
+
+[node name="TrailAlphaLabel" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Trail alpha"
+
+[node name="TrailAlphaEditor" type="SpinBox" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 0.5
+step = 0.01
+value = 0.0
 
 [node name="PhysicsTitle" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
 layout_mode = 2

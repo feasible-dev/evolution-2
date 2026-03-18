@@ -46,6 +46,10 @@ public sealed class RunConfiguration
 
     public GenePoolDefinition GenePool { get; set; } = GenePoolDefinition.Default;
 
+    public int TrailPointCount { get; set; } = 10;
+
+    public float TrailAlpha { get; set; } = 0.0f;
+
     public RunConfiguration Clone()
     {
         return new RunConfiguration
@@ -69,7 +73,9 @@ public sealed class RunConfiguration
             TimeScale = TimeScale,
             MutationStrength = MutationStrength,
             SurvivalZoneDefinition = SurvivalZoneDefinition,
-            GenePool = GenePool
+            GenePool = GenePool,
+            TrailPointCount = TrailPointCount,
+            TrailAlpha = TrailAlpha
         };
     }
 

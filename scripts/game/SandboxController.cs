@@ -45,6 +45,7 @@ public partial class SandboxController : Node2D
     private SpinBox? _selectionDurationSpinBox;
     private SpinBox? _timeScaleSpinBox;
     private SpinBox? _mutationStrengthSpinBox;
+    private SpinBox? _trailAlphaSpinBox;
     private SpinBox? _accelerationSpinBox;
     private SpinBox? _dragSpinBox;
     private SpinBox? _stuckSpeedSpinBox;
@@ -94,8 +95,7 @@ public partial class SandboxController : Node2D
 
         var scaledDelta = (float)delta * _runConfiguration.TimeScale;
         _elapsedTimeSeconds += scaledDelta;
-        StepSimulation(scaledDelta);
-
+        StepSimulation(scaledDelta, MaxSimulationStepSeconds);
         UpdateRendering();
         UpdateHud();
     }
@@ -130,6 +130,7 @@ public partial class SandboxController : Node2D
         _selectionDurationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls/SelectionDurationEditor");
         _timeScaleSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls/TimeScaleEditor");
         _mutationStrengthSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls/MutationStrengthEditor");
+        _trailAlphaSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls/TrailAlphaEditor");
         _accelerationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/PhysicsControls/AccelerationEditor");
         _dragSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/PhysicsControls/DragEditor");
         _stuckSpeedSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/PhysicsControls/StuckSpeedEditor");
@@ -210,6 +211,8 @@ public partial class SandboxController : Node2D
         _sandboxRenderer!.Bind(_simulation, _runConfiguration);
         _sandboxRenderer.SetSurvivalZones(_survivalZones);
         _sandboxRenderer.SetSelectionState(System.Array.Empty<Agent>(), selectionActive: false, selectionProgress: 0.0f);
+        _sandboxRenderer.SetLiveRenderingEnabled(true);
+        _sandboxRenderer.CaptureFrame();
         _runHistory = new RunHistory();
         _generationChart!.Bind(_runHistory);
         UpdateChartMetric();
@@ -250,6 +253,7 @@ public partial class SandboxController : Node2D
         _runConfiguration.SelectionDurationSeconds = (float)_selectionDurationSpinBox!.Value;
         _runConfiguration.TimeScale = (float)_timeScaleSpinBox!.Value;
         _runConfiguration.MutationStrength = (float)_mutationStrengthSpinBox!.Value;
+        _runConfiguration.TrailAlpha = (float)_trailAlphaSpinBox!.Value;
         _runConfiguration.Acceleration = (float)_accelerationSpinBox!.Value;
         _runConfiguration.Drag = (float)_dragSpinBox!.Value;
         _runConfiguration.StuckSpeedThreshold = (float)_stuckSpeedSpinBox!.Value;
@@ -266,6 +270,7 @@ public partial class SandboxController : Node2D
         _selectionDurationSpinBox!.Value = _runConfiguration.SelectionDurationSeconds;
         _timeScaleSpinBox!.Value = _runConfiguration.TimeScale;
         _mutationStrengthSpinBox!.Value = _runConfiguration.MutationStrength;
+        _trailAlphaSpinBox!.Value = _runConfiguration.TrailAlpha;
         _accelerationSpinBox!.Value = _runConfiguration.Acceleration;
         _dragSpinBox!.Value = _runConfiguration.Drag;
         _stuckSpeedSpinBox!.Value = _runConfiguration.StuckSpeedThreshold;
@@ -367,10 +372,13 @@ public partial class SandboxController : Node2D
 
     private void UpdateRendering()
     {
+        var showSelectionOverlay = _evolutionCycleController!.Phase == EvolutionPhase.Selection;
         _sandboxRenderer!.SetSelectionState(
             _evolutionCycleController!.SelectedSurvivors,
-            _evolutionCycleController.Phase == EvolutionPhase.Selection,
+            showSelectionOverlay,
             _evolutionCycleController.SelectionProgress);
+        _sandboxRenderer.SetLiveRenderingEnabled(true);
+        _sandboxRenderer.CaptureFrame();
         _sandboxRenderer.QueueRedraw();
     }
 
@@ -381,20 +389,22 @@ public partial class SandboxController : Node2D
             Mathf.RoundToInt(_runConfiguration.ViewportSize.Y)));
     }
 
-    private void StepSimulation(float scaledDelta)
+    private bool StepSimulation(float scaledDelta, float maxStepSeconds)
     {
         if (_simulation is null || _evolutionCycleController is null)
         {
-            return;
+            return false;
         }
 
         var remaining = scaledDelta;
         var safetyCounter = 0;
+        var shouldRefreshRendering = false;
 
         while (remaining > 0.0f && safetyCounter < 120)
         {
-            var step = Mathf.Min(remaining, MaxSimulationStepSeconds);
+            var step = Mathf.Min(remaining, maxStepSeconds);
             var phaseBeforeUpdate = _evolutionCycleController.Phase;
+            var generationBeforeUpdate = _evolutionCycleController.GenerationIndex;
 
             if (_evolutionCycleController.Phase == EvolutionPhase.Running)
             {
@@ -415,11 +425,19 @@ public partial class SandboxController : Node2D
                     _evolutionCycleController.SelectedSurvivors);
                 _runHistory.Add(snapshot);
                 _generationChart!.QueueRedraw();
+                shouldRefreshRendering = true;
+            }
+
+            if (_evolutionCycleController.GenerationIndex != generationBeforeUpdate)
+            {
+                shouldRefreshRendering = true;
             }
 
             remaining -= step;
             safetyCounter += 1;
         }
+
+        return shouldRefreshRendering;
     }
 
 }

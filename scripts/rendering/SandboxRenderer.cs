@@ -14,11 +14,14 @@ public partial class SandboxRenderer : Node2D
     private HashSet<Agent> _selectedSurvivors = new();
     private bool _selectionActive;
     private float _selectionProgress;
+    private readonly Dictionary<Agent, Queue<Vector2>> _trailHistory = new();
+    private bool _liveRenderingEnabled = true;
 
     public void Bind(Simulation simulation, RunConfiguration runConfiguration)
     {
         _simulation = simulation;
         _runConfiguration = runConfiguration;
+        _trailHistory.Clear();
         QueueRedraw();
     }
 
@@ -36,6 +39,44 @@ public partial class SandboxRenderer : Node2D
         QueueRedraw();
     }
 
+    public void SetLiveRenderingEnabled(bool enabled)
+    {
+        _liveRenderingEnabled = enabled;
+        QueueRedraw();
+    }
+
+    public void CaptureFrame()
+    {
+        if (_simulation is null || _runConfiguration is null)
+        {
+            return;
+        }
+
+        var activeAgents = new HashSet<Agent>(_simulation.WorldState.Agents);
+        foreach (var key in new List<Agent>(_trailHistory.Keys))
+        {
+            if (!activeAgents.Contains(key))
+            {
+                _trailHistory.Remove(key);
+            }
+        }
+
+        foreach (var agent in _simulation.WorldState.Agents)
+        {
+            if (!_trailHistory.TryGetValue(agent, out var history))
+            {
+                history = new Queue<Vector2>();
+                _trailHistory[agent] = history;
+            }
+
+            history.Enqueue(agent.Position);
+            while (history.Count > _runConfiguration.TrailPointCount)
+            {
+                history.Dequeue();
+            }
+        }
+    }
+
     public override void _Draw()
     {
         if (_simulation is null || _runConfiguration is null)
@@ -49,6 +90,11 @@ public partial class SandboxRenderer : Node2D
             worldRect,
             new Color(0.08f, 0.1f, 0.12f),
             filled: true);
+
+        if (_liveRenderingEnabled)
+        {
+            DrawTrails();
+        }
 
         if (_selectionActive && _survivalZones is not null)
         {
@@ -116,6 +162,29 @@ public partial class SandboxRenderer : Node2D
             case CircleSurvivalZone circleZone:
                 DrawCircle(_runConfiguration!.WorldOrigin + circleZone.Center, circleZone.Radius, fillColor);
                 break;
+        }
+    }
+
+    private void DrawTrails()
+    {
+        foreach (var (agent, history) in _trailHistory)
+        {
+            if (history.Count < 2)
+            {
+                continue;
+            }
+
+            var points = history.ToArray();
+            for (var index = 1; index < points.Length; index++)
+            {
+                var alpha = _runConfiguration!.TrailAlpha * (index / (float)points.Length);
+                var color = agent.Color with { A = alpha };
+                DrawLine(
+                    _runConfiguration.WorldOrigin + points[index - 1],
+                    _runConfiguration.WorldOrigin + points[index],
+                    color,
+                    width: 1.0f);
+            }
         }
     }
 }
