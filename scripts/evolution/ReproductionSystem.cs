@@ -36,6 +36,7 @@ public sealed class ReproductionSystem
             var genome = _mutationSystem.MutateGenome(
                 parent.Genome,
                 evolutionSettings.MutationStrength,
+                evolutionSettings.MutationPolicy,
                 simulationSettings.GenePool,
                 simulationSettings.GenerationDurationSeconds);
             var physicsProfile = _mutationSystem.MutatePhysicsProfile(parent.PhysicsProfile, evolutionSettings.MutationStrength);
@@ -79,6 +80,7 @@ public sealed class ReproductionSystem
             var genome = _mutationSystem.MutateGenome(
                 seededGenome,
                 evolutionSettings.MutationStrength,
+                evolutionSettings.MutationPolicy,
                 simulationSettings.GenePool,
                 simulationSettings.GenerationDurationSeconds);
             var physicsProfile = _mutationSystem.MutatePhysicsProfile(PhysicsProfile.Default, evolutionSettings.MutationStrength);

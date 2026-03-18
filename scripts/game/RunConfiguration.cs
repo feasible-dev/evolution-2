@@ -42,6 +42,8 @@ public sealed class RunConfiguration
 
     public float MutationStrength { get; set; } = 0.03f;
 
+    public MutationPolicy MutationPolicy { get; set; } = MutationPolicy.Default;
+
     public SurvivalZoneDefinition SurvivalZoneDefinition { get; set; } = SurvivalZoneDefinition.Default;
 
     public GenePoolDefinition GenePool { get; set; } = new(
@@ -77,6 +79,7 @@ public sealed class RunConfiguration
             SelectionDurationSeconds = SelectionDurationSeconds,
             TimeScale = TimeScale,
             MutationStrength = MutationStrength,
+            MutationPolicy = MutationPolicy,
             SurvivalZoneDefinition = SurvivalZoneDefinition,
             GenePool = GenePool,
             TrailPointCount = TrailPointCount,
@@ -113,6 +116,7 @@ public sealed class RunConfiguration
             SelectionDurationSeconds = SelectionDurationSeconds,
             TargetPopulationSize = AgentCount,
             MutationStrength = MutationStrength,
+            MutationPolicy = MutationPolicy,
             SurvivalZoneDefinition = SurvivalZoneDefinition
         };
     }

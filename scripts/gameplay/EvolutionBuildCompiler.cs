@@ -13,6 +13,7 @@ public static class EvolutionBuildCompiler
     {
         var build = EvolutionBuild.FromDefaults(
             mutationStrength: baseConfiguration.MutationStrength,
+            mutationPolicy: baseConfiguration.MutationPolicy,
             genePool: baseConfiguration.GenePool,
             survivalZoneDefinition: baseConfiguration.SurvivalZoneDefinition);
 
@@ -28,6 +29,7 @@ public static class EvolutionBuildCompiler
     {
         var compiled = baseConfiguration.Clone();
         compiled.MutationStrength = build.MutationStrength;
+        compiled.MutationPolicy = build.MutationPolicy;
         compiled.GenePool = build.GenePool;
         compiled.SurvivalZoneDefinition = build.SurvivalZoneDefinition;
         return compiled;

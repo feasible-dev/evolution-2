@@ -14,12 +14,13 @@ public sealed class MutationSystem
 
     public AgentGenome MutateGenome(AgentGenome source, float mutationStrength)
     {
-        return MutateGenome(source, mutationStrength, GenePoolDefinition.Default);
+        return MutateGenome(source, mutationStrength, MutationPolicy.Default, GenePoolDefinition.Default);
     }
 
     public AgentGenome MutateGenome(
         AgentGenome source,
         float mutationStrength,
+        MutationPolicy mutationPolicy,
         GenePoolDefinition genePool,
         float generationDurationSeconds = 10.0f)
     {
@@ -40,7 +41,13 @@ public sealed class MutationSystem
                 Clamp(source.TargetPointNormalized.X + NextSignedDelta(mutationStrength), 0.0f, 1.0f),
                 Clamp(source.TargetPointNormalized.Y + NextSignedDelta(mutationStrength), 0.0f, 1.0f)),
             TargetPointWeight: Clamp(source.TargetPointWeight + NextSignedDelta(mutationStrength * 2.0f), 0.0f, 2.5f),
-            Program: GeneRuleFactory.MutateProgram(_random, source.Program, genePool, generationDurationSeconds, mutationStrength));
+            Program: GeneRuleFactory.MutateProgram(
+                _random,
+                source.Program,
+                genePool,
+                mutationPolicy,
+                generationDurationSeconds,
+                mutationStrength));
     }
 
     public PhysicsProfile MutatePhysicsProfile(PhysicsProfile source, float mutationStrength)

@@ -1,4 +1,5 @@
 using System;
+using EvoPrototype.Evolution;
 using Godot;
 
 namespace EvoPrototype.Core;
@@ -22,12 +23,30 @@ public static class GeneRuleFactory
         Random random,
         GeneProgram source,
         GenePoolDefinition genePool,
+        MutationPolicy mutationPolicy,
         float generationDurationSeconds,
         float mutationStrength)
     {
-        var primaryRule = MutateRule(random, source.PrimaryRule, genePool, generationDurationSeconds, mutationStrength);
+        if (random.NextDouble() >= mutationPolicy.ProgramMutationChance)
+        {
+            return source;
+        }
+
+        var primaryRule = MutateRule(
+            random,
+            source.PrimaryRule,
+            genePool,
+            mutationPolicy,
+            generationDurationSeconds,
+            mutationStrength);
         var secondaryRule = genePool.MaxRulesPerAgent >= 2
-            ? MutateRule(random, source.SecondaryRule, genePool, generationDurationSeconds, mutationStrength)
+            ? MutateRule(
+                random,
+                source.SecondaryRule,
+                genePool,
+                mutationPolicy,
+                generationDurationSeconds,
+                mutationStrength)
             : GeneRule.Disabled;
 
         return new GeneProgram(primaryRule, secondaryRule);
@@ -56,12 +75,26 @@ public static class GeneRuleFactory
                 GetTargetCoordinateSpec().SampleInitial(random)));
     }
 
-    public static GeneRule MutateRule(Random random, GeneRule source, GenePoolDefinition genePool, float generationDurationSeconds, float mutationStrength)
+    public static GeneRule MutateRule(
+        Random random,
+        GeneRule source,
+        GenePoolDefinition genePool,
+        MutationPolicy mutationPolicy,
+        float generationDurationSeconds,
+        float mutationStrength)
     {
         var enabled = source.Enabled;
-        if (random.NextDouble() < mutationStrength * 0.8f)
+
+        if (enabled)
         {
-            enabled = !enabled;
+            if (random.NextDouble() < mutationPolicy.RemoveRuleChance)
+            {
+                enabled = false;
+            }
+        }
+        else if (random.NextDouble() < mutationPolicy.AddRuleChance)
+        {
+            return CreateRandomRule(random, genePool, generationDurationSeconds, disableChance: 0.0d);
         }
 
         if (!enabled)
@@ -70,7 +103,7 @@ public static class GeneRuleFactory
         }
 
         var conditionKind = source.ConditionKind;
-        if (random.NextDouble() < mutationStrength * 0.5f)
+        if (random.NextDouble() < mutationPolicy.ConditionKindMutationChance)
         {
             conditionKind = PickConditionKind(random, genePool);
         }
@@ -80,7 +113,7 @@ public static class GeneRuleFactory
         }
 
         var actionKind = source.ActionKind;
-        if (actionKind == GeneActionKind.None || random.NextDouble() < mutationStrength * 0.6f)
+        if (actionKind == GeneActionKind.None || random.NextDouble() < mutationPolicy.ActionKindMutationChance)
         {
             actionKind = PickActionKind(random, genePool);
         }
@@ -89,21 +122,55 @@ public static class GeneRuleFactory
             actionKind = PickActionKind(random, genePool);
         }
 
-        var threshold = conditionKind == GeneConditionKind.TimeGreaterOrEqual
-            ? GetConditionThresholdSpec(generationDurationSeconds).Mutate(
-                random,
-                source.ConditionThreshold > 0.0f ? source.ConditionThreshold : generationDurationSeconds * 0.5f,
-                mutationStrength)
-            : 0.0f;
+        var threshold = source.ConditionThreshold;
+        if (conditionKind == GeneConditionKind.TimeGreaterOrEqual)
+        {
+            if (source.ConditionKind != conditionKind || random.NextDouble() < mutationPolicy.ConditionParameterMutationChance)
+            {
+                threshold = GetConditionThresholdSpec(generationDurationSeconds).Mutate(
+                    random,
+                    source.ConditionThreshold > 0.0f ? source.ConditionThreshold : generationDurationSeconds * 0.5f,
+                    mutationStrength);
+            }
+            else
+            {
+                threshold = Clamp(source.ConditionThreshold, 0.0f, MathF.Max(generationDurationSeconds, 0.01f));
+            }
+        }
+        else
+        {
+            threshold = 0.0f;
+        }
 
         var sourceScalar = source.ActionKind == actionKind
             ? source.Scalar
             : GetActionScalarDefault(actionKind);
 
-        var scalar = GetActionScalarSpec(actionKind).Mutate(
-            random,
-            sourceScalar,
-            mutationStrength);
+        var scalar = sourceScalar;
+        if (source.ActionKind != actionKind || random.NextDouble() < mutationPolicy.ActionParameterMutationChance)
+        {
+            scalar = GetActionScalarSpec(actionKind).Mutate(
+                random,
+                sourceScalar,
+                mutationStrength);
+        }
+        else
+        {
+            scalar = Clamp(sourceScalar, GetActionScalarSpec(actionKind).MinValue, GetActionScalarSpec(actionKind).MaxValue);
+        }
+
+        var targetX = source.TargetPointNormalized.X;
+        var targetY = source.TargetPointNormalized.Y;
+        if (source.ActionKind != actionKind || random.NextDouble() < mutationPolicy.ActionParameterMutationChance)
+        {
+            targetX = GetTargetCoordinateSpec().Mutate(random, source.TargetPointNormalized.X, mutationStrength);
+            targetY = GetTargetCoordinateSpec().Mutate(random, source.TargetPointNormalized.Y, mutationStrength);
+        }
+        else
+        {
+            targetX = Clamp(source.TargetPointNormalized.X, 0.0f, 1.0f);
+            targetY = Clamp(source.TargetPointNormalized.Y, 0.0f, 1.0f);
+        }
 
         return new GeneRule(
             Enabled: true,
@@ -111,9 +178,7 @@ public static class GeneRuleFactory
             ConditionThreshold: threshold,
             ActionKind: actionKind,
             Scalar: scalar,
-            TargetPointNormalized: new Vector2(
-                GetTargetCoordinateSpec().Mutate(random, source.TargetPointNormalized.X, mutationStrength),
-                GetTargetCoordinateSpec().Mutate(random, source.TargetPointNormalized.Y, mutationStrength)));
+            TargetPointNormalized: new Vector2(targetX, targetY));
     }
 
     private static GeneConditionKind PickConditionKind(Random random, GenePoolDefinition genePool)

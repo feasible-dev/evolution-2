@@ -19,6 +19,8 @@ public static class EvolutionTests
         harness.Run("Survival region factory uses normalized circle centers", TestSurvivalRegionFactoryUsesNormalizedCircleCenter);
         harness.Run("Gene pool can disable time-triggered rules", TestGenePoolCanDisableTimeTriggeredRules);
         harness.Run("Gene pool can restrict generated action families", TestGenePoolCanRestrictGeneratedActionFamilies);
+        harness.Run("Mutation policy can preserve programs exactly", TestMutationPolicyCanPreserveProgramsExactly);
+        harness.Run("Mutation policy can force action kind mutation", TestMutationPolicyCanForceActionKindMutation);
         harness.Run("Time threshold sampling stays inside the generation duration", TestTimeThresholdSamplingStaysInsideGenerationDuration);
         harness.Run("Time threshold mutation stays bounded and local", TestTimeThresholdMutationStaysBoundedAndLocal);
         harness.Run("Action scalar sampling and mutation stay inside action domains", TestActionScalarSamplingAndMutationStayInsideDomains);
@@ -233,6 +235,66 @@ public static class EvolutionTests
         }
     }
 
+    private static void TestMutationPolicyCanPreserveProgramsExactly()
+    {
+        var random = new System.Random(111);
+        var source = new GeneProgram(
+            new GeneRule(
+                Enabled: true,
+                ConditionKind: GeneConditionKind.TimeGreaterOrEqual,
+                ConditionThreshold: 3.0f,
+                ActionKind: GeneActionKind.AddTurnBias,
+                Scalar: 0.5f,
+                TargetPointNormalized: new Vector2(0.4f, 0.6f)),
+            GeneRule.Disabled);
+
+        var preserved = GeneRuleFactory.MutateProgram(
+            random,
+            source,
+            GenePoolDefinition.Default,
+            MutationPolicy.Default with { ProgramMutationChance = 0.0f },
+            generationDurationSeconds: 10.0f,
+            mutationStrength: 0.2f);
+
+        AssertTrue(preserved.Equals(source), "Zero program mutation chance should keep the parent program unchanged.");
+    }
+
+    private static void TestMutationPolicyCanForceActionKindMutation()
+    {
+        var random = new System.Random(222);
+        var source = new GeneRule(
+            Enabled: true,
+            ConditionKind: GeneConditionKind.Always,
+            ConditionThreshold: 0.0f,
+            ActionKind: GeneActionKind.AddTurnBias,
+            Scalar: 0.5f,
+            TargetPointNormalized: new Vector2(0.5f, 0.5f));
+
+        var mutated = GeneRuleFactory.MutateRule(
+            random,
+            source,
+            new GenePoolDefinition(
+                AllowTimeCondition: true,
+                AllowTurnBiasAction: false,
+                AllowThrottleBiasAction: true,
+                AllowSteerToTargetAction: false,
+                MaxRulesPerAgent: 2),
+            MutationPolicy.Default with
+            {
+                RemoveRuleChance = 0.0f,
+                AddRuleChance = 0.0f,
+                ConditionKindMutationChance = 0.0f,
+                ActionKindMutationChance = 1.0f,
+                ConditionParameterMutationChance = 0.0f,
+                ActionParameterMutationChance = 0.0f
+            },
+            generationDurationSeconds: 10.0f,
+            mutationStrength: 0.1f);
+
+        AssertTrue(mutated.Enabled, "Forced action mutation should not disable the rule by itself.");
+        AssertTrue(mutated.ActionKind == GeneActionKind.AddThrottleBias, "When turn bias is no longer allowed, forced action mutation should pick an allowed action.");
+    }
+
     private static void TestTimeThresholdSamplingStaysInsideGenerationDuration()
     {
         var random = new System.Random(789);
@@ -266,6 +328,7 @@ public static class EvolutionTests
                 random,
                 source,
                 GenePoolDefinition.Default,
+                MutationPolicy.Default,
                 generationDurationSeconds: 14.0f,
                 mutationStrength: 0.08f);
 
@@ -306,6 +369,7 @@ public static class EvolutionTests
                 random,
                 rule,
                 GenePoolDefinition.Default,
+                MutationPolicy.Default,
                 generationDurationSeconds: 10.0f,
                 mutationStrength: 0.08f);
 
@@ -347,6 +411,7 @@ public static class EvolutionTests
                 random,
                 source,
                 GenePoolDefinition.Default,
+                MutationPolicy.Default,
                 generationDurationSeconds: 10.0f,
                 mutationStrength: 0.08f);
 
