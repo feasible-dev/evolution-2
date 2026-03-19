@@ -61,7 +61,7 @@ public sealed class Simulation
     private Agent CreateRandomAgent()
     {
         var radius = Settings.AgentRadius;
-        var position = BoardGeometry.RandomPointInside(_random, Settings.WorldSize, Settings.BoardShape, radius);
+        var position = BoardGeometry.RandomPointInside(_random, Settings.WorldSize, Settings.BoardShape, Settings.Obstacles, radius);
 
         var heading = NextFloat(0.0f, Mathf.Tau);
         var genome = new AgentGenome(
@@ -221,7 +221,7 @@ public sealed class Simulation
         agent.Energy = Mathf.Clamp(agent.Energy - (agent.PhysicsProfile.IdleEnergyDrainPerSecond * delta), 0.0f, agent.PhysicsProfile.MaxEnergy);
 
         var nextPosition = agent.Position + (agent.Velocity * delta);
-        var clampedPosition = BoardGeometry.ClampPoint(nextPosition, Settings.WorldSize, Settings.BoardShape, agent.Radius);
+        var clampedPosition = BoardGeometry.ClampPoint(nextPosition, Settings.WorldSize, Settings.BoardShape, Settings.Obstacles, agent.Radius);
         var hitBoundary = clampedPosition.DistanceSquaredTo(nextPosition) > 0.0001f;
         agent.Position = clampedPosition;
         ClampVelocityAgainstWalls(agent, hitBoundary);
@@ -313,14 +313,28 @@ public sealed class Simulation
 
     private void ClampVelocityAgainstWalls(Agent agent, bool hitBoundary)
     {
-        var boundaryNormal = BoardGeometry.GetBoundaryNormal(agent.Position, Settings.WorldSize, Settings.BoardShape);
-        var outwardSpeed = agent.Velocity.Dot(boundaryNormal);
-        if (hitBoundary && outwardSpeed > 0.0f)
+        if (hitBoundary &&
+            BoardGeometry.TryGetObstacleBoundaryNormal(agent.Position, Settings.Obstacles, agent.Radius + 0.5f, out var obstacleNormal))
         {
-            agent.Velocity -= boundaryNormal * outwardSpeed;
+            var inwardSpeed = agent.Velocity.Dot(obstacleNormal);
+            if (inwardSpeed < 0.0f)
+            {
+                agent.Velocity -= obstacleNormal * inwardSpeed;
+            }
+        }
+        else
+        {
+            var boundaryNormal = BoardGeometry.GetBoundaryNormal(agent.Position, Settings.WorldSize, Settings.BoardShape);
+            var outwardSpeed = agent.Velocity.Dot(boundaryNormal);
+            if (hitBoundary && outwardSpeed > 0.0f)
+            {
+                agent.Velocity -= boundaryNormal * outwardSpeed;
+            }
         }
 
-        agent.IsTouchingWall = hitBoundary || !BoardGeometry.ContainsPoint(agent.Position, Settings.WorldSize, Settings.BoardShape, agent.Radius + 0.5f);
+        agent.IsTouchingWall =
+            hitBoundary ||
+            !BoardGeometry.IsInsidePlayableArea(agent.Position, Settings.WorldSize, Settings.BoardShape, Settings.Obstacles, agent.Radius + 0.5f);
     }
 
     private void ResolveOverlaps()
@@ -359,8 +373,8 @@ public sealed class Simulation
                     var penetration = minimumDistance - distance;
                     var correction = normal * (penetration * 0.5f);
 
-                    firstAgent.Position = BoardGeometry.ClampPoint(firstAgent.Position - correction, Settings.WorldSize, Settings.BoardShape, firstAgent.Radius);
-                    secondAgent.Position = BoardGeometry.ClampPoint(secondAgent.Position + correction, Settings.WorldSize, Settings.BoardShape, secondAgent.Radius);
+                    firstAgent.Position = BoardGeometry.ClampPoint(firstAgent.Position - correction, Settings.WorldSize, Settings.BoardShape, Settings.Obstacles, firstAgent.Radius);
+                    secondAgent.Position = BoardGeometry.ClampPoint(secondAgent.Position + correction, Settings.WorldSize, Settings.BoardShape, Settings.Obstacles, secondAgent.Radius);
                 }
             }
         }
@@ -368,7 +382,7 @@ public sealed class Simulation
 
     private float DistanceToBoundary(Vector2 origin, Vector2 direction)
     {
-        return BoardGeometry.DistanceToBoundary(origin, direction, Settings.WorldSize, Settings.BoardShape);
+        return BoardGeometry.DistanceToBoundary(origin, direction, Settings.WorldSize, Settings.BoardShape, Settings.Obstacles);
     }
 
     private static Vector2 HeadingToVector(float heading)

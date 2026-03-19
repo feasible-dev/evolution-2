@@ -114,6 +114,7 @@ public partial class SetupOverlay : Node2D
         var worldRect = new Rect2(_runConfiguration.WorldOrigin, _runConfiguration.WorldSize);
         DrawRect(worldRect, new Color(0.24f, 0.24f, 0.24f), filled: true);
         DrawBoardSurface();
+        DrawObstacles();
         DrawBoardOutline();
 
         if (_definition.Layout != SurvivalZoneLayout.CenterCircle)
@@ -236,6 +237,35 @@ public partial class SetupOverlay : Node2D
                     DrawLine(start, end, outline, 2.0f);
                 }
                 break;
+        }
+    }
+
+    private void DrawObstacles()
+    {
+        var obstacles = ObstacleFactory.Create(_runConfiguration!.WorldSize, _runConfiguration.ObstacleLayout);
+        if (obstacles.Count == 0)
+        {
+            return;
+        }
+
+        var fill = new Color(0.42f, 0.46f, 0.54f, 0.52f);
+        var outline = new Color(0.64f, 0.68f, 0.76f, 0.92f);
+        foreach (var obstacle in obstacles)
+        {
+            switch (obstacle.Kind)
+            {
+                case BoardObstacleKind.Circle:
+                    DrawCircle(_runConfiguration.WorldOrigin + obstacle.Center, obstacle.Radius, fill);
+                    DrawArc(_runConfiguration.WorldOrigin + obstacle.Center, obstacle.Radius, 0.0f, Mathf.Tau, 48, outline, 2.0f);
+                    break;
+                case BoardObstacleKind.Rectangle:
+                    var rect = new Rect2(
+                        _runConfiguration.WorldOrigin + obstacle.Center - (obstacle.Size * 0.5f),
+                        obstacle.Size);
+                    DrawRect(rect, fill, filled: true);
+                    DrawRect(rect, outline, filled: false, width: 2.0f);
+                    break;
+            }
         }
     }
 }

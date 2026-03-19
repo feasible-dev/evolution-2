@@ -445,6 +445,13 @@ text = "Board shape"
 [node name="BoardShapeSelector" type="OptionButton" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls"]
 layout_mode = 2
 
+[node name="ObstacleLayoutLabel" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls"]
+layout_mode = 2
+text = "Obstacle layout"
+
+[node name="ObstacleLayoutSelector" type="OptionButton" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls"]
+layout_mode = 2
+
 [node name="SetupHint" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls"]
 layout_mode = 2
 autowrap_mode = 3

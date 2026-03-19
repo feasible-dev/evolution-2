@@ -110,7 +110,12 @@ public sealed class ReproductionSystem
 
     private Vector2 RandomPosition(SimulationSettings simulationSettings, float radius)
     {
-        return BoardGeometry.RandomPointInside(_random, simulationSettings.WorldSize, simulationSettings.BoardShape, radius);
+        return BoardGeometry.RandomPointInside(
+            _random,
+            simulationSettings.WorldSize,
+            simulationSettings.BoardShape,
+            simulationSettings.Obstacles,
+            radius);
     }
 
     private float NextFloat(float minValue, float maxValue)

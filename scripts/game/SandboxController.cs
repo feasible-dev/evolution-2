@@ -67,6 +67,7 @@ public partial class SandboxController : Node2D
     private Label? _setupSubtitleLabel;
     private Label? _cardsHintLabel;
     private OptionButton? _boardShapeOptionButton;
+    private OptionButton? _obstacleLayoutOptionButton;
     private Button? _setupStartRunButton;
     private Button? _startRunButton;
     private Button? _editZoneButton;
@@ -167,6 +168,7 @@ public partial class SandboxController : Node2D
         _stuckSpeedSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls/StuckSpeedEditor");
         _setupHintLabel = GetNode<Label>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/SetupHint");
         _boardShapeOptionButton = GetNode<OptionButton>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/BoardShapeSelector");
+        _obstacleLayoutOptionButton = GetNode<OptionButton>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/ObstacleLayoutSelector");
         _setupSubtitleLabel = GetNode<Label>("CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack/SetupSubtitle");
         _cardsHintLabel = GetNode<Label>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection/CardsHint");
         _setupStartRunButton = GetNode<Button>("CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack/SetupButtonRow/SetupStartRunButton");
@@ -179,6 +181,7 @@ public partial class SandboxController : Node2D
         _setupOverlay.Bind(_runConfiguration);
         _setupOverlay.DefinitionChanged += OnSetupDefinitionChanged;
         PopulateBoardShapeSelector();
+        PopulateObstacleLayoutSelector();
     }
 
     private void ConnectSignals()
@@ -190,6 +193,7 @@ public partial class SandboxController : Node2D
         _previousMetricButton!.Pressed += OnPreviousMetricPressed;
         _nextMetricButton!.Pressed += OnNextMetricPressed;
         _boardShapeOptionButton!.ItemSelected += OnBoardShapeSelected;
+        _obstacleLayoutOptionButton!.ItemSelected += OnObstacleLayoutSelected;
     }
 
     private void DisconnectSignals()
@@ -232,6 +236,11 @@ public partial class SandboxController : Node2D
         if (_boardShapeOptionButton is not null)
         {
             _boardShapeOptionButton.ItemSelected -= OnBoardShapeSelected;
+        }
+
+        if (_obstacleLayoutOptionButton is not null)
+        {
+            _obstacleLayoutOptionButton.ItemSelected -= OnObstacleLayoutSelected;
         }
     }
 
@@ -345,6 +354,7 @@ public partial class SandboxController : Node2D
         _dragSpinBox!.Value = _runConfiguration.Drag;
         _stuckSpeedSpinBox!.Value = _runConfiguration.StuckSpeedThreshold;
         _boardShapeOptionButton!.Select((int)_runConfiguration.BoardShape);
+        _obstacleLayoutOptionButton!.Select((int)_runConfiguration.ObstacleLayout);
     }
 
     private void UpdateHud()
@@ -421,6 +431,20 @@ public partial class SandboxController : Node2D
         }
     }
 
+    private void OnObstacleLayoutSelected(long index)
+    {
+        _runConfiguration.ObstacleLayout = (ObstacleLayoutKind)index;
+        if (_setupOverlay is not null)
+        {
+            _setupOverlay.QueueRedraw();
+        }
+
+        if (_sandboxRenderer is not null)
+        {
+            _sandboxRenderer.QueueRedraw();
+        }
+    }
+
     private void OnSetupDefinitionChanged(SurvivalZoneDefinition definition)
     {
         _sessionState.SurvivalZoneDefinition = definition;
@@ -459,6 +483,7 @@ public partial class SandboxController : Node2D
         _startRunButton!.Disabled = !inSetup;
         _editZoneButton!.Disabled = inSetup;
         _boardShapeOptionButton!.Disabled = !inSetup;
+        _obstacleLayoutOptionButton!.Disabled = !inSetup;
         _applyButton!.Disabled = inSetup;
         _applyButton.Visible = !inSetup;
     }
@@ -471,6 +496,16 @@ public partial class SandboxController : Node2D
         _boardShapeOptionButton.AddItem("Hexagon", (int)BoardShapeKind.Hexagon);
         _boardShapeOptionButton.AddItem("Octagon", (int)BoardShapeKind.Octagon);
         _boardShapeOptionButton.Select((int)_runConfiguration.BoardShape);
+    }
+
+    private void PopulateObstacleLayoutSelector()
+    {
+        _obstacleLayoutOptionButton!.Clear();
+        _obstacleLayoutOptionButton.AddItem("None", (int)ObstacleLayoutKind.None);
+        _obstacleLayoutOptionButton.AddItem("Central Disk", (int)ObstacleLayoutKind.CentralDisk);
+        _obstacleLayoutOptionButton.AddItem("Split Bar", (int)ObstacleLayoutKind.SplitBar);
+        _obstacleLayoutOptionButton.AddItem("Twin Blocks", (int)ObstacleLayoutKind.TwinBlocks);
+        _obstacleLayoutOptionButton.Select((int)_runConfiguration.ObstacleLayout);
     }
 
     private void UpdateRendering()

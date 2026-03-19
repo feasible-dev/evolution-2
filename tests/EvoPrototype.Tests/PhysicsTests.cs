@@ -9,6 +9,8 @@ public static class PhysicsTests
     {
         harness.Run("Wall clamp stops outward movement without bounce", TestWallClampStopsOutwardMovementWithoutBounce);
         harness.Run("Circle board clamps outward movement without bounce", TestCircleBoardClampsOutwardMovementWithoutBounce);
+        harness.Run("Central disk obstacle clamps inward movement", TestCentralDiskObstacleClampsInwardMovement);
+        harness.Run("Obstacle-aware sampling stays out of central disk", TestObstacleAwareSamplingStaysOutOfCentralDisk);
         harness.Run("Overlap resolution separates agents by radius", TestOverlapResolutionSeparatesAgentsByRadius);
         harness.Run("Overlap solver resolves dense chains of agents", TestOverlapSolverResolvesDenseChainsOfAgents);
         harness.Run("Brain turns toward open space near a wall", TestBrainTurnsTowardOpenSpaceNearWall);
@@ -92,6 +94,53 @@ public static class PhysicsTests
 
         AssertTrue(agent.Position.X <= 95.01f, "Agent should stay clamped inside the circular boundary.");
         AssertNearlyEqual(0.0f, agent.Velocity.X, 0.01f, "Agent should lose outward velocity on the circular boundary.");
+    }
+
+    private static void TestCentralDiskObstacleClampsInwardMovement()
+    {
+        var simulation = new Simulation(new SimulationSettings
+        {
+            WorldSize = new Vector2(100.0f, 100.0f),
+            AgentCount = 0,
+            AgentRadius = 4.0f,
+            Acceleration = 0.0f,
+            Drag = 0.0f,
+            MaxSpeed = 200.0f,
+            Obstacles = ObstacleFactory.Create(new Vector2(100.0f, 100.0f), ObstacleLayoutKind.CentralDisk)
+        });
+
+        var agent = new Agent
+        {
+            Genome = AgentGenome.Default,
+            PhysicsProfile = PhysicsProfile.Default,
+            Position = new Vector2(65.0f, 50.0f),
+            Velocity = new Vector2(-20.0f, 0.0f),
+            Heading = Mathf.Pi,
+            Radius = 4.0f,
+            Energy = 100.0f,
+            DecisionTimer = 999.0f
+        };
+
+        simulation.WorldState.Agents.Add(agent);
+        simulation.Update(1.0f);
+
+        AssertTrue(agent.Position.X >= 64.0f, "Agent should be clamped outside the central disk obstacle.");
+        AssertNearlyEqual(0.0f, agent.Velocity.X, 0.01f, "Agent should lose inward velocity when hitting an obstacle.");
+    }
+
+    private static void TestObstacleAwareSamplingStaysOutOfCentralDisk()
+    {
+        var worldSize = new Vector2(100.0f, 100.0f);
+        var obstacles = ObstacleFactory.Create(worldSize, ObstacleLayoutKind.CentralDisk);
+        var random = new System.Random(123);
+
+        for (var index = 0; index < 64; index++)
+        {
+            var point = BoardGeometry.RandomPointInside(random, worldSize, BoardShapeKind.Square, obstacles, 4.0f);
+            AssertTrue(
+                BoardGeometry.IsInsidePlayableArea(point, worldSize, BoardShapeKind.Square, obstacles, 4.0f),
+                "Obstacle-aware sampling should stay in playable space.");
+        }
     }
 
     private static void TestOverlapResolutionSeparatesAgentsByRadius()

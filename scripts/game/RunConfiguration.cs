@@ -12,6 +12,8 @@ public sealed class RunConfiguration
 
     public BoardShapeKind BoardShape { get; set; } = BoardShapeKind.Square;
 
+    public ObstacleLayoutKind ObstacleLayout { get; set; } = ObstacleLayoutKind.None;
+
     public Vector2 WorldOrigin { get; set; } = new(320.0f, 104.0f);
 
     public Vector2 ViewportSize { get; set; } = new(2560.0f, 1280.0f);
@@ -71,6 +73,7 @@ public sealed class RunConfiguration
             AgentCount = AgentCount,
             WorldSize = WorldSize,
             BoardShape = BoardShape,
+            ObstacleLayout = ObstacleLayout,
             WorldOrigin = WorldOrigin,
             ViewportSize = ViewportSize,
             AgentRadius = AgentRadius,
@@ -101,6 +104,7 @@ public sealed class RunConfiguration
         {
             WorldSize = WorldSize,
             BoardShape = BoardShape,
+            ObstacleLayout = ObstacleLayout,
             AgentCount = AgentCount,
             AgentRadius = AgentRadius,
             MaxSpeed = MaxSpeed,
@@ -113,7 +117,8 @@ public sealed class RunConfiguration
             LowSpeedReconsiderationSeconds = LowSpeedReconsiderationSeconds,
             NeighborBrakeDistance = NeighborBrakeDistance,
             GenePool = GenePool,
-            GenerationDurationSeconds = GenerationDurationSeconds
+            GenerationDurationSeconds = GenerationDurationSeconds,
+            Obstacles = ObstacleFactory.Create(WorldSize, ObstacleLayout)
         };
     }
 

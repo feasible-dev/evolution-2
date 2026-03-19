@@ -1,4 +1,5 @@
 using Godot;
+using System.Collections.Generic;
 
 namespace EvoPrototype.Core;
 
@@ -7,6 +8,10 @@ public sealed class SimulationSettings
     public Vector2 WorldSize { get; init; } = new(1280.0f, 720.0f);
 
     public BoardShapeKind BoardShape { get; init; } = BoardShapeKind.Square;
+
+    public ObstacleLayoutKind ObstacleLayout { get; init; } = ObstacleLayoutKind.None;
+
+    public IReadOnlyList<BoardObstacle> Obstacles { get; init; } = System.Array.Empty<BoardObstacle>();
 
     public int AgentCount { get; init; } = 200;
 
