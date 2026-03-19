@@ -102,6 +102,10 @@ public static class EvolutionBuildCompiler
                 build.GenePool = build.GenePool with { AllowNeighborCountCondition = true };
                 break;
 
+            case CardEffectKind.EnableHalfSpaceCondition:
+                build.GenePool = build.GenePool with { AllowHalfSpaceCondition = true };
+                break;
+
             case CardEffectKind.EnableTurnBiasAction:
                 build.GenePool = build.GenePool with { AllowTurnBiasAction = true };
                 break;

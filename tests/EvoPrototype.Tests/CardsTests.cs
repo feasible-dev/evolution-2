@@ -35,6 +35,7 @@ public static class CardsTests
         AssertTrue(selectionState.IsActive(CardCatalog.RandomTurn.Id), "Random turn should be active by default in the sandbox starter loadout.");
         AssertTrue(selectionState.IsActive(CardCatalog.TargetRadius.Id), "Target-radius conditions should be active by default in the sandbox starter loadout.");
         AssertTrue(selectionState.IsActive(CardCatalog.CrowdSense.Id), "Crowd-sense conditions should be active by default in the sandbox starter loadout.");
+        AssertTrue(!selectionState.IsActive(CardCatalog.LineSense.Id), "Line-sense conditions can stay optional by default for now.");
     }
 
     private static void TestCardSelectionStateActivatesAndDeactivatesCardsWithoutDuplicates()
@@ -82,6 +83,7 @@ public static class CardsTests
                 AllowTimeCondition: false,
                 AllowDistanceToPointCondition: false,
                 AllowNeighborCountCondition: false,
+                AllowHalfSpaceCondition: false,
                 AllowTurnBiasAction: false,
                 AllowThrottleBiasAction: false,
                 AllowSteerToTargetAction: false,
@@ -175,6 +177,7 @@ public static class CardsTests
                 AllowTimeCondition: false,
                 AllowDistanceToPointCondition: false,
                 AllowNeighborCountCondition: false,
+                AllowHalfSpaceCondition: false,
                 AllowTurnBiasAction: false,
                 AllowThrottleBiasAction: false,
                 AllowSteerToTargetAction: false,
@@ -190,13 +193,15 @@ public static class CardsTests
                 CardCatalog.Brake,
                 CardCatalog.RandomTurn,
                 CardCatalog.TargetRadius,
-                CardCatalog.CrowdSense
+                CardCatalog.CrowdSense,
+                CardCatalog.LineSense
             });
 
         AssertTrue(build.GenePool.AllowBrakeAction, "Brake cards should enable brake actions.");
         AssertTrue(build.GenePool.AllowRandomTurnAction, "Random-turn cards should enable noisy turn actions.");
         AssertTrue(build.GenePool.AllowDistanceToPointCondition, "Target-radius cards should enable distance-to-point conditions.");
         AssertTrue(build.GenePool.AllowNeighborCountCondition, "Crowd-sense cards should enable neighbor-count conditions.");
+        AssertTrue(build.GenePool.AllowHalfSpaceCondition, "Line-sense cards should enable half-space conditions.");
     }
 
     private static void TestMutationCardsCanTargetStructuralMutationPolicy()

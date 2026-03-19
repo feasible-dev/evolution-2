@@ -27,6 +27,7 @@ public static class PhysicsTests
         harness.Run("Gene steer-to-target rule adds world acceleration", TestGeneSteerToTargetRuleAddsWorldAcceleration);
         harness.Run("Distance-to-point gene rule can trigger braking", TestDistanceToPointGeneRuleCanTriggerBraking);
         harness.Run("Neighbor-count gene rule can trigger braking", TestNeighborCountGeneRuleCanTriggerBraking);
+        harness.Run("Half-space gene rule can trigger braking on one side of a line", TestHalfSpaceGeneRuleCanTriggerBraking);
     }
 
     private static void TestWallClampStopsOutwardMovementWithoutBounce()
@@ -705,5 +706,49 @@ public static class PhysicsTests
         var intent = AgentBrain.Decide(agent, observation, settings);
 
         AssertTrue(intent.BrakeWish > 0.5f, "Neighbor-count conditions should be able to trigger braking in crowded local states.");
+    }
+
+    private static void TestHalfSpaceGeneRuleCanTriggerBraking()
+    {
+        var agent = new Agent
+        {
+            Genome = AgentGenome.Default with
+            {
+                BaseThrottle = 0.0f,
+                PreferredSpeedFraction = 0.0f,
+                BaseTurnRate = 0.0f,
+                WanderAmplitude = 0.0f,
+                RandomTurnStrength = 0.0f,
+                RandomThrottleBias = 0.0f,
+                TargetPointWeight = 0.0f,
+                WallAvoidanceWeight = 0.0f,
+                NeighborAvoidanceWeight = 0.0f,
+                Program = new GeneProgram(
+                    new GeneRule(
+                        Enabled: true,
+                        ConditionKind: GeneConditionKind.InsideHalfSpace,
+                        ConditionThreshold: 0.0f,
+                        ActionKind: GeneActionKind.AddBrake,
+                        Scalar: 0.9f,
+                        TargetPointNormalized: new Vector2(0.5f, 0.5f))
+                    {
+                        ConditionPointNormalized = new Vector2(0.5f, 0.5f),
+                        ConditionOrientationNormalized = 0.0f
+                    },
+                    GeneRule.Disabled)
+            },
+            PhysicsProfile = PhysicsProfile.Default,
+            Position = new Vector2(80.0f, 50.0f),
+            Velocity = Vector2.Zero,
+            Heading = 0.0f,
+            Radius = 4.0f,
+            Energy = 100.0f
+        };
+
+        var settings = new SimulationSettings { WorldSize = new Vector2(100.0f, 100.0f) };
+        var observation = new AgentObservation(100.0f, 100.0f, 100.0f, Vector2.Zero, false, 0, 0.0f, false);
+        var intent = AgentBrain.Decide(agent, observation, settings);
+
+        AssertTrue(intent.BrakeWish > 0.5f, "Half-space conditions should trigger when the agent is on the selected side of the line.");
     }
 }

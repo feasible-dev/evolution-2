@@ -50,6 +50,7 @@ public sealed class RunConfiguration
         AllowTimeCondition: false,
         AllowDistanceToPointCondition: false,
         AllowNeighborCountCondition: false,
+        AllowHalfSpaceCondition: false,
         AllowTurnBiasAction: false,
         AllowThrottleBiasAction: false,
         AllowSteerToTargetAction: false,

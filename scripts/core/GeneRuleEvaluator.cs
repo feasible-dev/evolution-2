@@ -70,6 +70,7 @@ public static class GeneRuleEvaluator
             GeneConditionKind.TimeGreaterOrEqual => agent.BrainClock >= rule.ConditionThreshold,
             GeneConditionKind.DistanceToPointLessOrEqual => DistanceConditionMatches(rule, agent, settings.WorldSize),
             GeneConditionKind.NeighborCountGreaterOrEqual => observation.NeighborCountWithinAwareness >= Mathf.RoundToInt(Mathf.Clamp(rule.ConditionThreshold, 1.0f, 12.0f)),
+            GeneConditionKind.InsideHalfSpace => HalfSpaceConditionMatches(rule, agent, settings.WorldSize),
             _ => false
         };
     }
@@ -82,5 +83,15 @@ public static class GeneRuleEvaluator
         var maxDimension = Mathf.Max(Mathf.Min(worldSize.X, worldSize.Y), 1.0f);
         var distanceLimit = Mathf.Clamp(rule.ConditionThreshold, 0.02f, 0.5f) * maxDimension;
         return agent.Position.DistanceTo(targetWorld) <= distanceLimit;
+    }
+
+    private static bool HalfSpaceConditionMatches(GeneRule rule, Agent agent, Vector2 worldSize)
+    {
+        var pointOnLine = new Vector2(
+            rule.ConditionPointNormalized.X * worldSize.X,
+            rule.ConditionPointNormalized.Y * worldSize.Y);
+        var angle = rule.ConditionOrientationNormalized * Mathf.Tau;
+        var normal = Vector2.FromAngle(angle);
+        return (agent.Position - pointOnLine).Dot(normal) >= 0.0f;
     }
 }

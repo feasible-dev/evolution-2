@@ -74,7 +74,8 @@ public static class GeneRuleFactory
         {
             ConditionPointNormalized = new Vector2(
                 GetTargetCoordinateSpec().SampleInitial(random),
-                GetTargetCoordinateSpec().SampleInitial(random))
+                GetTargetCoordinateSpec().SampleInitial(random)),
+            ConditionOrientationNormalized = GetConditionOrientationSpec(conditionKind).SampleInitial(random)
         };
     }
 
@@ -147,6 +148,7 @@ public static class GeneRuleFactory
         }
 
         var conditionPoint = source.ConditionPointNormalized;
+        var conditionOrientation = source.ConditionOrientationNormalized;
         if (conditionKind == GeneConditionKind.DistanceToPointLessOrEqual &&
             (source.ConditionKind != conditionKind || random.NextDouble() < mutationPolicy.ConditionParameterMutationChance))
         {
@@ -163,6 +165,29 @@ public static class GeneRuleFactory
         else
         {
             conditionPoint = new Vector2(0.5f, 0.5f);
+        }
+
+        if (conditionKind == GeneConditionKind.InsideHalfSpace &&
+            (source.ConditionKind != conditionKind || random.NextDouble() < mutationPolicy.ConditionParameterMutationChance))
+        {
+            conditionPoint = new Vector2(
+                GetTargetCoordinateSpec().Mutate(random, source.ConditionPointNormalized.X, mutationStrength),
+                GetTargetCoordinateSpec().Mutate(random, source.ConditionPointNormalized.Y, mutationStrength));
+            conditionOrientation = GetConditionOrientationSpec(conditionKind).Mutate(
+                random,
+                source.ConditionKind == conditionKind ? source.ConditionOrientationNormalized : 0.0f,
+                mutationStrength);
+        }
+        else if (conditionKind == GeneConditionKind.InsideHalfSpace)
+        {
+            conditionPoint = new Vector2(
+                Clamp(source.ConditionPointNormalized.X, 0.0f, 1.0f),
+                Clamp(source.ConditionPointNormalized.Y, 0.0f, 1.0f));
+            conditionOrientation = Clamp(source.ConditionOrientationNormalized, 0.0f, 1.0f);
+        }
+        else
+        {
+            conditionOrientation = 0.0f;
         }
 
         var sourceScalar = source.ActionKind == actionKind
@@ -203,7 +228,8 @@ public static class GeneRuleFactory
             Scalar: scalar,
             TargetPointNormalized: new Vector2(targetX, targetY))
         {
-            ConditionPointNormalized = conditionPoint
+            ConditionPointNormalized = conditionPoint,
+            ConditionOrientationNormalized = conditionOrientation
         };
     }
 
@@ -222,6 +248,11 @@ public static class GeneRuleFactory
         if (genePool.AllowNeighborCountCondition && random.NextDouble() < 0.35d)
         {
             return GeneConditionKind.NeighborCountGreaterOrEqual;
+        }
+
+        if (genePool.AllowHalfSpaceCondition && random.NextDouble() < 0.35d)
+        {
+            return GeneConditionKind.InsideHalfSpace;
         }
 
         return GeneConditionKind.Always;
@@ -268,6 +299,7 @@ public static class GeneRuleFactory
             GeneConditionKind.TimeGreaterOrEqual => genePool.AllowTimeCondition,
             GeneConditionKind.DistanceToPointLessOrEqual => genePool.AllowDistanceToPointCondition,
             GeneConditionKind.NeighborCountGreaterOrEqual => genePool.AllowNeighborCountCondition,
+            GeneConditionKind.InsideHalfSpace => genePool.AllowHalfSpaceCondition,
             _ => false
         };
     }
@@ -303,6 +335,15 @@ public static class GeneRuleFactory
                 InitialBeta: 2.2f,
                 MutationConcentrationMin: 3.0f,
                 MutationConcentrationMax: 24.0f),
+            GeneConditionKind.InsideHalfSpace => new ParameterSpec(
+                MinValue: 0.0f,
+                MaxValue: 1.0f,
+                InitialDistribution: ParameterDistributionKind.Beta,
+                MutationDistribution: ParameterDistributionKind.Beta,
+                InitialAlpha: 2.0f,
+                InitialBeta: 2.0f,
+                MutationConcentrationMin: 3.0f,
+                MutationConcentrationMax: 28.0f),
             _ => new ParameterSpec(0.0f, 0.0f, ParameterDistributionKind.Uniform, ParameterDistributionKind.Uniform)
         };
     }
@@ -399,8 +440,24 @@ public static class GeneRuleFactory
             GeneConditionKind.TimeGreaterOrEqual => generationDurationSeconds * 0.5f,
             GeneConditionKind.DistanceToPointLessOrEqual => 0.18f,
             GeneConditionKind.NeighborCountGreaterOrEqual => 2.0f,
+            GeneConditionKind.InsideHalfSpace => 0.0f,
             _ => 0.0f
         };
+    }
+
+    private static ParameterSpec GetConditionOrientationSpec(GeneConditionKind conditionKind)
+    {
+        return conditionKind == GeneConditionKind.InsideHalfSpace
+            ? new ParameterSpec(
+                MinValue: 0.0f,
+                MaxValue: 1.0f,
+                InitialDistribution: ParameterDistributionKind.Beta,
+                MutationDistribution: ParameterDistributionKind.Beta,
+                InitialAlpha: 2.0f,
+                InitialBeta: 2.0f,
+                MutationConcentrationMin: 3.0f,
+                MutationConcentrationMax: 28.0f)
+            : new ParameterSpec(0.0f, 0.0f, ParameterDistributionKind.Uniform, ParameterDistributionKind.Uniform);
     }
 
     private static ParameterSpec GetTargetCoordinateSpec()

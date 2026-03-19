@@ -8,5 +8,6 @@ public enum GeneConditionKind
     Always,
     TimeGreaterOrEqual,
     DistanceToPointLessOrEqual,
-    NeighborCountGreaterOrEqual
+    NeighborCountGreaterOrEqual,
+    InsideHalfSpace
 }

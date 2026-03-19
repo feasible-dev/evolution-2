@@ -14,6 +14,7 @@ public readonly record struct GeneRule(
     Vector2 TargetPointNormalized)
 {
     public Vector2 ConditionPointNormalized { get; init; } = new Vector2(0.5f, 0.5f);
+    public float ConditionOrientationNormalized { get; init; } = 0.0f;
 
     public static GeneRule Disabled => new(
         Enabled: false,

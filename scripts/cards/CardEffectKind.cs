@@ -15,6 +15,7 @@ public enum CardEffectKind
     IncreaseConditionParameterMutationChance,
     EnableDistanceCondition,
     EnableNeighborCountCondition,
+    EnableHalfSpaceCondition,
     EnableTurnBiasAction,
     EnableThrottleBiasAction,
     EnableBrakeAction,

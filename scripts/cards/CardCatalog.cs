@@ -120,6 +120,13 @@ public static class CardCatalog
         Category: CardCategory.Condition,
         EffectKind: CardEffectKind.EnableNeighborCountCondition);
 
+    public static readonly CardDefinition LineSense = new(
+        Id: "line_sense",
+        Name: "Line Sense",
+        Description: "Allow conditions based on which side of a line an agent occupies.",
+        Category: CardCategory.Condition,
+        EffectKind: CardEffectKind.EnableHalfSpaceCondition);
+
     public static readonly CardDefinition ExtraRuleSlot = new(
         Id: "extra_rule_slot",
         Name: "Extra Rule Slot",
@@ -152,6 +159,7 @@ public static class CardCatalog
         TemporalLogic,
         TargetRadius,
         CrowdSense,
+        LineSense,
         ExtraRuleSlot,
         TargetSteering
     };
