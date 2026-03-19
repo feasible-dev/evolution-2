@@ -8,9 +8,11 @@ public sealed class RunConfiguration
 {
     public int AgentCount { get; set; } = 200;
 
-    public Vector2 WorldSize { get; set; } = new(1280.0f, 720.0f);
+    public Vector2 WorldSize { get; set; } = new(1120.0f, 1120.0f);
 
-    public Vector2 WorldOrigin { get; set; } = new(344.0f, 104.0f);
+    public BoardShapeKind BoardShape { get; set; } = BoardShapeKind.Square;
+
+    public Vector2 WorldOrigin { get; set; } = new(320.0f, 104.0f);
 
     public Vector2 ViewportSize { get; set; } = new(2560.0f, 1280.0f);
 
@@ -68,6 +70,7 @@ public sealed class RunConfiguration
         {
             AgentCount = AgentCount,
             WorldSize = WorldSize,
+            BoardShape = BoardShape,
             WorldOrigin = WorldOrigin,
             ViewportSize = ViewportSize,
             AgentRadius = AgentRadius,
@@ -97,6 +100,7 @@ public sealed class RunConfiguration
         return new SimulationSettings
         {
             WorldSize = WorldSize,
+            BoardShape = BoardShape,
             AgentCount = AgentCount,
             AgentRadius = AgentRadius,
             MaxSpeed = MaxSpeed,

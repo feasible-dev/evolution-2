@@ -47,7 +47,7 @@ public sealed class ReproductionSystem
             {
                 Genome = genome,
                 PhysicsProfile = physicsProfile,
-                Position = RandomPosition(simulationSettings.WorldSize, radius),
+                Position = RandomPosition(simulationSettings, radius),
                 Velocity = Vector2.Zero,
                 Heading = heading,
                 Radius = radius,
@@ -91,7 +91,7 @@ public sealed class ReproductionSystem
             {
                 Genome = genome,
                 PhysicsProfile = physicsProfile,
-                Position = RandomPosition(simulationSettings.WorldSize, radius),
+                Position = RandomPosition(simulationSettings, radius),
                 Velocity = Vector2.Zero,
                 Heading = heading,
                 Radius = radius,
@@ -108,11 +108,9 @@ public sealed class ReproductionSystem
         return population;
     }
 
-    private Vector2 RandomPosition(Vector2 worldSize, float radius)
+    private Vector2 RandomPosition(SimulationSettings simulationSettings, float radius)
     {
-        return new Vector2(
-            NextFloat(radius, worldSize.X - radius),
-            NextFloat(radius, worldSize.Y - radius));
+        return BoardGeometry.RandomPointInside(_random, simulationSettings.WorldSize, simulationSettings.BoardShape, radius);
     }
 
     private float NextFloat(float minValue, float maxValue)

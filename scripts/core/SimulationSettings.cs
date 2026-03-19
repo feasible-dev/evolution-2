@@ -6,6 +6,8 @@ public sealed class SimulationSettings
 {
     public Vector2 WorldSize { get; init; } = new(1280.0f, 720.0f);
 
+    public BoardShapeKind BoardShape { get; init; } = BoardShapeKind.Square;
+
     public int AgentCount { get; init; } = 200;
 
     public float AgentRadius { get; init; } = 4.0f;

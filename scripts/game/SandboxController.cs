@@ -66,6 +66,7 @@ public partial class SandboxController : Node2D
     private Label? _setupHintLabel;
     private Label? _setupSubtitleLabel;
     private Label? _cardsHintLabel;
+    private OptionButton? _boardShapeOptionButton;
     private Button? _setupStartRunButton;
     private Button? _startRunButton;
     private Button? _editZoneButton;
@@ -124,7 +125,7 @@ public partial class SandboxController : Node2D
         _setupOverlay = GetNode<SetupOverlay>("SetupOverlay");
         _setupScreen = GetNode<Control>("CanvasLayer/UiRoot/SetupScreen");
         _topBar = GetNode<Control>("CanvasLayer/UiRoot/TopBar");
-        _bottomPanel = GetNode<Control>("CanvasLayer/UiRoot/BottomPanel");
+        _bottomPanel = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel");
         _rightPanel = GetNode<Control>("CanvasLayer/UiRoot/RightPanel");
         _metricsTitle = GetNode<Control>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/MetricsTitle");
         _metricsSection = GetNode<Control>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics");
@@ -140,7 +141,7 @@ public partial class SandboxController : Node2D
         _evolutionControlsSection = GetNode<Control>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls");
         _physicsTitle = GetNode<Control>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsTitle");
         _physicsControlsSection = GetNode<Control>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls");
-        _generationChart = GetNode<GenerationChart>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/Chart");
+        _generationChart = GetNode<GenerationChart>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel/BottomMargin/BottomStack/Chart");
         _timeValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/TimeValue");
         _generationValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/GenerationValue");
         _lifeValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/LifeValue");
@@ -165,17 +166,19 @@ public partial class SandboxController : Node2D
         _dragSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls/DragEditor");
         _stuckSpeedSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls/StuckSpeedEditor");
         _setupHintLabel = GetNode<Label>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/SetupHint");
+        _boardShapeOptionButton = GetNode<OptionButton>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/BoardShapeSelector");
         _setupSubtitleLabel = GetNode<Label>("CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack/SetupSubtitle");
         _cardsHintLabel = GetNode<Label>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection/CardsHint");
         _setupStartRunButton = GetNode<Button>("CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack/SetupButtonRow/SetupStartRunButton");
         _startRunButton = GetNode<Button>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/StartRunButton");
         _editZoneButton = GetNode<Button>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/EditZoneButton");
         _applyButton = GetNode<Button>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/ApplyButton");
-        _previousMetricButton = GetNode<Button>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/ChartHeader/PreviousMetricButton");
-        _nextMetricButton = GetNode<Button>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/ChartHeader/NextMetricButton");
-        _chartMetricValueLabel = GetNode<Label>("CanvasLayer/UiRoot/BottomPanel/BottomMargin/BottomStack/ChartHeader/MetricValue");
+        _previousMetricButton = GetNode<Button>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel/BottomMargin/BottomStack/ChartHeader/PreviousMetricButton");
+        _nextMetricButton = GetNode<Button>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel/BottomMargin/BottomStack/ChartHeader/NextMetricButton");
+        _chartMetricValueLabel = GetNode<Label>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel/BottomMargin/BottomStack/ChartHeader/MetricValue");
         _setupOverlay.Bind(_runConfiguration);
         _setupOverlay.DefinitionChanged += OnSetupDefinitionChanged;
+        PopulateBoardShapeSelector();
     }
 
     private void ConnectSignals()
@@ -186,6 +189,7 @@ public partial class SandboxController : Node2D
         _applyButton!.Pressed += OnApplyPressed;
         _previousMetricButton!.Pressed += OnPreviousMetricPressed;
         _nextMetricButton!.Pressed += OnNextMetricPressed;
+        _boardShapeOptionButton!.ItemSelected += OnBoardShapeSelected;
     }
 
     private void DisconnectSignals()
@@ -223,6 +227,11 @@ public partial class SandboxController : Node2D
         if (_nextMetricButton is not null)
         {
             _nextMetricButton.Pressed -= OnNextMetricPressed;
+        }
+
+        if (_boardShapeOptionButton is not null)
+        {
+            _boardShapeOptionButton.ItemSelected -= OnBoardShapeSelected;
         }
     }
 
@@ -335,6 +344,7 @@ public partial class SandboxController : Node2D
         _accelerationSpinBox!.Value = _runConfiguration.Acceleration;
         _dragSpinBox!.Value = _runConfiguration.Drag;
         _stuckSpeedSpinBox!.Value = _runConfiguration.StuckSpeedThreshold;
+        _boardShapeOptionButton!.Select((int)_runConfiguration.BoardShape);
     }
 
     private void UpdateHud()
@@ -397,6 +407,20 @@ public partial class SandboxController : Node2D
         EnterSetupPhase();
     }
 
+    private void OnBoardShapeSelected(long index)
+    {
+        _runConfiguration.BoardShape = (BoardShapeKind)index;
+        if (_setupOverlay is not null)
+        {
+            _setupOverlay.QueueRedraw();
+        }
+
+        if (_sandboxRenderer is not null)
+        {
+            _sandboxRenderer.QueueRedraw();
+        }
+    }
+
     private void OnSetupDefinitionChanged(SurvivalZoneDefinition definition)
     {
         _sessionState.SurvivalZoneDefinition = definition;
@@ -434,8 +458,19 @@ public partial class SandboxController : Node2D
         _editZoneButton!.Visible = !inSetup;
         _startRunButton!.Disabled = !inSetup;
         _editZoneButton!.Disabled = inSetup;
+        _boardShapeOptionButton!.Disabled = !inSetup;
         _applyButton!.Disabled = inSetup;
         _applyButton.Visible = !inSetup;
+    }
+
+    private void PopulateBoardShapeSelector()
+    {
+        _boardShapeOptionButton!.Clear();
+        _boardShapeOptionButton.AddItem("Square", (int)BoardShapeKind.Square);
+        _boardShapeOptionButton.AddItem("Circle", (int)BoardShapeKind.Circle);
+        _boardShapeOptionButton.AddItem("Hexagon", (int)BoardShapeKind.Hexagon);
+        _boardShapeOptionButton.AddItem("Octagon", (int)BoardShapeKind.Octagon);
+        _boardShapeOptionButton.Select((int)_runConfiguration.BoardShape);
     }
 
     private void UpdateRendering()

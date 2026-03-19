@@ -1,4 +1,5 @@
 using System;
+using EvoPrototype.Core;
 using EvoPrototype.Evolution;
 using EvoPrototype.Game;
 using Godot;
@@ -85,9 +86,10 @@ public partial class SetupOverlay : Node2D
             }
 
             var worldPosition = ToWorldPosition(mouseMotion.Position);
-            var clampedWorld = new Vector2(
-                Mathf.Clamp(worldPosition.X, 0.0f, _runConfiguration.WorldSize.X),
-                Mathf.Clamp(worldPosition.Y, 0.0f, _runConfiguration.WorldSize.Y));
+            var clampedWorld = BoardGeometry.ClampPoint(
+                worldPosition,
+                _runConfiguration.WorldSize,
+                _runConfiguration.BoardShape);
 
             if (_draggingCenter)
             {
@@ -110,8 +112,9 @@ public partial class SetupOverlay : Node2D
         }
 
         var worldRect = new Rect2(_runConfiguration.WorldOrigin, _runConfiguration.WorldSize);
-        DrawRect(worldRect, new Color(0.08f, 0.10f, 0.12f), filled: true);
-        DrawRect(worldRect, new Color(0.24f, 0.28f, 0.33f), filled: false, width: 2.0f);
+        DrawRect(worldRect, new Color(0.24f, 0.24f, 0.24f), filled: true);
+        DrawBoardSurface();
+        DrawBoardOutline();
 
         if (_definition.Layout != SurvivalZoneLayout.CenterCircle)
         {
@@ -179,9 +182,60 @@ public partial class SetupOverlay : Node2D
 
     private bool IsInsideWorld(Vector2 worldPosition)
     {
-        return worldPosition.X >= 0.0f &&
-               worldPosition.Y >= 0.0f &&
-               worldPosition.X <= _runConfiguration!.WorldSize.X &&
-               worldPosition.Y <= _runConfiguration.WorldSize.Y;
+        return BoardGeometry.ContainsPoint(worldPosition, _runConfiguration!.WorldSize, _runConfiguration.BoardShape);
+    }
+
+    private void DrawBoardSurface()
+    {
+        var square = BoardGeometry.GetBoundingSquare(_runConfiguration!.WorldSize);
+        var fill = new Color(0.08f, 0.10f, 0.12f);
+        var origin = _runConfiguration.WorldOrigin;
+
+        switch (_runConfiguration.BoardShape)
+        {
+            case BoardShapeKind.Square:
+                DrawRect(new Rect2(origin + square.Position, square.Size), fill, filled: true);
+                break;
+            case BoardShapeKind.Circle:
+                DrawCircle(origin + square.GetCenter(), square.Size.X * 0.5f, fill);
+                break;
+            case BoardShapeKind.Hexagon:
+            case BoardShapeKind.Octagon:
+                var polygon = BoardGeometry.GetOutline(_runConfiguration.WorldSize, _runConfiguration.BoardShape);
+                var translated = new Vector2[polygon.Length];
+                for (var index = 0; index < polygon.Length; index++)
+                {
+                    translated[index] = origin + polygon[index];
+                }
+                DrawColoredPolygon(translated, fill);
+                break;
+        }
+    }
+
+    private void DrawBoardOutline()
+    {
+        var square = BoardGeometry.GetBoundingSquare(_runConfiguration!.WorldSize);
+        var outline = new Color(0.24f, 0.28f, 0.33f);
+        var origin = _runConfiguration.WorldOrigin;
+
+        switch (_runConfiguration.BoardShape)
+        {
+            case BoardShapeKind.Square:
+                DrawRect(new Rect2(origin + square.Position, square.Size), outline, filled: false, width: 2.0f);
+                break;
+            case BoardShapeKind.Circle:
+                DrawArc(origin + square.GetCenter(), square.Size.X * 0.5f, 0.0f, Mathf.Tau, 96, outline, 2.0f);
+                break;
+            case BoardShapeKind.Hexagon:
+            case BoardShapeKind.Octagon:
+                var polygon = BoardGeometry.GetOutline(_runConfiguration.WorldSize, _runConfiguration.BoardShape);
+                for (var index = 0; index < polygon.Length; index++)
+                {
+                    var start = origin + polygon[index];
+                    var end = origin + polygon[(index + 1) % polygon.Length];
+                    DrawLine(start, end, outline, 2.0f);
+                }
+                break;
+        }
     }
 }

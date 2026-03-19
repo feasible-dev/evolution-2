@@ -8,6 +8,7 @@ public static class PhysicsTests
     public static void Register(TestHarness harness)
     {
         harness.Run("Wall clamp stops outward movement without bounce", TestWallClampStopsOutwardMovementWithoutBounce);
+        harness.Run("Circle board clamps outward movement without bounce", TestCircleBoardClampsOutwardMovementWithoutBounce);
         harness.Run("Overlap resolution separates agents by radius", TestOverlapResolutionSeparatesAgentsByRadius);
         harness.Run("Overlap solver resolves dense chains of agents", TestOverlapSolverResolvesDenseChainsOfAgents);
         harness.Run("Brain turns toward open space near a wall", TestBrainTurnsTowardOpenSpaceNearWall);
@@ -59,6 +60,38 @@ public static class PhysicsTests
 
         AssertNearlyEqual(95.0f, agent.Position.X, 0.01f, "Agent should stay clamped to the right wall.");
         AssertNearlyEqual(0.0f, agent.Velocity.X, 0.01f, "Agent should lose outward horizontal velocity instead of bouncing.");
+    }
+
+    private static void TestCircleBoardClampsOutwardMovementWithoutBounce()
+    {
+        var simulation = new Simulation(new SimulationSettings
+        {
+            WorldSize = new Vector2(100.0f, 100.0f),
+            BoardShape = BoardShapeKind.Circle,
+            AgentCount = 0,
+            AgentRadius = 5.0f,
+            Acceleration = 0.0f,
+            Drag = 0.0f,
+            MaxSpeed = 200.0f
+        });
+
+        var agent = new Agent
+        {
+            Genome = AgentGenome.Default,
+            PhysicsProfile = PhysicsProfile.Default,
+            Position = new Vector2(94.0f, 50.0f),
+            Velocity = new Vector2(20.0f, 0.0f),
+            Heading = 0.0f,
+            Radius = 5.0f,
+            Energy = 100.0f,
+            DecisionTimer = 999.0f
+        };
+
+        simulation.WorldState.Agents.Add(agent);
+        simulation.Update(1.0f);
+
+        AssertTrue(agent.Position.X <= 95.01f, "Agent should stay clamped inside the circular boundary.");
+        AssertNearlyEqual(0.0f, agent.Velocity.X, 0.01f, "Agent should lose outward velocity on the circular boundary.");
     }
 
     private static void TestOverlapResolutionSeparatesAgentsByRadius()

@@ -85,11 +85,8 @@ public partial class SandboxRenderer : Node2D
         }
 
         var worldRect = new Rect2(_runConfiguration.WorldOrigin, _simulation.WorldState.Size);
-
-        DrawRect(
-            worldRect,
-            new Color(0.08f, 0.1f, 0.12f),
-            filled: true);
+        DrawRect(worldRect, new Color(0.24f, 0.24f, 0.24f), filled: true);
+        DrawBoardSurface();
 
         if (_liveRenderingEnabled)
         {
@@ -104,7 +101,7 @@ public partial class SandboxRenderer : Node2D
             }
         }
 
-        DrawRect(worldRect, new Color(0.24f, 0.28f, 0.33f), filled: false, width: 2.0f);
+        DrawBoardOutline();
 
         foreach (var agent in _simulation.WorldState.Agents)
         {
@@ -185,6 +182,64 @@ public partial class SandboxRenderer : Node2D
                     color,
                     width: 1.0f);
             }
+        }
+    }
+
+    private void DrawBoardSurface()
+    {
+        var shape = _runConfiguration!.BoardShape;
+        var worldSize = _simulation!.WorldState.Size;
+        var origin = _runConfiguration.WorldOrigin;
+        var fill = new Color(0.08f, 0.10f, 0.12f);
+        var square = BoardGeometry.GetBoundingSquare(worldSize);
+
+        switch (shape)
+        {
+            case BoardShapeKind.Square:
+                DrawRect(new Rect2(origin + square.Position, square.Size), fill, filled: true);
+                break;
+            case BoardShapeKind.Circle:
+                DrawCircle(origin + square.GetCenter(), square.Size.X * 0.5f, fill);
+                break;
+            case BoardShapeKind.Hexagon:
+            case BoardShapeKind.Octagon:
+                var polygon = BoardGeometry.GetOutline(worldSize, shape);
+                var translated = new Vector2[polygon.Length];
+                for (var index = 0; index < polygon.Length; index++)
+                {
+                    translated[index] = origin + polygon[index];
+                }
+                DrawColoredPolygon(translated, fill);
+                break;
+        }
+    }
+
+    private void DrawBoardOutline()
+    {
+        var shape = _runConfiguration!.BoardShape;
+        var worldSize = _simulation!.WorldState.Size;
+        var origin = _runConfiguration.WorldOrigin;
+        var outline = new Color(0.24f, 0.28f, 0.33f);
+        var square = BoardGeometry.GetBoundingSquare(worldSize);
+
+        switch (shape)
+        {
+            case BoardShapeKind.Square:
+                DrawRect(new Rect2(origin + square.Position, square.Size), outline, filled: false, width: 2.0f);
+                break;
+            case BoardShapeKind.Circle:
+                DrawArc(origin + square.GetCenter(), square.Size.X * 0.5f, 0.0f, Mathf.Tau, 96, outline, 2.0f);
+                break;
+            case BoardShapeKind.Hexagon:
+            case BoardShapeKind.Octagon:
+                var polygon = BoardGeometry.GetOutline(worldSize, shape);
+                for (var index = 0; index < polygon.Length; index++)
+                {
+                    var start = origin + polygon[index];
+                    var end = origin + polygon[(index + 1) % polygon.Length];
+                    DrawLine(start, end, outline, 2.0f);
+                }
+                break;
         }
     }
 }
