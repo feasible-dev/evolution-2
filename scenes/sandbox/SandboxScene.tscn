@@ -1,13 +1,18 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/SandboxController.cs" id="1"]
 [ext_resource type="Script" path="res://scripts/rendering/SandboxRenderer.cs" id="2"]
+[ext_resource type="Script" path="res://scripts/ui/GenerationChart.cs" id="3"]
+[ext_resource type="Script" path="res://scripts/setup/SetupOverlay.cs" id="4"]
 
 [node name="SandboxController" type="Node2D"]
 script = ExtResource("1")
 
 [node name="SandboxRenderer" type="Node2D" parent="."]
 script = ExtResource("2")
+
+[node name="SetupOverlay" type="Node2D" parent="."]
+script = ExtResource("4")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -19,11 +24,310 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="SetupScreen" type="Control" parent="CanvasLayer/UiRoot"]
+visible = false
+offset_left = 120.0
+offset_top = 96.0
+offset_right = 1240.0
+offset_bottom = 760.0
+
+[node name="SetupMargin" type="MarginContainer" parent="CanvasLayer/UiRoot/SetupScreen"]
+layout_mode = 2
+theme_override_constants/margin_left = 36
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 36
+theme_override_constants/margin_bottom = 30
+
+[node name="SetupStack" type="VBoxContainer" parent="CanvasLayer/UiRoot/SetupScreen/SetupMargin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="GameTitle" type="Label" parent="CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "Evolution"
+
+[node name="SetupSubtitle" type="Label" parent="CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Phase 1: Design the survival zone"
+
+[node name="SetupDescription" type="Label" parent="CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack"]
+layout_mode = 2
+autowrap_mode = 3
+text = "Place the first safe zone before the creatures start evolving. Drag inside the circle to move it. Drag the bright handle on its rim to resize it."
+
+[node name="SetupSpacer" type="Control" parent="CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack"]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+
+[node name="SetupCallout" type="Label" parent="CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Build the zone, then launch the first run."
+
+[node name="SetupButtonRow" type="HBoxContainer" parent="CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SetupStartRunButton" type="Button" parent="CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack/SetupButtonRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(180, 44)
+text = "Start Run"
+
+[node name="SetupSecondaryHint" type="Label" parent="CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack/SetupButtonRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+vertical_alignment = 1
+text = "The circle can be moved and resized directly on the board."
+
 [node name="TopBar" type="PanelContainer" parent="CanvasLayer/UiRoot"]
-offset_left = 32.0
+offset_left = 320.0
 offset_top = 24.0
-offset_right = 1328.0
+offset_right = 1440.0
 offset_bottom = 88.0
+
+[node name="LeftPanel" type="PanelContainer" parent="CanvasLayer/UiRoot"]
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 288.0
+offset_bottom = 1256.0
+
+[node name="PanelMargin" type="MarginContainer" parent="CanvasLayer/UiRoot/LeftPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="PanelStack" type="VBoxContainer" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="MetricsTitle" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+text = "Live Metrics"
+
+[node name="Metrics" type="GridContainer" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+columns = 2
+
+[node name="PhaseLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics"]
+layout_mode = 2
+text = "Phase"
+
+[node name="PhaseValue" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics"]
+layout_mode = 2
+text = "Running"
+
+[node name="SurvivorLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics"]
+layout_mode = 2
+text = "Last survivors"
+
+[node name="SurvivorValue" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics"]
+layout_mode = 2
+text = "0"
+
+[node name="EnergyLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics"]
+layout_mode = 2
+text = "Avg energy"
+
+[node name="EnergyValue" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics"]
+layout_mode = 2
+text = "0.0"
+
+[node name="SpeedLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics"]
+layout_mode = 2
+text = "Avg speed"
+
+[node name="SpeedValue" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics"]
+layout_mode = 2
+text = "0.0"
+
+[node name="EvolutionTitle" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+text = "Development Controls"
+
+[node name="EvolutionControls" type="GridContainer" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+columns = 2
+
+[node name="AgentCountLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Agent count"
+
+[node name="AgentCountEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 10.0
+max_value = 1000.0
+step = 10.0
+value = 200.0
+
+[node name="LifeDurationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Life duration"
+
+[node name="LifeDurationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 1.0
+max_value = 120.0
+step = 1.0
+value = 10.0
+
+[node name="SelectionDurationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Selection time"
+
+[node name="SelectionDurationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.1
+max_value = 10.0
+step = 0.1
+value = 1.5
+
+[node name="TimeScaleLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Speed"
+
+[node name="TimeScaleEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.1
+max_value = 50.0
+step = 0.1
+value = 8.0
+
+[node name="MutationStrengthLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Mutation strength"
+
+[node name="MutationStrengthEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.01
+max_value = 1.0
+step = 0.01
+value = 0.03
+
+[node name="ProgramMutationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Program mutation"
+
+[node name="ProgramMutationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.1
+
+[node name="AddRuleMutationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Add rule"
+
+[node name="AddRuleMutationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.04
+
+[node name="RemoveRuleMutationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Remove rule"
+
+[node name="RemoveRuleMutationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.03
+
+[node name="ConditionKindMutationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Condition kind"
+
+[node name="ConditionKindMutationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.08
+
+[node name="ActionKindMutationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Action kind"
+
+[node name="ActionKindMutationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.1
+
+[node name="ConditionParameterMutationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Condition params"
+
+[node name="ConditionParameterMutationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.28
+
+[node name="ActionParameterMutationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+text = "Action params"
+
+[node name="ActionParameterMutationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 1.0
+step = 0.01
+value = 0.32
+
+[node name="PhysicsTitle" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+text = "Physics Controls"
+
+[node name="PhysicsControls" type="GridContainer" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+columns = 2
+
+[node name="AccelerationLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls"]
+layout_mode = 2
+text = "Acceleration"
+
+[node name="AccelerationEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls"]
+layout_mode = 2
+min_value = 20.0
+max_value = 600.0
+step = 5.0
+value = 220.0
+
+[node name="DragLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls"]
+layout_mode = 2
+text = "Drag"
+
+[node name="DragEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 2.0
+step = 0.01
+value = 0.08
+
+[node name="StuckSpeedLabel" type="Label" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls"]
+layout_mode = 2
+text = "Stuck speed"
+
+[node name="StuckSpeedEditor" type="SpinBox" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls"]
+layout_mode = 2
+min_value = 0.0
+max_value = 40.0
+step = 0.5
+value = 8.0
+
+[node name="ApplyButton" type="Button" parent="CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+text = "Apply + Reset"
 
 [node name="StatsRow" type="HBoxContainer" parent="CanvasLayer/UiRoot/TopBar"]
 layout_mode = 2
@@ -59,13 +363,13 @@ text = "Life"
 
 [node name="LifeValue" type="Label" parent="CanvasLayer/UiRoot/TopBar/StatsRow"]
 layout_mode = 2
-text = "0.0/20.0s"
+text = "0.0/10.0s"
 
 [node name="RightPanel" type="PanelContainer" parent="CanvasLayer/UiRoot"]
-offset_left = 1360.0
+offset_left = 1480.0
 offset_top = 24.0
-offset_right = 1648.0
-offset_bottom = 824.0
+offset_right = 2536.0
+offset_bottom = 1256.0
 
 [node name="PanelMargin" type="MarginContainer" parent="CanvasLayer/UiRoot/RightPanel"]
 layout_mode = 2
@@ -79,10 +383,12 @@ layout_mode = 2
 theme_override_constants/separation = 18
 
 [node name="MetricsTitle" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+visible = false
 layout_mode = 2
 text = "Live Metrics"
 
 [node name="Metrics" type="GridContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+visible = false
 layout_mode = 2
 columns = 2
 
@@ -119,10 +425,135 @@ layout_mode = 2
 text = "0.0"
 
 [node name="EvolutionTitle" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+visible = false
 layout_mode = 2
-text = "Evolution Controls"
+text = "Development Controls"
+
+[node name="SetupTitle" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Evolution"
+
+[node name="SetupControls" type="VBoxContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="BoardShapeLabel" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls"]
+layout_mode = 2
+text = "Board shape"
+
+[node name="BoardShapeSelector" type="OptionButton" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls"]
+layout_mode = 2
+
+[node name="ObstacleLayoutLabel" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls"]
+layout_mode = 2
+text = "Obstacle layout"
+
+[node name="ObstacleLayoutSelector" type="OptionButton" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls"]
+layout_mode = 2
+
+[node name="SetupHint" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls"]
+layout_mode = 2
+autowrap_mode = 3
+text = "Phase 1: Design the survival zone.\n\nDrag inside the circle to move it. Drag the bright edge handle to resize it.\n\nWhen the zone feels right, start the first run."
+
+[node name="StartRunButton" type="Button" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls"]
+layout_mode = 2
+text = "Start Run"
+
+[node name="EditZoneButton" type="Button" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls"]
+layout_mode = 2
+disabled = true
+text = "Edit Survival Zone"
+
+[node name="CardsTitle" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+text = "Cards"
+
+[node name="CardsSection" type="VBoxContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="CardsHint" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection"]
+layout_mode = 2
+autowrap_mode = 3
+text = "Choose which genetic possibilities are available before the run starts."
+
+[node name="ActiveCardsBlock" type="VBoxContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ActiveCardsLabel" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection/ActiveCardsBlock"]
+layout_mode = 2
+text = "Active cards"
+
+[node name="ActiveCardsList" type="GridContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection/ActiveCardsBlock"]
+layout_mode = 2
+columns = 4
+theme_override_constants/separation = 8
+
+[node name="AvailableCardsBlock" type="VBoxContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AvailableCardsLabel" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection/AvailableCardsBlock"]
+layout_mode = 2
+text = "Available cards"
+
+[node name="AvailableCardsList" type="GridContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection/AvailableCardsBlock"]
+layout_mode = 2
+columns = 4
+theme_override_constants/separation = 8
+
+[node name="BottomPanel" type="PanelContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+custom_minimum_size = Vector2(0, 332)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BottomMargin" type="MarginContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="BottomStack" type="VBoxContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel/BottomMargin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ChartHeader" type="HBoxContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel/BottomMargin/BottomStack"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ChartTitle" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel/BottomMargin/BottomStack/ChartHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Evolution Graph"
+
+[node name="PreviousMetricButton" type="Button" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel/BottomMargin/BottomStack/ChartHeader"]
+layout_mode = 2
+text = "<"
+
+[node name="MetricValue" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel/BottomMargin/BottomStack/ChartHeader"]
+layout_mode = 2
+custom_minimum_size = Vector2(240, 0)
+horizontal_alignment = 1
+text = "Deaths / generation"
+
+[node name="NextMetricButton" type="Button" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel/BottomMargin/BottomStack/ChartHeader"]
+layout_mode = 2
+text = ">"
+
+[node name="Chart" type="Control" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel/BottomMargin/BottomStack"]
+custom_minimum_size = Vector2(0, 272)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("3")
 
 [node name="EvolutionControls" type="GridContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+visible = false
 layout_mode = 2
 columns = 2
 
@@ -146,7 +577,7 @@ layout_mode = 2
 min_value = 1.0
 max_value = 120.0
 step = 1.0
-value = 20.0
+value = 10.0
 
 [node name="SelectionDurationLabel" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls"]
 layout_mode = 2
@@ -168,7 +599,7 @@ layout_mode = 2
 min_value = 0.1
 max_value = 50.0
 step = 0.1
-value = 1.0
+value = 8.0
 
 [node name="MutationStrengthLabel" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls"]
 layout_mode = 2
@@ -179,24 +610,15 @@ layout_mode = 2
 min_value = 0.01
 max_value = 1.0
 step = 0.01
-value = 0.12
-
-[node name="BandThicknessLabel" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls"]
-layout_mode = 2
-text = "Band thickness"
-
-[node name="BandThicknessEditor" type="SpinBox" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls"]
-layout_mode = 2
-min_value = 8.0
-max_value = 240.0
-step = 4.0
-value = 64.0
+value = 0.03
 
 [node name="PhysicsTitle" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+visible = false
 layout_mode = 2
 text = "Physics Controls"
 
 [node name="PhysicsControls" type="GridContainer" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+visible = false
 layout_mode = 2
 columns = 2
 
@@ -220,7 +642,7 @@ layout_mode = 2
 min_value = 0.0
 max_value = 2.0
 step = 0.01
-value = 0.35
+value = 0.08
 
 [node name="StuckSpeedLabel" type="Label" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/PhysicsControls"]
 layout_mode = 2
@@ -234,5 +656,6 @@ step = 0.5
 value = 8.0
 
 [node name="ApplyButton" type="Button" parent="CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack"]
+visible = false
 layout_mode = 2
 text = "Apply + Reset"

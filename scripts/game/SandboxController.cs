@@ -1,7 +1,12 @@
 using System.Collections.Generic;
+using EvoPrototype.Analytics;
+using EvoPrototype.Cards;
 using EvoPrototype.Core;
 using EvoPrototype.Evolution;
+using EvoPrototype.Gameplay;
 using EvoPrototype.Rendering;
+using EvoPrototype.Setup;
+using EvoPrototype.Ui;
 using Godot;
 
 namespace EvoPrototype.Game;
@@ -10,10 +15,31 @@ public partial class SandboxController : Node2D
 {
     private const float MaxSimulationStepSeconds = 1.0f / 30.0f;
     private readonly RunConfiguration _runConfiguration = new();
+    private readonly GameSessionState _sessionState = new();
     private Simulation? _simulation;
     private EvolutionCycleController? _evolutionCycleController;
-    private IReadOnlyList<SurvivalRegion>? _survivalRegions;
+    private IReadOnlyList<ISurvivalZone>? _survivalZones;
     private SandboxRenderer? _sandboxRenderer;
+    private SetupOverlay? _setupOverlay;
+    private GenerationChart? _generationChart;
+    private Control? _setupScreen;
+    private Control? _topBar;
+    private Control? _bottomPanel;
+    private Control? _rightPanel;
+    private Control? _metricsTitle;
+    private Control? _metricsSection;
+    private Control? _evolutionTitle;
+    private Control? _setupTitle;
+    private Control? _setupControlsSection;
+    private Control? _cardsTitle;
+    private Control? _cardsSection;
+    private Control? _activeCardsBlock;
+    private GridContainer? _activeCardsList;
+    private Control? _availableCardsBlock;
+    private GridContainer? _availableCardsList;
+    private Control? _evolutionControlsSection;
+    private Control? _physicsTitle;
+    private Control? _physicsControlsSection;
     private Label? _timeValueLabel;
     private Label? _generationValueLabel;
     private Label? _lifeValueLabel;
@@ -27,11 +53,32 @@ public partial class SandboxController : Node2D
     private SpinBox? _selectionDurationSpinBox;
     private SpinBox? _timeScaleSpinBox;
     private SpinBox? _mutationStrengthSpinBox;
-    private SpinBox? _bandThicknessSpinBox;
+    private SpinBox? _programMutationSpinBox;
+    private SpinBox? _addRuleMutationSpinBox;
+    private SpinBox? _removeRuleMutationSpinBox;
+    private SpinBox? _conditionKindMutationSpinBox;
+    private SpinBox? _actionKindMutationSpinBox;
+    private SpinBox? _conditionParameterMutationSpinBox;
+    private SpinBox? _actionParameterMutationSpinBox;
     private SpinBox? _accelerationSpinBox;
     private SpinBox? _dragSpinBox;
     private SpinBox? _stuckSpeedSpinBox;
+    private Label? _setupHintLabel;
+    private Label? _setupSubtitleLabel;
+    private Label? _cardsHintLabel;
+    private OptionButton? _boardShapeOptionButton;
+    private OptionButton? _obstacleLayoutOptionButton;
+    private Button? _setupStartRunButton;
+    private Button? _startRunButton;
+    private Button? _editZoneButton;
     private Button? _applyButton;
+    private Button? _previousMetricButton;
+    private Button? _nextMetricButton;
+    private Label? _chartMetricValueLabel;
+    private RunHistory _runHistory = new();
+    private RunConfiguration? _activeRunConfiguration;
+    private RunConfiguration? _pendingRunConfiguration;
+    private int _chartMetricIndex;
     private float _elapsedTimeSeconds;
 
     /// <summary>
@@ -39,41 +86,28 @@ public partial class SandboxController : Node2D
     /// </summary>
     public override void _Ready()
     {
-        _sandboxRenderer = GetNode<SandboxRenderer>("SandboxRenderer");
-        _timeValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/TimeValue");
-        _generationValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/GenerationValue");
-        _lifeValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/LifeValue");
-        _agentValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/AgentValue");
-        _survivorValueLabel = GetNode<Label>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/Metrics/SurvivorValue");
-        _phaseValueLabel = GetNode<Label>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/Metrics/PhaseValue");
-        _energyValueLabel = GetNode<Label>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/Metrics/EnergyValue");
-        _speedValueLabel = GetNode<Label>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/Metrics/SpeedValue");
-        _agentCountSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls/AgentCountEditor");
-        _lifeDurationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls/LifeDurationEditor");
-        _selectionDurationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls/SelectionDurationEditor");
-        _timeScaleSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls/TimeScaleEditor");
-        _mutationStrengthSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls/MutationStrengthEditor");
-        _bandThicknessSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/EvolutionControls/BandThicknessEditor");
-        _accelerationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/PhysicsControls/AccelerationEditor");
-        _dragSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/PhysicsControls/DragEditor");
-        _stuckSpeedSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/PhysicsControls/StuckSpeedEditor");
-        _applyButton = GetNode<Button>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/ApplyButton");
-        _applyButton.Pressed += OnApplyPressed;
+        BindUiNodes();
+        ConnectSignals();
         SyncEditorsFromConfiguration();
         ApplyWindowSize();
-        ResetSimulation();
+        _sessionState.SurvivalZoneDefinition = _runConfiguration.SurvivalZoneDefinition;
+        RefreshCardsUi();
+        EnterSetupPhase();
     }
 
     public override void _ExitTree()
     {
-        if (_applyButton is not null)
-        {
-            _applyButton.Pressed -= OnApplyPressed;
-        }
+        DisconnectSignals();
     }
 
     public override void _Process(double delta)
     {
+        if (_sessionState.CurrentPhase == GamePhase.Setup)
+        {
+            UpdateHud();
+            return;
+        }
+
         if (_simulation is null || _sandboxRenderer is null || _evolutionCycleController is null)
         {
             return;
@@ -81,31 +115,199 @@ public partial class SandboxController : Node2D
 
         var scaledDelta = (float)delta * _runConfiguration.TimeScale;
         _elapsedTimeSeconds += scaledDelta;
-        StepSimulation(scaledDelta);
-
-        _sandboxRenderer.SetSelectionState(
-            _evolutionCycleController.SelectedSurvivors,
-            _evolutionCycleController.Phase == EvolutionPhase.Selection,
-            _evolutionCycleController.SelectionProgress);
-        _sandboxRenderer.QueueRedraw();
+        StepSimulation(scaledDelta, MaxSimulationStepSeconds);
+        UpdateRendering();
         UpdateHud();
+    }
+
+    private void BindUiNodes()
+    {
+        _sandboxRenderer = GetNode<SandboxRenderer>("SandboxRenderer");
+        _setupOverlay = GetNode<SetupOverlay>("SetupOverlay");
+        _setupScreen = GetNode<Control>("CanvasLayer/UiRoot/SetupScreen");
+        _topBar = GetNode<Control>("CanvasLayer/UiRoot/TopBar");
+        _bottomPanel = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel");
+        _rightPanel = GetNode<Control>("CanvasLayer/UiRoot/RightPanel");
+        _metricsTitle = GetNode<Control>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/MetricsTitle");
+        _metricsSection = GetNode<Control>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics");
+        _evolutionTitle = GetNode<Control>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionTitle");
+        _setupTitle = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupTitle");
+        _setupControlsSection = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls");
+        _cardsTitle = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsTitle");
+        _cardsSection = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection");
+        _activeCardsBlock = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection/ActiveCardsBlock");
+        _activeCardsList = GetNode<GridContainer>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection/ActiveCardsBlock/ActiveCardsList");
+        _availableCardsBlock = GetNode<Control>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection/AvailableCardsBlock");
+        _availableCardsList = GetNode<GridContainer>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection/AvailableCardsBlock/AvailableCardsList");
+        _evolutionControlsSection = GetNode<Control>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls");
+        _physicsTitle = GetNode<Control>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsTitle");
+        _physicsControlsSection = GetNode<Control>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls");
+        _generationChart = GetNode<GenerationChart>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel/BottomMargin/BottomStack/Chart");
+        _timeValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/TimeValue");
+        _generationValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/GenerationValue");
+        _lifeValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/LifeValue");
+        _agentValueLabel = GetNode<Label>("CanvasLayer/UiRoot/TopBar/StatsRow/AgentValue");
+        _survivorValueLabel = GetNode<Label>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics/SurvivorValue");
+        _phaseValueLabel = GetNode<Label>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics/PhaseValue");
+        _energyValueLabel = GetNode<Label>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics/EnergyValue");
+        _speedValueLabel = GetNode<Label>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/Metrics/SpeedValue");
+        _agentCountSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/AgentCountEditor");
+        _lifeDurationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/LifeDurationEditor");
+        _selectionDurationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/SelectionDurationEditor");
+        _timeScaleSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/TimeScaleEditor");
+        _mutationStrengthSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/MutationStrengthEditor");
+        _programMutationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/ProgramMutationEditor");
+        _addRuleMutationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/AddRuleMutationEditor");
+        _removeRuleMutationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/RemoveRuleMutationEditor");
+        _conditionKindMutationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/ConditionKindMutationEditor");
+        _actionKindMutationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/ActionKindMutationEditor");
+        _conditionParameterMutationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/ConditionParameterMutationEditor");
+        _actionParameterMutationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/EvolutionControls/ActionParameterMutationEditor");
+        _accelerationSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls/AccelerationEditor");
+        _dragSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls/DragEditor");
+        _stuckSpeedSpinBox = GetNode<SpinBox>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/PhysicsControls/StuckSpeedEditor");
+        _setupHintLabel = GetNode<Label>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/SetupHint");
+        _boardShapeOptionButton = GetNode<OptionButton>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/BoardShapeSelector");
+        _obstacleLayoutOptionButton = GetNode<OptionButton>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/ObstacleLayoutSelector");
+        _setupSubtitleLabel = GetNode<Label>("CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack/SetupSubtitle");
+        _cardsHintLabel = GetNode<Label>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/CardsSection/CardsHint");
+        _setupStartRunButton = GetNode<Button>("CanvasLayer/UiRoot/SetupScreen/SetupMargin/SetupStack/SetupButtonRow/SetupStartRunButton");
+        _startRunButton = GetNode<Button>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/StartRunButton");
+        _editZoneButton = GetNode<Button>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/SetupControls/EditZoneButton");
+        _applyButton = GetNode<Button>("CanvasLayer/UiRoot/LeftPanel/PanelMargin/PanelStack/ApplyButton");
+        _previousMetricButton = GetNode<Button>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel/BottomMargin/BottomStack/ChartHeader/PreviousMetricButton");
+        _nextMetricButton = GetNode<Button>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel/BottomMargin/BottomStack/ChartHeader/NextMetricButton");
+        _chartMetricValueLabel = GetNode<Label>("CanvasLayer/UiRoot/RightPanel/PanelMargin/PanelStack/BottomPanel/BottomMargin/BottomStack/ChartHeader/MetricValue");
+        _setupOverlay.Bind(_runConfiguration);
+        _setupOverlay.DefinitionChanged += OnSetupDefinitionChanged;
+        PopulateBoardShapeSelector();
+        PopulateObstacleLayoutSelector();
+    }
+
+    private void ConnectSignals()
+    {
+        _setupStartRunButton!.Pressed += OnStartRunPressed;
+        _startRunButton!.Pressed += OnStartRunPressed;
+        _editZoneButton!.Pressed += OnEditZonePressed;
+        _applyButton!.Pressed += OnApplyPressed;
+        _previousMetricButton!.Pressed += OnPreviousMetricPressed;
+        _nextMetricButton!.Pressed += OnNextMetricPressed;
+        _boardShapeOptionButton!.ItemSelected += OnBoardShapeSelected;
+        _obstacleLayoutOptionButton!.ItemSelected += OnObstacleLayoutSelected;
+    }
+
+    private void DisconnectSignals()
+    {
+        if (_setupOverlay is not null)
+        {
+            _setupOverlay.DefinitionChanged -= OnSetupDefinitionChanged;
+        }
+
+        if (_startRunButton is not null)
+        {
+            _startRunButton.Pressed -= OnStartRunPressed;
+        }
+
+        if (_setupStartRunButton is not null)
+        {
+            _setupStartRunButton.Pressed -= OnStartRunPressed;
+        }
+
+        if (_editZoneButton is not null)
+        {
+            _editZoneButton.Pressed -= OnEditZonePressed;
+        }
+
+        if (_applyButton is not null)
+        {
+            _applyButton.Pressed -= OnApplyPressed;
+        }
+
+        if (_previousMetricButton is not null)
+        {
+            _previousMetricButton.Pressed -= OnPreviousMetricPressed;
+        }
+
+        if (_nextMetricButton is not null)
+        {
+            _nextMetricButton.Pressed -= OnNextMetricPressed;
+        }
+
+        if (_boardShapeOptionButton is not null)
+        {
+            _boardShapeOptionButton.ItemSelected -= OnBoardShapeSelected;
+        }
+
+        if (_obstacleLayoutOptionButton is not null)
+        {
+            _obstacleLayoutOptionButton.ItemSelected -= OnObstacleLayoutSelected;
+        }
     }
 
     private void ResetSimulation()
     {
         _elapsedTimeSeconds = 0.0f;
-        _simulation = new Simulation(_runConfiguration.ToSimulationSettings());
+        _pendingRunConfiguration = null;
+        var runtimeConfiguration = _activeRunConfiguration ?? _runConfiguration;
+        _simulation = new Simulation(runtimeConfiguration.ToSimulationSettings());
         _simulation.InitializeAgents();
-        _survivalRegions = BuildSurvivalRegions(_runConfiguration.ToEvolutionSettings());
+        _survivalZones = SurvivalRegionFactory.CreateZones(
+            runtimeConfiguration.WorldSize,
+            runtimeConfiguration.SurvivalZoneDefinition);
         _evolutionCycleController = new EvolutionCycleController(
-            new RegionSurvivalRule(_survivalRegions),
+            new RegionSurvivalRule(_survivalZones),
             new ReproductionSystem(new MutationSystem(), seed: null),
-            _runConfiguration.ToEvolutionSettings(),
-            _runConfiguration.ToSimulationSettings());
-        _sandboxRenderer!.Bind(_simulation, _runConfiguration);
-        _sandboxRenderer.SetSurvivalRegions(_survivalRegions);
+            runtimeConfiguration.ToEvolutionSettings(),
+            runtimeConfiguration.ToSimulationSettings());
+        _sandboxRenderer!.Bind(_simulation, runtimeConfiguration);
+        _sandboxRenderer.SetSurvivalZones(_survivalZones);
         _sandboxRenderer.SetSelectionState(System.Array.Empty<Agent>(), selectionActive: false, selectionProgress: 0.0f);
+        _sandboxRenderer.SetLiveRenderingEnabled(true);
+        _sandboxRenderer.CaptureFrame();
+        _runHistory = new RunHistory();
+        _generationChart!.Bind(_runHistory);
+        UpdateChartMetric();
         UpdateHud();
+    }
+
+    private void EnterSetupPhase()
+    {
+        _sessionState.CurrentPhase = GamePhase.Setup;
+        _activeRunConfiguration = null;
+        _pendingRunConfiguration = null;
+        _simulation = null;
+        _evolutionCycleController = null;
+        _survivalZones = SurvivalRegionFactory.CreateZones(_runConfiguration.WorldSize, _sessionState.SurvivalZoneDefinition);
+        _setupOverlay!.SetDefinition(_sessionState.SurvivalZoneDefinition);
+        _setupOverlay.SetEditingEnabled(true);
+        _setupOverlay.Visible = true;
+        _sandboxRenderer!.Visible = false;
+        RefreshCardsUi();
+        UpdateSetupUi();
+        UpdateHud();
+    }
+
+    private void StartRun()
+    {
+        _runConfiguration.SurvivalZoneDefinition = _sessionState.SurvivalZoneDefinition;
+        _activeRunConfiguration = BuildRuntimeConfigurationFromCards();
+        ResetSimulation();
+        _sessionState.CurrentPhase = GamePhase.Running;
+        _setupOverlay!.SetEditingEnabled(false);
+        _setupOverlay.Visible = false;
+        _sandboxRenderer!.Visible = true;
+        RefreshCardsUi();
+        UpdateSetupUi();
+        UpdateRendering();
+        UpdateHud();
+    }
+
+    private RunConfiguration BuildRuntimeConfigurationFromCards()
+    {
+        var build = EvolutionBuildCompiler.CreateFromBase(
+            _runConfiguration,
+            _sessionState.CardSelectionState.ActiveCards);
+        return EvolutionBuildCompiler.Compile(_runConfiguration, build);
     }
 
     private void OnApplyPressed()
@@ -115,11 +317,23 @@ public partial class SandboxController : Node2D
         _runConfiguration.SelectionDurationSeconds = (float)_selectionDurationSpinBox!.Value;
         _runConfiguration.TimeScale = (float)_timeScaleSpinBox!.Value;
         _runConfiguration.MutationStrength = (float)_mutationStrengthSpinBox!.Value;
-        _runConfiguration.SurvivalBandThickness = (float)_bandThicknessSpinBox!.Value;
+        _runConfiguration.MutationPolicy = _runConfiguration.MutationPolicy with
+        {
+            ProgramMutationChance = (float)_programMutationSpinBox!.Value,
+            AddRuleChance = (float)_addRuleMutationSpinBox!.Value,
+            RemoveRuleChance = (float)_removeRuleMutationSpinBox!.Value,
+            ConditionKindMutationChance = (float)_conditionKindMutationSpinBox!.Value,
+            ActionKindMutationChance = (float)_actionKindMutationSpinBox!.Value,
+            ConditionParameterMutationChance = (float)_conditionParameterMutationSpinBox!.Value,
+            ActionParameterMutationChance = (float)_actionParameterMutationSpinBox!.Value
+        };
         _runConfiguration.Acceleration = (float)_accelerationSpinBox!.Value;
         _runConfiguration.Drag = (float)_dragSpinBox!.Value;
         _runConfiguration.StuckSpeedThreshold = (float)_stuckSpeedSpinBox!.Value;
-        ResetSimulation();
+        if (_sessionState.CurrentPhase == GamePhase.Running)
+        {
+            StartRun();
+        }
     }
 
     private void SyncEditorsFromConfiguration()
@@ -129,40 +343,181 @@ public partial class SandboxController : Node2D
         _selectionDurationSpinBox!.Value = _runConfiguration.SelectionDurationSeconds;
         _timeScaleSpinBox!.Value = _runConfiguration.TimeScale;
         _mutationStrengthSpinBox!.Value = _runConfiguration.MutationStrength;
-        _bandThicknessSpinBox!.Value = _runConfiguration.SurvivalBandThickness;
+        _programMutationSpinBox!.Value = _runConfiguration.MutationPolicy.ProgramMutationChance;
+        _addRuleMutationSpinBox!.Value = _runConfiguration.MutationPolicy.AddRuleChance;
+        _removeRuleMutationSpinBox!.Value = _runConfiguration.MutationPolicy.RemoveRuleChance;
+        _conditionKindMutationSpinBox!.Value = _runConfiguration.MutationPolicy.ConditionKindMutationChance;
+        _actionKindMutationSpinBox!.Value = _runConfiguration.MutationPolicy.ActionKindMutationChance;
+        _conditionParameterMutationSpinBox!.Value = _runConfiguration.MutationPolicy.ConditionParameterMutationChance;
+        _actionParameterMutationSpinBox!.Value = _runConfiguration.MutationPolicy.ActionParameterMutationChance;
         _accelerationSpinBox!.Value = _runConfiguration.Acceleration;
         _dragSpinBox!.Value = _runConfiguration.Drag;
         _stuckSpeedSpinBox!.Value = _runConfiguration.StuckSpeedThreshold;
+        _boardShapeOptionButton!.Select((int)_runConfiguration.BoardShape);
+        _obstacleLayoutOptionButton!.Select((int)_runConfiguration.ObstacleLayout);
     }
 
     private void UpdateHud()
     {
+        if (_sessionState.CurrentPhase == GamePhase.Setup)
+        {
+            _timeValueLabel!.Text = "0.0s";
+            _generationValueLabel!.Text = "-";
+            _lifeValueLabel!.Text = "Setup";
+            _agentValueLabel!.Text = _runConfiguration.AgentCount.ToString();
+            _survivorValueLabel!.Text = "-";
+            _phaseValueLabel!.Text = "Setup";
+            _energyValueLabel!.Text = "-";
+            _speedValueLabel!.Text = "-";
+            return;
+        }
+
         if (_simulation is null || _evolutionCycleController is null)
         {
             return;
         }
-
-        var agentCount = _simulation.WorldState.Agents.Count;
-        var totalEnergy = 0.0f;
-        var totalSpeed = 0.0f;
-
-        foreach (var agent in _simulation.WorldState.Agents)
-        {
-            totalEnergy += agent.Energy;
-            totalSpeed += agent.Velocity.Length();
-        }
-
-        var averageEnergy = agentCount > 0 ? totalEnergy / agentCount : 0.0f;
-        var averageSpeed = agentCount > 0 ? totalSpeed / agentCount : 0.0f;
+        var liveMetrics = LiveMetrics.FromAgents(_simulation.WorldState.Agents);
 
         _timeValueLabel!.Text = $"{_elapsedTimeSeconds:0.0}s";
         _generationValueLabel!.Text = _evolutionCycleController.GenerationIndex.ToString();
         _lifeValueLabel!.Text = $"{_evolutionCycleController.GenerationElapsedSeconds:0.0}/{_runConfiguration.GenerationDurationSeconds:0.0}s";
-        _agentValueLabel!.Text = agentCount.ToString();
+        _agentValueLabel!.Text = liveMetrics.AgentCount.ToString();
         _survivorValueLabel!.Text = _evolutionCycleController.LastSurvivorCount.ToString();
         _phaseValueLabel!.Text = _evolutionCycleController.Phase.ToString();
-        _energyValueLabel!.Text = $"{averageEnergy:0.0}";
-        _speedValueLabel!.Text = $"{averageSpeed:0.0}";
+        _energyValueLabel!.Text = $"{liveMetrics.AverageEnergy:0.0}";
+        _speedValueLabel!.Text = $"{liveMetrics.AverageSpeed:0.0}";
+    }
+
+    private void UpdateChartMetric()
+    {
+        var metricId = MetricCatalog.GetByIndex(_chartMetricIndex);
+        _chartMetricValueLabel!.Text = MetricCatalog.GetLabel(metricId);
+        _generationChart!.SetMetric(metricId);
+    }
+
+    private void OnPreviousMetricPressed()
+    {
+        _chartMetricIndex -= 1;
+        UpdateChartMetric();
+    }
+
+    private void OnNextMetricPressed()
+    {
+        _chartMetricIndex += 1;
+        UpdateChartMetric();
+    }
+
+    private void OnStartRunPressed()
+    {
+        StartRun();
+    }
+
+    private void OnEditZonePressed()
+    {
+        EnterSetupPhase();
+    }
+
+    private void OnBoardShapeSelected(long index)
+    {
+        _runConfiguration.BoardShape = (BoardShapeKind)index;
+        if (_setupOverlay is not null)
+        {
+            _setupOverlay.QueueRedraw();
+        }
+
+        if (_sandboxRenderer is not null)
+        {
+            _sandboxRenderer.QueueRedraw();
+        }
+    }
+
+    private void OnObstacleLayoutSelected(long index)
+    {
+        _runConfiguration.ObstacleLayout = (ObstacleLayoutKind)index;
+        if (_setupOverlay is not null)
+        {
+            _setupOverlay.QueueRedraw();
+        }
+
+        if (_sandboxRenderer is not null)
+        {
+            _sandboxRenderer.QueueRedraw();
+        }
+    }
+
+    private void OnSetupDefinitionChanged(SurvivalZoneDefinition definition)
+    {
+        _sessionState.SurvivalZoneDefinition = definition;
+        _survivalZones = SurvivalRegionFactory.CreateZones(_runConfiguration.WorldSize, definition);
+    }
+
+    private void UpdateSetupUi()
+    {
+        var inSetup = _sessionState.CurrentPhase == GamePhase.Setup;
+        _setupScreen!.Visible = false;
+        _topBar!.Visible = !inSetup;
+        _bottomPanel!.Visible = !inSetup;
+        _rightPanel!.Visible = true;
+        _metricsTitle!.Visible = !inSetup;
+        _metricsSection!.Visible = !inSetup;
+        _evolutionTitle!.Visible = !inSetup;
+        _setupTitle!.Visible = inSetup;
+        _setupControlsSection!.Visible = true;
+        _cardsTitle!.Visible = true;
+        _cardsSection!.Visible = true;
+        _activeCardsBlock!.Visible = true;
+        _availableCardsBlock!.Visible = true;
+        _evolutionControlsSection!.Visible = !inSetup;
+        _physicsTitle!.Visible = !inSetup;
+        _physicsControlsSection!.Visible = !inSetup;
+        _setupHintLabel!.Text = inSetup
+            ? "Drag inside the circle to move it. Drag its edge handle to resize it, then start the run."
+            : "The current run uses the configured survival zone. Return to setup to edit it.";
+        _cardsHintLabel!.Text = inSetup
+            ? "Choose which genetic possibilities are available before the run starts."
+            : "Card changes made during the run apply to the next generation.";
+        _setupSubtitleLabel!.Text = "Phase 1: Design the survival zone";
+        _setupStartRunButton!.Visible = false;
+        _startRunButton!.Visible = inSetup;
+        _editZoneButton!.Visible = !inSetup;
+        _startRunButton!.Disabled = !inSetup;
+        _editZoneButton!.Disabled = inSetup;
+        _boardShapeOptionButton!.Disabled = !inSetup;
+        _obstacleLayoutOptionButton!.Disabled = !inSetup;
+        _applyButton!.Disabled = inSetup;
+        _applyButton.Visible = !inSetup;
+    }
+
+    private void PopulateBoardShapeSelector()
+    {
+        _boardShapeOptionButton!.Clear();
+        _boardShapeOptionButton.AddItem("Square", (int)BoardShapeKind.Square);
+        _boardShapeOptionButton.AddItem("Circle", (int)BoardShapeKind.Circle);
+        _boardShapeOptionButton.AddItem("Hexagon", (int)BoardShapeKind.Hexagon);
+        _boardShapeOptionButton.AddItem("Octagon", (int)BoardShapeKind.Octagon);
+        _boardShapeOptionButton.Select((int)_runConfiguration.BoardShape);
+    }
+
+    private void PopulateObstacleLayoutSelector()
+    {
+        _obstacleLayoutOptionButton!.Clear();
+        _obstacleLayoutOptionButton.AddItem("None", (int)ObstacleLayoutKind.None);
+        _obstacleLayoutOptionButton.AddItem("Central Disk", (int)ObstacleLayoutKind.CentralDisk);
+        _obstacleLayoutOptionButton.AddItem("Split Bar", (int)ObstacleLayoutKind.SplitBar);
+        _obstacleLayoutOptionButton.AddItem("Twin Blocks", (int)ObstacleLayoutKind.TwinBlocks);
+        _obstacleLayoutOptionButton.Select((int)_runConfiguration.ObstacleLayout);
+    }
+
+    private void UpdateRendering()
+    {
+        var showSelectionOverlay = _evolutionCycleController!.Phase == EvolutionPhase.Selection;
+        _sandboxRenderer!.SetSelectionState(
+            _evolutionCycleController!.SelectedSurvivors,
+            showSelectionOverlay,
+            _evolutionCycleController.SelectionProgress);
+        _sandboxRenderer.SetLiveRenderingEnabled(true);
+        _sandboxRenderer.CaptureFrame();
+        _sandboxRenderer.QueueRedraw();
     }
 
     private void ApplyWindowSize()
@@ -172,19 +527,22 @@ public partial class SandboxController : Node2D
             Mathf.RoundToInt(_runConfiguration.ViewportSize.Y)));
     }
 
-    private void StepSimulation(float scaledDelta)
+    private bool StepSimulation(float scaledDelta, float maxStepSeconds)
     {
         if (_simulation is null || _evolutionCycleController is null)
         {
-            return;
+            return false;
         }
 
         var remaining = scaledDelta;
         var safetyCounter = 0;
+        var shouldRefreshRendering = false;
 
         while (remaining > 0.0f && safetyCounter < 120)
         {
-            var step = Mathf.Min(remaining, MaxSimulationStepSeconds);
+            var step = Mathf.Min(remaining, maxStepSeconds);
+            var phaseBeforeUpdate = _evolutionCycleController.Phase;
+            var generationBeforeUpdate = _evolutionCycleController.GenerationIndex;
 
             if (_evolutionCycleController.Phase == EvolutionPhase.Running)
             {
@@ -196,22 +554,183 @@ public partial class SandboxController : Node2D
                 _simulation.ResolvePopulationLayout();
             }
 
+            if (phaseBeforeUpdate == EvolutionPhase.Running &&
+                _evolutionCycleController.Phase == EvolutionPhase.Selection)
+            {
+                ApplyPendingRunConfiguration();
+                var snapshot = StatisticsCollector.Capture(
+                    _evolutionCycleController.GenerationIndex,
+                    _simulation.WorldState.Agents,
+                    _evolutionCycleController.SelectedSurvivors);
+                _runHistory.Add(snapshot);
+                _generationChart!.QueueRedraw();
+                shouldRefreshRendering = true;
+            }
+
+            if (_evolutionCycleController.GenerationIndex != generationBeforeUpdate)
+            {
+                shouldRefreshRendering = true;
+            }
+
             remaining -= step;
             safetyCounter += 1;
         }
+
+        return shouldRefreshRendering;
     }
 
-    private IReadOnlyList<SurvivalRegion> BuildSurvivalRegions(EvolutionSettings evolutionSettings)
+    private void ApplyPendingRunConfiguration()
     {
-        var thickness = evolutionSettings.SurvivalBandThickness;
-        var worldSize = _runConfiguration.WorldSize;
-
-        return new[]
+        if (_pendingRunConfiguration is null || _simulation is null || _evolutionCycleController is null)
         {
-            new SurvivalRegion(new Rect2(0.0f, 0.0f, thickness, worldSize.Y)),
-            new SurvivalRegion(new Rect2(worldSize.X - thickness, 0.0f, thickness, worldSize.Y)),
-            new SurvivalRegion(new Rect2(0.0f, 0.0f, worldSize.X, thickness)),
-            new SurvivalRegion(new Rect2(0.0f, worldSize.Y - thickness, worldSize.X, thickness))
-        };
+            return;
+        }
+
+        _activeRunConfiguration = _pendingRunConfiguration;
+        _pendingRunConfiguration = null;
+
+        var simulationSettings = _activeRunConfiguration.ToSimulationSettings();
+        var evolutionSettings = _activeRunConfiguration.ToEvolutionSettings();
+        _simulation.UpdateSettings(simulationSettings);
+        _evolutionCycleController.UpdateSettings(evolutionSettings, simulationSettings);
     }
+
+    private void RefreshCardsUi()
+    {
+        RebuildCardList(_activeCardsList!, _sessionState.CardSelectionState.ActiveCards, activeList: true);
+        RebuildCardList(_availableCardsList!, _sessionState.CardSelectionState.AvailableCards, activeList: false);
+    }
+
+    private void RebuildCardList(GridContainer container, IReadOnlyList<CardDefinition> cards, bool activeList)
+    {
+        foreach (var child in container.GetChildren())
+        {
+            container.RemoveChild(child);
+            child.QueueFree();
+        }
+
+        if (cards.Count == 0)
+        {
+            var emptyLabel = new Label
+            {
+                Text = activeList ? "No active cards yet." : "No cards available."
+            };
+            emptyLabel.Modulate = new Color(0.68f, 0.72f, 0.78f);
+            container.AddChild(emptyLabel);
+            return;
+        }
+
+        foreach (var card in cards)
+        {
+            container.AddChild(BuildCardEntry(card, activeList));
+        }
+    }
+
+    private Control BuildCardEntry(CardDefinition card, bool activeList)
+    {
+        var panel = new PanelContainer
+        {
+            CustomMinimumSize = new Vector2(0.0f, 124.0f)
+        };
+        panel.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+
+        var (backgroundColor, borderColor, contentColor) = GetCardVisuals(card.Category, activeList);
+        var styleBox = new StyleBoxFlat
+        {
+            BgColor = backgroundColor,
+            BorderColor = borderColor,
+            BorderWidthLeft = 2,
+            BorderWidthTop = 2,
+            BorderWidthRight = 2,
+            BorderWidthBottom = 2,
+            CornerRadiusTopLeft = 8,
+            CornerRadiusTopRight = 8,
+            CornerRadiusBottomRight = 8,
+            CornerRadiusBottomLeft = 8
+        };
+        panel.AddThemeStyleboxOverride("panel", styleBox);
+
+        var margin = new MarginContainer();
+        margin.AddThemeConstantOverride("margin_left", 10);
+        margin.AddThemeConstantOverride("margin_top", 8);
+        margin.AddThemeConstantOverride("margin_right", 10);
+        margin.AddThemeConstantOverride("margin_bottom", 8);
+        panel.AddChild(margin);
+
+        var stack = new VBoxContainer();
+        stack.AddThemeConstantOverride("separation", 6);
+        margin.AddChild(stack);
+
+        var title = new Label
+        {
+            Text = card.Name,
+            AutowrapMode = TextServer.AutowrapMode.WordSmart
+        };
+        title.AddThemeFontSizeOverride("font_size", 14);
+        title.Modulate = contentColor;
+        stack.AddChild(title);
+
+        var description = new Label
+        {
+            Text = card.Description,
+            AutowrapMode = TextServer.AutowrapMode.WordSmart
+        };
+        description.AddThemeFontSizeOverride("font_size", 11);
+        description.Modulate = contentColor with { A = activeList ? 0.92f : 0.72f };
+        description.SizeFlagsVertical = Control.SizeFlags.ExpandFill;
+        stack.AddChild(description);
+
+        var button = new Button
+        {
+            Text = activeList ? "Remove" : "Add"
+        };
+        button.CustomMinimumSize = new Vector2(0.0f, 30.0f);
+        button.Pressed += () =>
+        {
+            if (activeList)
+            {
+                _sessionState.CardSelectionState.TryDeactivate(card.Id);
+            }
+            else
+            {
+                _sessionState.CardSelectionState.TryActivate(card.Id);
+            }
+
+            if (_sessionState.CurrentPhase == GamePhase.Running)
+            {
+                _pendingRunConfiguration = BuildRuntimeConfigurationFromCards();
+            }
+
+            RefreshCardsUi();
+        };
+        stack.AddChild(button);
+
+        return panel;
+    }
+
+    private static (Color Background, Color Border, Color Content) GetCardVisuals(CardCategory category, bool active)
+    {
+        var baseColor = category switch
+        {
+            CardCategory.Condition => new Color(0.18f, 0.48f, 0.34f),
+            CardCategory.Action => new Color(0.22f, 0.36f, 0.66f),
+            CardCategory.Program => new Color(0.52f, 0.34f, 0.18f),
+            CardCategory.Mutation => new Color(0.56f, 0.18f, 0.44f),
+            CardCategory.Budget => new Color(0.52f, 0.48f, 0.16f),
+            _ => new Color(0.30f, 0.30f, 0.34f)
+        };
+
+        var background = active
+            ? baseColor.Lerp(Colors.White, 0.12f) with { A = 0.92f }
+            : baseColor.Darkened(0.42f) with { A = 0.68f };
+        var border = active
+            ? baseColor.Lerp(Colors.White, 0.28f)
+            : baseColor.Darkened(0.12f);
+        var content = active
+            ? new Color(0.96f, 0.97f, 0.99f)
+            : new Color(0.78f, 0.81f, 0.86f);
+
+        return (background, border, content);
+    }
+
 }

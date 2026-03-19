@@ -18,9 +18,14 @@ public sealed class Simulation
         _random = seed.HasValue ? new Random(seed.Value) : new Random();
     }
 
-    public SimulationSettings Settings { get; }
+    public SimulationSettings Settings { get; private set; }
 
     public WorldState WorldState { get; }
+
+    public void UpdateSettings(SimulationSettings settings)
+    {
+        Settings = settings;
+    }
 
     /// <summary>
     /// Creates a fresh population using randomized genomes and physical profiles.
@@ -56,13 +61,12 @@ public sealed class Simulation
     private Agent CreateRandomAgent()
     {
         var radius = Settings.AgentRadius;
-        var position = new Vector2(
-            NextFloat(radius, Settings.WorldSize.X - radius),
-            NextFloat(radius, Settings.WorldSize.Y - radius));
+        var position = BoardGeometry.RandomPointInside(_random, Settings.WorldSize, Settings.BoardShape, Settings.Obstacles, radius);
 
         var heading = NextFloat(0.0f, Mathf.Tau);
         var genome = new AgentGenome(
             BaseThrottle: NextFloat(0.55f, 1.0f),
+            PreferredSpeedFraction: NextFloat(0.20f, 1.0f),
             BaseTurnRate: NextFloat(-1.6f, 1.6f),
             WallAvoidanceWeight: NextFloat(0.4f, 1.8f),
             NeighborAvoidanceWeight: NextFloat(0.2f, 1.2f),
@@ -70,7 +74,12 @@ public sealed class Simulation
             DecisionIntervalJitterSeconds: NextFloat(0.03f, 0.12f),
             WanderAmplitude: NextFloat(0.3f, 0.9f),
             WanderFrequency: NextFloat(0.6f, 2.4f),
-            StuckTurnBias: NextFloat(1.6f, 3.2f));
+            StuckTurnBias: NextFloat(1.6f, 3.2f),
+            RandomTurnStrength: NextFloat(0.0f, 1.0f),
+            RandomThrottleBias: NextFloat(-0.3f, 0.3f),
+            TargetPointNormalized: new Vector2(NextFloat(0.0f, 1.0f), NextFloat(0.0f, 1.0f)),
+            TargetPointWeight: NextFloat(0.0f, 1.6f),
+            Program: GeneRuleFactory.CreateRandomProgram(_random, Settings.GenePool, Settings.GenerationDurationSeconds));
         var physicsProfile = PhysicsProfile.Default with
         {
             Mass = NextFloat(0.8f, 1.4f),
@@ -100,6 +109,8 @@ public sealed class Simulation
             TimeBelowSpeedThreshold = 0.0f,
             IsTouchingWall = false,
             BrainClock = NextFloat(0.0f, Mathf.Tau),
+            DecisionTurnNoise = NextFloat(-1.0f, 1.0f),
+            DecisionThrottleNoise = NextFloat(-1.0f, 1.0f),
             Color = Color.FromHsv(NextFloat(0.0f, 1.0f), 0.65f, 0.95f)
         };
     }
@@ -125,6 +136,8 @@ public sealed class Simulation
         }
 
         var observation = BuildObservation(agent);
+        agent.DecisionTurnNoise = NextFloat(-1.0f, 1.0f);
+        agent.DecisionThrottleNoise = NextFloat(-1.0f, 1.0f);
         agent.CurrentIntent = AgentBrain.Decide(agent, observation, Settings);
         agent.DecisionTimer = NextDecisionDelay(agent.Genome);
         agent.TimeSinceLastDecision = 0.0f;
@@ -137,6 +150,7 @@ public sealed class Simulation
 
         var nearestNeighborDistance = float.MaxValue;
         var nearestNeighborLocalOffset = Vector2.Zero;
+        var neighborCountWithinAwareness = 0;
 
         foreach (var otherAgent in WorldState.Agents)
         {
@@ -147,6 +161,10 @@ public sealed class Simulation
 
             var offset = otherAgent.Position - agent.Position;
             var distance = offset.Length();
+            if (distance < Settings.NeighborAwarenessDistance)
+            {
+                neighborCountWithinAwareness += 1;
+            }
             if (distance < nearestNeighborDistance)
             {
                 nearestNeighborDistance = distance;
@@ -160,6 +178,7 @@ public sealed class Simulation
             RightWallDistance: DistanceToBoundary(agent.Position, right),
             NearestNeighborLocalOffset: nearestNeighborLocalOffset,
             HasNeighbor: nearestNeighborDistance < float.MaxValue,
+            NeighborCountWithinAwareness: neighborCountWithinAwareness,
             Speed: agent.Velocity.Length(),
             IsTouchingWall: agent.IsTouchingWall);
     }
@@ -202,8 +221,10 @@ public sealed class Simulation
         agent.Energy = Mathf.Clamp(agent.Energy - (agent.PhysicsProfile.IdleEnergyDrainPerSecond * delta), 0.0f, agent.PhysicsProfile.MaxEnergy);
 
         var nextPosition = agent.Position + (agent.Velocity * delta);
-        agent.Position = ClampToWorld(nextPosition, agent.Radius);
-        ClampVelocityAgainstWalls(agent);
+        var clampedPosition = BoardGeometry.ClampPoint(nextPosition, Settings.WorldSize, Settings.BoardShape, Settings.Obstacles, agent.Radius);
+        var hitBoundary = clampedPosition.DistanceSquaredTo(nextPosition) > 0.0001f;
+        agent.Position = clampedPosition;
+        ClampVelocityAgainstWalls(agent, hitBoundary);
     }
 
     private Vector2 ResolveWorldAcceleration(Agent agent, float delta)
@@ -290,55 +311,30 @@ public sealed class Simulation
         return turnRate * scale;
     }
 
-    private Vector2 ClampToWorld(Vector2 position, float radius)
+    private void ClampVelocityAgainstWalls(Agent agent, bool hitBoundary)
     {
-        return new Vector2(
-            Mathf.Clamp(position.X, radius, Settings.WorldSize.X - radius),
-            Mathf.Clamp(position.Y, radius, Settings.WorldSize.Y - radius));
-    }
-
-    private void ClampVelocityAgainstWalls(Agent agent)
-    {
-        var leftLimit = agent.Radius;
-        var rightLimit = Settings.WorldSize.X - agent.Radius;
-        var topLimit = agent.Radius;
-        var bottomLimit = Settings.WorldSize.Y - agent.Radius;
-        var isTouchingWall = false;
-
-        if (agent.Position.X <= leftLimit && agent.Velocity.X < 0.0f)
+        if (hitBoundary &&
+            BoardGeometry.TryGetObstacleBoundaryNormal(agent.Position, Settings.Obstacles, agent.Radius + 0.5f, out var obstacleNormal))
         {
-            agent.Velocity = new Vector2(0.0f, agent.Velocity.Y);
-            isTouchingWall = true;
+            var inwardSpeed = agent.Velocity.Dot(obstacleNormal);
+            if (inwardSpeed < 0.0f)
+            {
+                agent.Velocity -= obstacleNormal * inwardSpeed;
+            }
+        }
+        else
+        {
+            var boundaryNormal = BoardGeometry.GetBoundaryNormal(agent.Position, Settings.WorldSize, Settings.BoardShape);
+            var outwardSpeed = agent.Velocity.Dot(boundaryNormal);
+            if (hitBoundary && outwardSpeed > 0.0f)
+            {
+                agent.Velocity -= boundaryNormal * outwardSpeed;
+            }
         }
 
-        if (agent.Position.X >= rightLimit && agent.Velocity.X > 0.0f)
-        {
-            agent.Velocity = new Vector2(0.0f, agent.Velocity.Y);
-            isTouchingWall = true;
-        }
-
-        if (agent.Position.Y <= topLimit && agent.Velocity.Y < 0.0f)
-        {
-            agent.Velocity = new Vector2(agent.Velocity.X, 0.0f);
-            isTouchingWall = true;
-        }
-
-        if (agent.Position.Y >= bottomLimit && agent.Velocity.Y > 0.0f)
-        {
-            agent.Velocity = new Vector2(agent.Velocity.X, 0.0f);
-            isTouchingWall = true;
-        }
-
-        if (!isTouchingWall)
-        {
-            isTouchingWall =
-                agent.Position.X <= leftLimit ||
-                agent.Position.X >= rightLimit ||
-                agent.Position.Y <= topLimit ||
-                agent.Position.Y >= bottomLimit;
-        }
-
-        agent.IsTouchingWall = isTouchingWall;
+        agent.IsTouchingWall =
+            hitBoundary ||
+            !BoardGeometry.IsInsidePlayableArea(agent.Position, Settings.WorldSize, Settings.BoardShape, Settings.Obstacles, agent.Radius + 0.5f);
     }
 
     private void ResolveOverlaps()
@@ -377,8 +373,8 @@ public sealed class Simulation
                     var penetration = minimumDistance - distance;
                     var correction = normal * (penetration * 0.5f);
 
-                    firstAgent.Position = ClampToWorld(firstAgent.Position - correction, firstAgent.Radius);
-                    secondAgent.Position = ClampToWorld(secondAgent.Position + correction, secondAgent.Radius);
+                    firstAgent.Position = BoardGeometry.ClampPoint(firstAgent.Position - correction, Settings.WorldSize, Settings.BoardShape, Settings.Obstacles, firstAgent.Radius);
+                    secondAgent.Position = BoardGeometry.ClampPoint(secondAgent.Position + correction, Settings.WorldSize, Settings.BoardShape, Settings.Obstacles, secondAgent.Radius);
                 }
             }
         }
@@ -386,35 +382,7 @@ public sealed class Simulation
 
     private float DistanceToBoundary(Vector2 origin, Vector2 direction)
     {
-        const float epsilon = 0.0001f;
-        var normalizedDirection = direction.Normalized();
-        var minDistance = float.MaxValue;
-
-        if (Mathf.Abs(normalizedDirection.X) > epsilon)
-        {
-            var distanceToVertical = normalizedDirection.X > 0.0f
-                ? (Settings.WorldSize.X - origin.X) / normalizedDirection.X
-                : (0.0f - origin.X) / normalizedDirection.X;
-
-            if (distanceToVertical >= 0.0f)
-            {
-                minDistance = Mathf.Min(minDistance, distanceToVertical);
-            }
-        }
-
-        if (Mathf.Abs(normalizedDirection.Y) > epsilon)
-        {
-            var distanceToHorizontal = normalizedDirection.Y > 0.0f
-                ? (Settings.WorldSize.Y - origin.Y) / normalizedDirection.Y
-                : (0.0f - origin.Y) / normalizedDirection.Y;
-
-            if (distanceToHorizontal >= 0.0f)
-            {
-                minDistance = Mathf.Min(minDistance, distanceToHorizontal);
-            }
-        }
-
-        return minDistance == float.MaxValue ? 0.0f : minDistance;
+        return BoardGeometry.DistanceToBoundary(origin, direction, Settings.WorldSize, Settings.BoardShape, Settings.Obstacles);
     }
 
     private static Vector2 HeadingToVector(float heading)

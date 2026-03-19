@@ -26,6 +26,10 @@ public sealed class Agent
 
     public float BrainClock { get; set; }
 
+    public float DecisionTurnNoise { get; set; }
+
+    public float DecisionThrottleNoise { get; set; }
+
     public required PhysicsProfile PhysicsProfile { get; init; }
 
     public AgentIntent CurrentIntent { get; set; } = AgentIntent.Neutral;

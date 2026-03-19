@@ -8,5 +8,6 @@ public readonly record struct AgentObservation(
     float RightWallDistance,
     Vector2 NearestNeighborLocalOffset,
     bool HasNeighbor,
+    int NeighborCountWithinAwareness,
     float Speed,
     bool IsTouchingWall);

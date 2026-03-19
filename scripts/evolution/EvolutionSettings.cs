@@ -10,5 +10,7 @@ public sealed class EvolutionSettings
 
     public float MutationStrength { get; init; } = 0.12f;
 
-    public float SurvivalBandThickness { get; init; } = 64.0f;
+    public MutationPolicy MutationPolicy { get; init; } = MutationPolicy.Default;
+
+    public SurvivalZoneDefinition SurvivalZoneDefinition { get; init; } = SurvivalZoneDefinition.Default;
 }

@@ -8,11 +8,15 @@ public sealed class RunConfiguration
 {
     public int AgentCount { get; set; } = 200;
 
-    public Vector2 WorldSize { get; set; } = new(1280.0f, 720.0f);
+    public Vector2 WorldSize { get; set; } = new(1120.0f, 1120.0f);
 
-    public Vector2 WorldOrigin { get; set; } = new(32.0f, 104.0f);
+    public BoardShapeKind BoardShape { get; set; } = BoardShapeKind.Square;
 
-    public Vector2 ViewportSize { get; set; } = new(1680.0f, 900.0f);
+    public ObstacleLayoutKind ObstacleLayout { get; set; } = ObstacleLayoutKind.None;
+
+    public Vector2 WorldOrigin { get; set; } = new(320.0f, 104.0f);
+
+    public Vector2 ViewportSize { get; set; } = new(2560.0f, 1280.0f);
 
     public float AgentRadius { get; set; } = 4.0f;
 
@@ -20,7 +24,7 @@ public sealed class RunConfiguration
 
     public float Acceleration { get; set; } = 220.0f;
 
-    public float Drag { get; set; } = 0.35f;
+    public float Drag { get; set; } = 0.08f;
 
     public float WallAvoidanceDistance { get; set; } = 60.0f;
 
@@ -34,21 +38,73 @@ public sealed class RunConfiguration
 
     public float NeighborBrakeDistance { get; set; } = 18.0f;
 
-    public float GenerationDurationSeconds { get; set; } = 20.0f;
+    public float GenerationDurationSeconds { get; set; } = 10.0f;
 
     public float SelectionDurationSeconds { get; set; } = 1.5f;
 
-    public float TimeScale { get; set; } = 1.0f;
+    public float TimeScale { get; set; } = 8.0f;
 
-    public float SurvivalBandThickness { get; set; } = 64.0f;
+    public float MutationStrength { get; set; } = 0.03f;
 
-    public float MutationStrength { get; set; } = 0.12f;
+    public MutationPolicy MutationPolicy { get; set; } = MutationPolicy.Default;
+
+    public SurvivalZoneDefinition SurvivalZoneDefinition { get; set; } = SurvivalZoneDefinition.Default;
+
+    public GenePoolDefinition GenePool { get; set; } = new(
+        AllowTimeCondition: false,
+        AllowDistanceToPointCondition: false,
+        AllowNeighborCountCondition: false,
+        AllowHalfSpaceCondition: false,
+        AllowTurnBiasAction: false,
+        AllowThrottleBiasAction: false,
+        AllowSteerToTargetAction: false,
+        AllowBrakeAction: false,
+        AllowRandomTurnAction: false,
+        MaxRulesPerAgent: 1);
+
+    public int TrailPointCount { get; set; } = 10;
+
+    public float TrailAlpha { get; set; } = 0.0f;
+
+    public RunConfiguration Clone()
+    {
+        return new RunConfiguration
+        {
+            AgentCount = AgentCount,
+            WorldSize = WorldSize,
+            BoardShape = BoardShape,
+            ObstacleLayout = ObstacleLayout,
+            WorldOrigin = WorldOrigin,
+            ViewportSize = ViewportSize,
+            AgentRadius = AgentRadius,
+            MaxSpeed = MaxSpeed,
+            Acceleration = Acceleration,
+            Drag = Drag,
+            WallAvoidanceDistance = WallAvoidanceDistance,
+            NeighborAwarenessDistance = NeighborAwarenessDistance,
+            StuckSpeedThreshold = StuckSpeedThreshold,
+            MinimumDecisionIntervalSeconds = MinimumDecisionIntervalSeconds,
+            LowSpeedReconsiderationSeconds = LowSpeedReconsiderationSeconds,
+            NeighborBrakeDistance = NeighborBrakeDistance,
+            GenerationDurationSeconds = GenerationDurationSeconds,
+            SelectionDurationSeconds = SelectionDurationSeconds,
+            TimeScale = TimeScale,
+            MutationStrength = MutationStrength,
+            MutationPolicy = MutationPolicy,
+            SurvivalZoneDefinition = SurvivalZoneDefinition,
+            GenePool = GenePool,
+            TrailPointCount = TrailPointCount,
+            TrailAlpha = TrailAlpha
+        };
+    }
 
     public SimulationSettings ToSimulationSettings()
     {
         return new SimulationSettings
         {
             WorldSize = WorldSize,
+            BoardShape = BoardShape,
+            ObstacleLayout = ObstacleLayout,
             AgentCount = AgentCount,
             AgentRadius = AgentRadius,
             MaxSpeed = MaxSpeed,
@@ -59,7 +115,10 @@ public sealed class RunConfiguration
             StuckSpeedThreshold = StuckSpeedThreshold,
             MinimumDecisionIntervalSeconds = MinimumDecisionIntervalSeconds,
             LowSpeedReconsiderationSeconds = LowSpeedReconsiderationSeconds,
-            NeighborBrakeDistance = NeighborBrakeDistance
+            NeighborBrakeDistance = NeighborBrakeDistance,
+            GenePool = GenePool,
+            GenerationDurationSeconds = GenerationDurationSeconds,
+            Obstacles = ObstacleFactory.Create(WorldSize, ObstacleLayout)
         };
     }
 
@@ -71,7 +130,8 @@ public sealed class RunConfiguration
             SelectionDurationSeconds = SelectionDurationSeconds,
             TargetPopulationSize = AgentCount,
             MutationStrength = MutationStrength,
-            SurvivalBandThickness = SurvivalBandThickness
+            MutationPolicy = MutationPolicy,
+            SurvivalZoneDefinition = SurvivalZoneDefinition
         };
     }
 }
