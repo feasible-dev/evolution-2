@@ -8,5 +8,7 @@ public enum GeneActionKind
     None,
     AddTurnBias,
     AddThrottleBias,
-    SteerToTarget
+    SteerToTarget,
+    AddBrake,
+    AddRandomTurn
 }

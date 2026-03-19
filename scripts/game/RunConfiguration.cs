@@ -48,9 +48,13 @@ public sealed class RunConfiguration
 
     public GenePoolDefinition GenePool { get; set; } = new(
         AllowTimeCondition: false,
+        AllowDistanceToPointCondition: false,
+        AllowNeighborCountCondition: false,
         AllowTurnBiasAction: false,
         AllowThrottleBiasAction: false,
         AllowSteerToTargetAction: false,
+        AllowBrakeAction: false,
+        AllowRandomTurnAction: false,
         MaxRulesPerAgent: 1);
 
     public int TrailPointCount { get; set; } = 10;

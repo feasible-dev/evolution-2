@@ -17,6 +17,7 @@ public static class CardsTests
         harness.Run("Compiled builds preserve mutation policy", TestCompiledBuildPreservesMutationPolicy);
         harness.Run("Run configuration forwards mutation policy to evolution settings", TestRunConfigurationForwardsMutationPolicyToEvolutionSettings);
         harness.Run("Cards can enable relative and absolute rule actions", TestCardsCanEnableRelativeAndAbsoluteRuleActions);
+        harness.Run("Cards can enable brake noise and extra condition families", TestCardsCanEnableBrakeNoiseAndExtraConditionFamilies);
         harness.Run("Cards can increase the maximum number of rules", TestCardsCanIncreaseMaximumNumberOfRules);
         harness.Run("Mutation cards can target structural mutation policy", TestMutationCardsCanTargetStructuralMutationPolicy);
         harness.Run("Mutation cards can target rule kind mutation policy", TestMutationCardsCanTargetRuleKindMutationPolicy);
@@ -30,6 +31,10 @@ public static class CardsTests
         AssertTrue(selectionState.IsActive(CardCatalog.RelativeTurn.Id), "Relative turn should be active by default.");
         AssertTrue(selectionState.IsActive(CardCatalog.RelativeImpulse.Id), "Relative impulse should be active by default.");
         AssertTrue(selectionState.IsActive(CardCatalog.TargetSteering.Id), "Target steering should be active by default.");
+        AssertTrue(selectionState.IsActive(CardCatalog.Brake.Id), "Brake should be active by default in the sandbox starter loadout.");
+        AssertTrue(selectionState.IsActive(CardCatalog.RandomTurn.Id), "Random turn should be active by default in the sandbox starter loadout.");
+        AssertTrue(selectionState.IsActive(CardCatalog.TargetRadius.Id), "Target-radius conditions should be active by default in the sandbox starter loadout.");
+        AssertTrue(selectionState.IsActive(CardCatalog.CrowdSense.Id), "Crowd-sense conditions should be active by default in the sandbox starter loadout.");
     }
 
     private static void TestCardSelectionStateActivatesAndDeactivatesCardsWithoutDuplicates()
@@ -75,9 +80,13 @@ public static class CardsTests
         {
             GenePool = new GenePoolDefinition(
                 AllowTimeCondition: false,
+                AllowDistanceToPointCondition: false,
+                AllowNeighborCountCondition: false,
                 AllowTurnBiasAction: false,
                 AllowThrottleBiasAction: false,
                 AllowSteerToTargetAction: false,
+                AllowBrakeAction: false,
+                AllowRandomTurnAction: false,
                 MaxRulesPerAgent: 1)
         };
 
@@ -156,6 +165,38 @@ public static class CardsTests
             });
 
         AssertTrue(build.GenePool.MaxRulesPerAgent == 4, "Extra-rule cards should increase the rule budget additively.");
+    }
+
+    private static void TestCardsCanEnableBrakeNoiseAndExtraConditionFamilies()
+    {
+        var baseConfiguration = new RunConfiguration
+        {
+            GenePool = new GenePoolDefinition(
+                AllowTimeCondition: false,
+                AllowDistanceToPointCondition: false,
+                AllowNeighborCountCondition: false,
+                AllowTurnBiasAction: false,
+                AllowThrottleBiasAction: false,
+                AllowSteerToTargetAction: false,
+                AllowBrakeAction: false,
+                AllowRandomTurnAction: false,
+                MaxRulesPerAgent: 1)
+        };
+
+        var build = EvolutionBuildCompiler.CreateFromBase(
+            baseConfiguration,
+            new[]
+            {
+                CardCatalog.Brake,
+                CardCatalog.RandomTurn,
+                CardCatalog.TargetRadius,
+                CardCatalog.CrowdSense
+            });
+
+        AssertTrue(build.GenePool.AllowBrakeAction, "Brake cards should enable brake actions.");
+        AssertTrue(build.GenePool.AllowRandomTurnAction, "Random-turn cards should enable noisy turn actions.");
+        AssertTrue(build.GenePool.AllowDistanceToPointCondition, "Target-radius cards should enable distance-to-point conditions.");
+        AssertTrue(build.GenePool.AllowNeighborCountCondition, "Crowd-sense cards should enable neighbor-count conditions.");
     }
 
     private static void TestMutationCardsCanTargetStructuralMutationPolicy()

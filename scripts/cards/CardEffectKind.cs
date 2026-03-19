@@ -13,8 +13,12 @@ public enum CardEffectKind
     IncreaseActionKindMutationChance,
     IncreaseActionParameterMutationChance,
     IncreaseConditionParameterMutationChance,
+    EnableDistanceCondition,
+    EnableNeighborCountCondition,
     EnableTurnBiasAction,
     EnableThrottleBiasAction,
+    EnableBrakeAction,
+    EnableRandomTurnAction,
     EnableTimeCondition,
     IncreaseMaxRulesPerProgram,
     EnableSteerToTargetAction

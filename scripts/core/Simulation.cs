@@ -152,6 +152,7 @@ public sealed class Simulation
 
         var nearestNeighborDistance = float.MaxValue;
         var nearestNeighborLocalOffset = Vector2.Zero;
+        var neighborCountWithinAwareness = 0;
 
         foreach (var otherAgent in WorldState.Agents)
         {
@@ -162,6 +163,10 @@ public sealed class Simulation
 
             var offset = otherAgent.Position - agent.Position;
             var distance = offset.Length();
+            if (distance < Settings.NeighborAwarenessDistance)
+            {
+                neighborCountWithinAwareness += 1;
+            }
             if (distance < nearestNeighborDistance)
             {
                 nearestNeighborDistance = distance;
@@ -175,6 +180,7 @@ public sealed class Simulation
             RightWallDistance: DistanceToBoundary(agent.Position, right),
             NearestNeighborLocalOffset: nearestNeighborLocalOffset,
             HasNeighbor: nearestNeighborDistance < float.MaxValue,
+            NeighborCountWithinAwareness: neighborCountWithinAwareness,
             Speed: agent.Velocity.Length(),
             IsTouchingWall: agent.IsTouchingWall);
     }

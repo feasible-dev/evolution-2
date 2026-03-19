@@ -6,5 +6,7 @@ namespace EvoPrototype.Core;
 public enum GeneConditionKind
 {
     Always,
-    TimeGreaterOrEqual
+    TimeGreaterOrEqual,
+    DistanceToPointLessOrEqual,
+    NeighborCountGreaterOrEqual
 }

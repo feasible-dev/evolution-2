@@ -65,14 +65,17 @@ public static class GeneRuleFactory
         return new GeneRule(
             Enabled: true,
             ConditionKind: conditionKind,
-            ConditionThreshold: conditionKind == GeneConditionKind.TimeGreaterOrEqual
-                ? GetConditionThresholdSpec(generationDurationSeconds).SampleInitial(random)
-                : 0.0f,
+            ConditionThreshold: GetConditionThresholdSpec(conditionKind, generationDurationSeconds).SampleInitial(random),
             ActionKind: actionKind,
             Scalar: GetActionScalarSpec(actionKind).SampleInitial(random),
             TargetPointNormalized: new Vector2(
                 GetTargetCoordinateSpec().SampleInitial(random),
-                GetTargetCoordinateSpec().SampleInitial(random)));
+                GetTargetCoordinateSpec().SampleInitial(random)))
+        {
+            ConditionPointNormalized = new Vector2(
+                GetTargetCoordinateSpec().SampleInitial(random),
+                GetTargetCoordinateSpec().SampleInitial(random))
+        };
     }
 
     public static GeneRule MutateRule(
@@ -123,23 +126,43 @@ public static class GeneRuleFactory
         }
 
         var threshold = source.ConditionThreshold;
-        if (conditionKind == GeneConditionKind.TimeGreaterOrEqual)
+        if (conditionKind != GeneConditionKind.Always)
         {
             if (source.ConditionKind != conditionKind || random.NextDouble() < mutationPolicy.ConditionParameterMutationChance)
             {
-                threshold = GetConditionThresholdSpec(generationDurationSeconds).Mutate(
+                threshold = GetConditionThresholdSpec(conditionKind, generationDurationSeconds).Mutate(
                     random,
-                    source.ConditionThreshold > 0.0f ? source.ConditionThreshold : generationDurationSeconds * 0.5f,
+                    GetConditionDefaultThreshold(conditionKind, source.ConditionThreshold, generationDurationSeconds),
                     mutationStrength);
             }
             else
             {
-                threshold = Clamp(source.ConditionThreshold, 0.0f, MathF.Max(generationDurationSeconds, 0.01f));
+                var thresholdSpec = GetConditionThresholdSpec(conditionKind, generationDurationSeconds);
+                threshold = Clamp(source.ConditionThreshold, thresholdSpec.MinValue, thresholdSpec.MaxValue);
             }
         }
         else
         {
             threshold = 0.0f;
+        }
+
+        var conditionPoint = source.ConditionPointNormalized;
+        if (conditionKind == GeneConditionKind.DistanceToPointLessOrEqual &&
+            (source.ConditionKind != conditionKind || random.NextDouble() < mutationPolicy.ConditionParameterMutationChance))
+        {
+            conditionPoint = new Vector2(
+                GetTargetCoordinateSpec().Mutate(random, source.ConditionPointNormalized.X, mutationStrength),
+                GetTargetCoordinateSpec().Mutate(random, source.ConditionPointNormalized.Y, mutationStrength));
+        }
+        else if (conditionKind == GeneConditionKind.DistanceToPointLessOrEqual)
+        {
+            conditionPoint = new Vector2(
+                Clamp(source.ConditionPointNormalized.X, 0.0f, 1.0f),
+                Clamp(source.ConditionPointNormalized.Y, 0.0f, 1.0f));
+        }
+        else
+        {
+            conditionPoint = new Vector2(0.5f, 0.5f);
         }
 
         var sourceScalar = source.ActionKind == actionKind
@@ -178,7 +201,10 @@ public static class GeneRuleFactory
             ConditionThreshold: threshold,
             ActionKind: actionKind,
             Scalar: scalar,
-            TargetPointNormalized: new Vector2(targetX, targetY));
+            TargetPointNormalized: new Vector2(targetX, targetY))
+        {
+            ConditionPointNormalized = conditionPoint
+        };
     }
 
     private static GeneConditionKind PickConditionKind(Random random, GenePoolDefinition genePool)
@@ -188,12 +214,22 @@ public static class GeneRuleFactory
             return GeneConditionKind.TimeGreaterOrEqual;
         }
 
+        if (genePool.AllowDistanceToPointCondition && random.NextDouble() < 0.35d)
+        {
+            return GeneConditionKind.DistanceToPointLessOrEqual;
+        }
+
+        if (genePool.AllowNeighborCountCondition && random.NextDouble() < 0.35d)
+        {
+            return GeneConditionKind.NeighborCountGreaterOrEqual;
+        }
+
         return GeneConditionKind.Always;
     }
 
     private static GeneActionKind PickActionKind(Random random, GenePoolDefinition genePool)
     {
-        Span<GeneActionKind> available = stackalloc GeneActionKind[3];
+        Span<GeneActionKind> available = stackalloc GeneActionKind[5];
         var count = 0;
 
         if (genePool.AllowTurnBiasAction)
@@ -211,6 +247,16 @@ public static class GeneRuleFactory
             available[count++] = GeneActionKind.SteerToTarget;
         }
 
+        if (genePool.AllowBrakeAction)
+        {
+            available[count++] = GeneActionKind.AddBrake;
+        }
+
+        if (genePool.AllowRandomTurnAction)
+        {
+            available[count++] = GeneActionKind.AddRandomTurn;
+        }
+
         return count == 0 ? GeneActionKind.None : available[random.Next(count)];
     }
 
@@ -220,21 +266,45 @@ public static class GeneRuleFactory
         {
             GeneConditionKind.Always => true,
             GeneConditionKind.TimeGreaterOrEqual => genePool.AllowTimeCondition,
+            GeneConditionKind.DistanceToPointLessOrEqual => genePool.AllowDistanceToPointCondition,
+            GeneConditionKind.NeighborCountGreaterOrEqual => genePool.AllowNeighborCountCondition,
             _ => false
         };
     }
 
-    private static ParameterSpec GetConditionThresholdSpec(float generationDurationSeconds)
+    private static ParameterSpec GetConditionThresholdSpec(GeneConditionKind conditionKind, float generationDurationSeconds)
     {
-        return new ParameterSpec(
-            MinValue: 0.0f,
-            MaxValue: MathF.Max(generationDurationSeconds, 0.01f),
-            InitialDistribution: ParameterDistributionKind.Beta,
-            MutationDistribution: ParameterDistributionKind.Beta,
-            InitialAlpha: 2.0f,
-            InitialBeta: 2.0f,
-            MutationConcentrationMin: 3.5f,
-            MutationConcentrationMax: 36.0f);
+        return conditionKind switch
+        {
+            GeneConditionKind.TimeGreaterOrEqual => new ParameterSpec(
+                MinValue: 0.0f,
+                MaxValue: MathF.Max(generationDurationSeconds, 0.01f),
+                InitialDistribution: ParameterDistributionKind.Beta,
+                MutationDistribution: ParameterDistributionKind.Beta,
+                InitialAlpha: 2.0f,
+                InitialBeta: 2.0f,
+                MutationConcentrationMin: 3.5f,
+                MutationConcentrationMax: 36.0f),
+            GeneConditionKind.DistanceToPointLessOrEqual => new ParameterSpec(
+                MinValue: 0.02f,
+                MaxValue: 0.50f,
+                InitialDistribution: ParameterDistributionKind.Beta,
+                MutationDistribution: ParameterDistributionKind.Beta,
+                InitialAlpha: 2.1f,
+                InitialBeta: 2.6f,
+                MutationConcentrationMin: 3.0f,
+                MutationConcentrationMax: 28.0f),
+            GeneConditionKind.NeighborCountGreaterOrEqual => new ParameterSpec(
+                MinValue: 1.0f,
+                MaxValue: 8.0f,
+                InitialDistribution: ParameterDistributionKind.Beta,
+                MutationDistribution: ParameterDistributionKind.Beta,
+                InitialAlpha: 1.8f,
+                InitialBeta: 2.2f,
+                MutationConcentrationMin: 3.0f,
+                MutationConcentrationMax: 24.0f),
+            _ => new ParameterSpec(0.0f, 0.0f, ParameterDistributionKind.Uniform, ParameterDistributionKind.Uniform)
+        };
     }
 
     private static bool ActionAllowed(GeneActionKind actionKind, GenePoolDefinition genePool)
@@ -244,6 +314,8 @@ public static class GeneRuleFactory
             GeneActionKind.AddTurnBias => genePool.AllowTurnBiasAction,
             GeneActionKind.AddThrottleBias => genePool.AllowThrottleBiasAction,
             GeneActionKind.SteerToTarget => genePool.AllowSteerToTargetAction,
+            GeneActionKind.AddBrake => genePool.AllowBrakeAction,
+            GeneActionKind.AddRandomTurn => genePool.AllowRandomTurnAction,
             GeneActionKind.None => true,
             _ => false
         };
@@ -280,6 +352,24 @@ public static class GeneRuleFactory
                 InitialBeta: 2.2f,
                 MutationConcentrationMin: 3.0f,
                 MutationConcentrationMax: 26.0f),
+            GeneActionKind.AddBrake => new ParameterSpec(
+                MinValue: 0.1f,
+                MaxValue: 1.0f,
+                InitialDistribution: ParameterDistributionKind.Beta,
+                MutationDistribution: ParameterDistributionKind.Beta,
+                InitialAlpha: 2.0f,
+                InitialBeta: 1.8f,
+                MutationConcentrationMin: 3.0f,
+                MutationConcentrationMax: 26.0f),
+            GeneActionKind.AddRandomTurn => new ParameterSpec(
+                MinValue: 0.3f,
+                MaxValue: 2.4f,
+                InitialDistribution: ParameterDistributionKind.Beta,
+                MutationDistribution: ParameterDistributionKind.Beta,
+                InitialAlpha: 2.0f,
+                InitialBeta: 2.0f,
+                MutationConcentrationMin: 3.0f,
+                MutationConcentrationMax: 28.0f),
             _ => new ParameterSpec(0.0f, 0.0f, ParameterDistributionKind.Uniform, ParameterDistributionKind.Uniform)
         };
     }
@@ -291,6 +381,24 @@ public static class GeneRuleFactory
             GeneActionKind.AddTurnBias => 0.0f,
             GeneActionKind.AddThrottleBias => 0.0f,
             GeneActionKind.SteerToTarget => 1.0f,
+            GeneActionKind.AddBrake => 0.5f,
+            GeneActionKind.AddRandomTurn => 1.0f,
+            _ => 0.0f
+        };
+    }
+
+    private static float GetConditionDefaultThreshold(GeneConditionKind conditionKind, float sourceValue, float generationDurationSeconds)
+    {
+        if (sourceValue > 0.0f)
+        {
+            return sourceValue;
+        }
+
+        return conditionKind switch
+        {
+            GeneConditionKind.TimeGreaterOrEqual => generationDurationSeconds * 0.5f,
+            GeneConditionKind.DistanceToPointLessOrEqual => 0.18f,
+            GeneConditionKind.NeighborCountGreaterOrEqual => 2.0f,
             _ => 0.0f
         };
     }
@@ -306,11 +414,6 @@ public static class GeneRuleFactory
             InitialBeta: 2.0f,
             MutationConcentrationMin: 3.0f,
             MutationConcentrationMax: 30.0f);
-    }
-
-    private static float NextFloat(Random random, float minValue, float maxValue)
-    {
-        return minValue + ((float)random.NextDouble() * (maxValue - minValue));
     }
 
     private static float Clamp(float value, float minValue, float maxValue)

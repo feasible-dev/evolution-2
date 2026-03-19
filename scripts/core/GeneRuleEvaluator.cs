@@ -25,7 +25,7 @@ public static class GeneRuleEvaluator
         AgentObservation observation,
         SimulationSettings settings)
     {
-        if (!rule.Enabled || !ConditionMatches(rule, agent, observation))
+        if (!rule.Enabled || !ConditionMatches(rule, agent, observation, settings))
         {
             return;
         }
@@ -51,16 +51,36 @@ public static class GeneRuleEvaluator
                         offset.Normalized() * (rule.Scalar * settings.Acceleration * 0.20f)));
                 }
                 break;
+
+            case GeneActionKind.AddBrake:
+                contributions.Add(ActionContribution.Brake(Mathf.Clamp(rule.Scalar, 0.0f, 1.0f)));
+                break;
+
+            case GeneActionKind.AddRandomTurn:
+                contributions.Add(ActionContribution.Turn(agent.DecisionTurnNoise * rule.Scalar));
+                break;
         }
     }
 
-    private static bool ConditionMatches(GeneRule rule, Agent agent, AgentObservation observation)
+    private static bool ConditionMatches(GeneRule rule, Agent agent, AgentObservation observation, SimulationSettings settings)
     {
         return rule.ConditionKind switch
         {
             GeneConditionKind.Always => true,
             GeneConditionKind.TimeGreaterOrEqual => agent.BrainClock >= rule.ConditionThreshold,
+            GeneConditionKind.DistanceToPointLessOrEqual => DistanceConditionMatches(rule, agent, settings.WorldSize),
+            GeneConditionKind.NeighborCountGreaterOrEqual => observation.NeighborCountWithinAwareness >= Mathf.RoundToInt(Mathf.Clamp(rule.ConditionThreshold, 1.0f, 12.0f)),
             _ => false
         };
+    }
+
+    private static bool DistanceConditionMatches(GeneRule rule, Agent agent, Vector2 worldSize)
+    {
+        var targetWorld = new Vector2(
+            rule.ConditionPointNormalized.X * worldSize.X,
+            rule.ConditionPointNormalized.Y * worldSize.Y);
+        var maxDimension = Mathf.Max(Mathf.Min(worldSize.X, worldSize.Y), 1.0f);
+        var distanceLimit = Mathf.Clamp(rule.ConditionThreshold, 0.02f, 0.5f) * maxDimension;
+        return agent.Position.DistanceTo(targetWorld) <= distanceLimit;
     }
 }

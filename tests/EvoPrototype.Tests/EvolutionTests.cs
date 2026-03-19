@@ -197,9 +197,13 @@ public static class EvolutionTests
         var random = new System.Random(123);
         var genePool = new GenePoolDefinition(
             AllowTimeCondition: false,
+            AllowDistanceToPointCondition: false,
+            AllowNeighborCountCondition: false,
             AllowTurnBiasAction: true,
             AllowThrottleBiasAction: true,
             AllowSteerToTargetAction: true,
+            AllowBrakeAction: false,
+            AllowRandomTurnAction: false,
             MaxRulesPerAgent: 2);
 
         for (var index = 0; index < 32; index++)
@@ -215,9 +219,13 @@ public static class EvolutionTests
         var random = new System.Random(456);
         var genePool = new GenePoolDefinition(
             AllowTimeCondition: true,
+            AllowDistanceToPointCondition: false,
+            AllowNeighborCountCondition: false,
             AllowTurnBiasAction: false,
             AllowThrottleBiasAction: false,
             AllowSteerToTargetAction: true,
+            AllowBrakeAction: false,
+            AllowRandomTurnAction: false,
             MaxRulesPerAgent: 2);
 
         for (var index = 0; index < 32; index++)
@@ -275,9 +283,13 @@ public static class EvolutionTests
             source,
             new GenePoolDefinition(
                 AllowTimeCondition: true,
+                AllowDistanceToPointCondition: false,
+                AllowNeighborCountCondition: false,
                 AllowTurnBiasAction: false,
                 AllowThrottleBiasAction: true,
                 AllowSteerToTargetAction: false,
+                AllowBrakeAction: false,
+                AllowRandomTurnAction: false,
                 MaxRulesPerAgent: 2),
             MutationPolicy.Default with
             {
@@ -364,6 +376,14 @@ public static class EvolutionTests
             {
                 AssertTrue(rule.Scalar >= 0.0f && rule.Scalar <= 2.0f, "Steer-to-target weights should stay inside their bounded domain.");
             }
+            else if (rule.ActionKind == GeneActionKind.AddBrake)
+            {
+                AssertTrue(rule.Scalar >= 0.1f && rule.Scalar <= 1.0f, "Brake scalars should stay inside their bounded domain.");
+            }
+            else if (rule.ActionKind == GeneActionKind.AddRandomTurn)
+            {
+                AssertTrue(rule.Scalar >= 0.3f && rule.Scalar <= 2.4f, "Random-turn scalars should stay inside their bounded domain.");
+            }
 
             var mutated = GeneRuleFactory.MutateRule(
                 random,
@@ -389,6 +409,14 @@ public static class EvolutionTests
             else if (mutated.ActionKind == GeneActionKind.SteerToTarget)
             {
                 AssertTrue(mutated.Scalar >= 0.0f && mutated.Scalar <= 2.0f, "Mutated steer-to-target weights should stay bounded.");
+            }
+            else if (mutated.ActionKind == GeneActionKind.AddBrake)
+            {
+                AssertTrue(mutated.Scalar >= 0.1f && mutated.Scalar <= 1.0f, "Mutated brake scalars should stay bounded.");
+            }
+            else if (mutated.ActionKind == GeneActionKind.AddRandomTurn)
+            {
+                AssertTrue(mutated.Scalar >= 0.3f && mutated.Scalar <= 2.4f, "Mutated random-turn scalars should stay bounded.");
             }
         }
     }

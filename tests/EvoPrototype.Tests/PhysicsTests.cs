@@ -25,6 +25,8 @@ public static class PhysicsTests
         harness.Run("Action resolver sums weighted contributions by channel", TestActionResolverSumsWeightedContributionsByChannel);
         harness.Run("Time-based gene rule activates only after its threshold", TestTimeBasedGeneRuleActivatesOnlyAfterThreshold);
         harness.Run("Gene steer-to-target rule adds world acceleration", TestGeneSteerToTargetRuleAddsWorldAcceleration);
+        harness.Run("Distance-to-point gene rule can trigger braking", TestDistanceToPointGeneRuleCanTriggerBraking);
+        harness.Run("Neighbor-count gene rule can trigger braking", TestNeighborCountGeneRuleCanTriggerBraking);
     }
 
     private static void TestWallClampStopsOutwardMovementWithoutBounce()
@@ -193,7 +195,7 @@ public static class PhysicsTests
             BrainClock = 0.0f
         };
 
-        var observation = new AgentObservation(12.0f, 10.0f, 40.0f, Vector2.Zero, false, 12.0f, false);
+        var observation = new AgentObservation(12.0f, 10.0f, 40.0f, Vector2.Zero, false, 0, 12.0f, false);
         var decision = AgentBrain.Decide(agent, observation, new SimulationSettings { WallAvoidanceDistance = 60.0f });
         AssertTrue(decision.TurnWish > 0.0f, "Agent should turn toward the side with more clearance.");
     }
@@ -227,7 +229,7 @@ public static class PhysicsTests
             BrainClock = 0.0f
         };
 
-        var observation = new AgentObservation(5.5f, 8.0f, 25.0f, Vector2.Zero, false, 1.0f, true);
+        var observation = new AgentObservation(5.5f, 8.0f, 25.0f, Vector2.Zero, false, 0, 1.0f, true);
         var decision = AgentBrain.Decide(agent, observation, new SimulationSettings
         {
             WallAvoidanceDistance = 60.0f,
@@ -428,6 +430,7 @@ public static class PhysicsTests
             100.0f,
             new Vector2(0.0f, 5.0f),
             true,
+            1,
             10.0f,
             false);
 
@@ -460,7 +463,7 @@ public static class PhysicsTests
         };
 
         var settings = new SimulationSettings { WorldSize = new Vector2(100.0f, 100.0f), Acceleration = 200.0f };
-        var observation = new AgentObservation(100.0f, 100.0f, 100.0f, Vector2.Zero, false, 0.0f, false);
+        var observation = new AgentObservation(100.0f, 100.0f, 100.0f, Vector2.Zero, false, 0, 0.0f, false);
         var intent = AgentBrain.Decide(agent, observation, settings);
 
         AssertTrue(intent.WorldAccelerationWish.X > 0.1f, "Target-seeking genes should add a world-space acceleration toward the configured point.");
@@ -499,7 +502,7 @@ public static class PhysicsTests
         };
 
         var settings = new SimulationSettings { MaxSpeed = 100.0f };
-        var observation = new AgentObservation(100.0f, 100.0f, 100.0f, Vector2.Zero, false, 10.0f, false);
+        var observation = new AgentObservation(100.0f, 100.0f, 100.0f, Vector2.Zero, false, 0, 10.0f, false);
         var fastIntent = AgentBrain.Decide(fastAgent, observation, settings);
         var slowIntent = AgentBrain.Decide(slowAgent, observation, settings);
 
@@ -570,7 +573,7 @@ public static class PhysicsTests
             Energy = 100.0f,
             BrainClock = 6.0f
         };
-        var observation = new AgentObservation(100.0f, 100.0f, 100.0f, Vector2.Zero, false, 0.0f, false);
+        var observation = new AgentObservation(100.0f, 100.0f, 100.0f, Vector2.Zero, false, 0, 0.0f, false);
         var settings = new SimulationSettings();
 
         var earlyIntent = AgentBrain.Decide(earlyAgent, observation, settings);
@@ -615,9 +618,92 @@ public static class PhysicsTests
         };
 
         var settings = new SimulationSettings { WorldSize = new Vector2(100.0f, 100.0f), Acceleration = 200.0f };
-        var observation = new AgentObservation(100.0f, 100.0f, 100.0f, Vector2.Zero, false, 0.0f, false);
+        var observation = new AgentObservation(100.0f, 100.0f, 100.0f, Vector2.Zero, false, 0, 0.0f, false);
         var intent = AgentBrain.Decide(agent, observation, settings);
 
         AssertTrue(intent.WorldAccelerationWish.X > 0.1f, "Steer-to-target gene rules should produce world acceleration toward their target.");
+    }
+
+    private static void TestDistanceToPointGeneRuleCanTriggerBraking()
+    {
+        var agent = new Agent
+        {
+            Genome = AgentGenome.Default with
+            {
+                BaseThrottle = 0.0f,
+                PreferredSpeedFraction = 0.0f,
+                BaseTurnRate = 0.0f,
+                WanderAmplitude = 0.0f,
+                RandomTurnStrength = 0.0f,
+                RandomThrottleBias = 0.0f,
+                TargetPointWeight = 0.0f,
+                WallAvoidanceWeight = 0.0f,
+                NeighborAvoidanceWeight = 0.0f,
+                Program = new GeneProgram(
+                    new GeneRule(
+                        Enabled: true,
+                        ConditionKind: GeneConditionKind.DistanceToPointLessOrEqual,
+                        ConditionThreshold: 0.15f,
+                        ActionKind: GeneActionKind.AddBrake,
+                        Scalar: 0.8f,
+                        TargetPointNormalized: new Vector2(0.5f, 0.5f))
+                    {
+                        ConditionPointNormalized = new Vector2(0.5f, 0.5f)
+                    },
+                    GeneRule.Disabled)
+            },
+            PhysicsProfile = PhysicsProfile.Default,
+            Position = new Vector2(52.0f, 48.0f),
+            Velocity = Vector2.Zero,
+            Heading = 0.0f,
+            Radius = 4.0f,
+            Energy = 100.0f
+        };
+
+        var settings = new SimulationSettings { WorldSize = new Vector2(100.0f, 100.0f) };
+        var observation = new AgentObservation(100.0f, 100.0f, 100.0f, Vector2.Zero, false, 0, 0.0f, false);
+        var intent = AgentBrain.Decide(agent, observation, settings);
+
+        AssertTrue(intent.BrakeWish > 0.5f, "Distance-to-point conditions should be able to trigger braking near a target.");
+    }
+
+    private static void TestNeighborCountGeneRuleCanTriggerBraking()
+    {
+        var agent = new Agent
+        {
+            Genome = AgentGenome.Default with
+            {
+                BaseThrottle = 0.0f,
+                PreferredSpeedFraction = 0.0f,
+                BaseTurnRate = 0.0f,
+                WanderAmplitude = 0.0f,
+                RandomTurnStrength = 0.0f,
+                RandomThrottleBias = 0.0f,
+                TargetPointWeight = 0.0f,
+                WallAvoidanceWeight = 0.0f,
+                NeighborAvoidanceWeight = 0.0f,
+                Program = new GeneProgram(
+                    new GeneRule(
+                        Enabled: true,
+                        ConditionKind: GeneConditionKind.NeighborCountGreaterOrEqual,
+                        ConditionThreshold: 3.0f,
+                        ActionKind: GeneActionKind.AddBrake,
+                        Scalar: 0.7f,
+                        TargetPointNormalized: new Vector2(0.5f, 0.5f)),
+                    GeneRule.Disabled)
+            },
+            PhysicsProfile = PhysicsProfile.Default,
+            Position = Vector2.Zero,
+            Velocity = Vector2.Zero,
+            Heading = 0.0f,
+            Radius = 4.0f,
+            Energy = 100.0f
+        };
+
+        var settings = new SimulationSettings();
+        var observation = new AgentObservation(100.0f, 100.0f, 100.0f, Vector2.Zero, false, 4, 0.0f, false);
+        var intent = AgentBrain.Decide(agent, observation, settings);
+
+        AssertTrue(intent.BrakeWish > 0.5f, "Neighbor-count conditions should be able to trigger braking in crowded local states.");
     }
 }

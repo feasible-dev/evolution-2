@@ -94,12 +94,28 @@ public static class EvolutionBuildCompiler
                 };
                 break;
 
+            case CardEffectKind.EnableDistanceCondition:
+                build.GenePool = build.GenePool with { AllowDistanceToPointCondition = true };
+                break;
+
+            case CardEffectKind.EnableNeighborCountCondition:
+                build.GenePool = build.GenePool with { AllowNeighborCountCondition = true };
+                break;
+
             case CardEffectKind.EnableTurnBiasAction:
                 build.GenePool = build.GenePool with { AllowTurnBiasAction = true };
                 break;
 
             case CardEffectKind.EnableThrottleBiasAction:
                 build.GenePool = build.GenePool with { AllowThrottleBiasAction = true };
+                break;
+
+            case CardEffectKind.EnableBrakeAction:
+                build.GenePool = build.GenePool with { AllowBrakeAction = true };
+                break;
+
+            case CardEffectKind.EnableRandomTurnAction:
+                build.GenePool = build.GenePool with { AllowRandomTurnAction = true };
                 break;
 
             case CardEffectKind.EnableTimeCondition:

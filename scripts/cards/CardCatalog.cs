@@ -21,6 +21,20 @@ public static class CardCatalog
         Category: CardCategory.Action,
         EffectKind: CardEffectKind.EnableThrottleBiasAction);
 
+    public static readonly CardDefinition Brake = new(
+        Id: "brake",
+        Name: "Brake",
+        Description: "Allow evolved rules to issue direct braking actions.",
+        Category: CardCategory.Action,
+        EffectKind: CardEffectKind.EnableBrakeAction);
+
+    public static readonly CardDefinition RandomTurn = new(
+        Id: "random_turn",
+        Name: "Random Turn",
+        Description: "Allow evolved rules to inject noisy turning impulses.",
+        Category: CardCategory.Action,
+        EffectKind: CardEffectKind.EnableRandomTurnAction);
+
     public static readonly CardDefinition MutationBoost = new(
         Id: "mutation_boost",
         Name: "Mutation Boost",
@@ -92,6 +106,20 @@ public static class CardCatalog
         Category: CardCategory.Condition,
         EffectKind: CardEffectKind.EnableTimeCondition);
 
+    public static readonly CardDefinition TargetRadius = new(
+        Id: "target_radius",
+        Name: "Target Radius",
+        Description: "Allow conditions based on distance to a target point.",
+        Category: CardCategory.Condition,
+        EffectKind: CardEffectKind.EnableDistanceCondition);
+
+    public static readonly CardDefinition CrowdSense = new(
+        Id: "crowd_sense",
+        Name: "Crowd Sense",
+        Description: "Allow conditions based on nearby neighbor count.",
+        Category: CardCategory.Condition,
+        EffectKind: CardEffectKind.EnableNeighborCountCondition);
+
     public static readonly CardDefinition ExtraRuleSlot = new(
         Id: "extra_rule_slot",
         Name: "Extra Rule Slot",
@@ -111,6 +139,8 @@ public static class CardCatalog
     {
         RelativeTurn,
         RelativeImpulse,
+        Brake,
+        RandomTurn,
         MutationBoost,
         ProgramMutation,
         RuleGrowth,
@@ -120,6 +150,8 @@ public static class CardCatalog
         ActionParameterMutation,
         ConditionParameterMutation,
         TemporalLogic,
+        TargetRadius,
+        CrowdSense,
         ExtraRuleSlot,
         TargetSteering
     };
@@ -128,6 +160,10 @@ public static class CardCatalog
     {
         RelativeTurn.Id,
         RelativeImpulse.Id,
-        TargetSteering.Id
+        TargetSteering.Id,
+        Brake.Id,
+        RandomTurn.Id,
+        TargetRadius.Id,
+        CrowdSense.Id
     };
 }

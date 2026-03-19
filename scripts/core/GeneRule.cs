@@ -13,6 +13,8 @@ public readonly record struct GeneRule(
     float Scalar,
     Vector2 TargetPointNormalized)
 {
+    public Vector2 ConditionPointNormalized { get; init; } = new Vector2(0.5f, 0.5f);
+
     public static GeneRule Disabled => new(
         Enabled: false,
         ConditionKind: GeneConditionKind.Always,
