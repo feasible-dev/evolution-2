@@ -1,0 +1,14 @@
+Godot Engine v4.6.1.stable.mono.official.14d19694e - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2570)
+IDENTICAL CARDS: BudgetPlan { Turn = 2, Throttle = 2, Target = 6, Total = 10, Remaining = 0, IsValid = True }
+MOTION US t=0.0: mass=1.111; thrust=219.890; thrust/mass=203.164; drag=0.339; energy=100.185; speed=54.505; exhausted=0; maxSpeed=110
+MOTION OPPONENT t=0.0: mass=1.094; thrust=221.546; thrust/mass=207.436; drag=0.350; energy=99.930; speed=54.513; exhausted=0; maxSpeed=110
+MOTION US t=3.0: mass=1.111; thrust=219.890; thrust/mass=203.164; drag=0.339; energy=90.127; speed=54.088; exhausted=0; maxSpeed=110
+MOTION OPPONENT t=3.0: mass=1.094; thrust=221.546; thrust/mass=207.436; drag=0.350; energy=90.003; speed=49.824; exhausted=0; maxSpeed=110
+MOTION US t=9.0: mass=1.111; thrust=219.890; thrust/mass=203.164; drag=0.339; energy=69.853; speed=39.933; exhausted=1; maxSpeed=110
+MOTION OPPONENT t=9.0: mass=1.094; thrust=221.546; thrust/mass=207.436; drag=0.350; energy=69.979; speed=38.242; exhausted=2; maxSpeed=110
+MOTION US t=18.0: mass=1.111; thrust=219.890; thrust/mass=203.164; drag=0.339; energy=41.463; speed=18.847; exhausted=20; maxSpeed=110
+MOTION OPPONENT t=18.0: mass=1.094; thrust=221.546; thrust/mass=207.436; drag=0.350; energy=42.223; speed=19.395; exhausted=21; maxSpeed=110
+MOTION AUDIT PASS: 5 checks. No side multiplier in matched-seed control.
