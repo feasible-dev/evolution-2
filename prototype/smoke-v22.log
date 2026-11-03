@@ -1,0 +1,13 @@
+Godot Engine v4.6.1.stable.mono.official.14d19694e - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2570)
+PROGRESS: G10; latest=192; best=196/240
+PROGRESS: G20; latest=229; best=229/240
+PROGRESS: G30; latest=236; best=237/240
+PROGRESS: G40; latest=236; best=239/240
+SURVIVAL TRACE: 5,58,120,149,177,177,187,196,190,192,200,198,199,205,216,220,226,224,228,229,229,232,231,231,231,236,236,236,237,236,230,232,238,239,238,234,233,235,236,236
+CONTINUOUS: 40 generations; latest=236/240; extinctions=0
+PLAYTEST PASS: 28506 checks in 271.86s. Budget, speed, 5% selection, 40 generations, history and queued DNA policy.
+WARNING: ObjectDB instances leaked at exit (run with --verbose for details).
+   at: cleanup (core/object/object.cpp:2641)

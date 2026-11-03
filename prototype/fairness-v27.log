@@ -1,0 +1,17 @@
+Godot Engine v4.6.1.stable.mono.official.14d19694e - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2570)
+IDENTICAL CARDS: BudgetPlan { Turn = 7, Throttle = 3, Target = 0, Total = 10, Remaining = 0, IsValid = True }
+MOTION US t=0.0: mass=1.000; thrust=220.000; thrust/mass=220.000; drag=0.350; energy=100.000; speed=54.505; exhausted=0; maxSpeed=110
+MOTION OPPONENT t=0.0: mass=1.000; thrust=220.000; thrust/mass=220.000; drag=0.350; energy=100.000; speed=54.505; exhausted=0; maxSpeed=110
+MOTION US t=3.0: mass=1.000; thrust=220.000; thrust/mass=220.000; drag=0.350; energy=90.251; speed=35.053; exhausted=0; maxSpeed=110
+MOTION OPPONENT t=3.0: mass=1.000; thrust=220.000; thrust/mass=220.000; drag=0.350; energy=90.251; speed=35.053; exhausted=0; maxSpeed=110
+MOTION US t=9.0: mass=1.000; thrust=220.000; thrust/mass=220.000; drag=0.350; energy=70.490; speed=22.311; exhausted=0; maxSpeed=110
+MOTION OPPONENT t=9.0: mass=1.000; thrust=220.000; thrust/mass=220.000; drag=0.350; energy=70.490; speed=22.311; exhausted=0; maxSpeed=110
+MOTION US t=18.0: mass=1.000; thrust=220.000; thrust/mass=220.000; drag=0.350; energy=43.088; speed=10.884; exhausted=19; maxSpeed=110
+MOTION OPPONENT t=18.0: mass=1.000; thrust=220.000; thrust/mass=220.000; drag=0.350; energy=43.088; speed=10.884; exhausted=19; maxSpeed=110
+MATCHED LIVE TEAMS G1: 37 = 37; exact DNA, positions, velocities and energy
+MATCHED LIVE TEAMS G2: 73 = 73; exact DNA, positions, velocities and energy
+MATCHED LIVE TEAMS G3: 83 = 83; exact DNA, positions, velocities and energy
+MOTION AUDIT PASS: 14 checks. No side multiplier in matched-seed control.

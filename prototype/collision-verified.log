@@ -1,0 +1,6 @@
+Godot Engine v4.6.1.stable.mono.official.14d19694e - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2570)
+COLLISION BENCH: 646 ms; 3001333 candidate pairs; 240 dense steps
+GEOMETRY AND FRAME BUDGET PASS: 9286 checks

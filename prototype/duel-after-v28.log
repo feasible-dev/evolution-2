@@ -1,0 +1,6 @@
+Godot Engine v4.6.1.stable.mono.official.14d19694e - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2570)
+DUEL BLUE: G12 speed=22.22; target strength=1.000; world push=44.000; decision interval=0.200; energy=60.65
+DUEL RED: G12 speed=24.35; target strength=1.000; world push=44.000; decision interval=0.200; energy=60.65
