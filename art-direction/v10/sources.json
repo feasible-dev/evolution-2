@@ -1,0 +1,20 @@
+{
+  "method": "SVG et composants natifs",
+  "frame": "Ivoire, filet or, volutes et petits losanges",
+  "reticles": [
+    "Point",
+    "Croix ouverte",
+    "Croix fine",
+    "Cercle et point",
+    "Quatre chevrons",
+    "Holographique",
+    "Lunette Mil-dot",
+    "Chevron gradué"
+  ],
+  "references": "Familles usuelles de réticules ; géométrie originale, aucun asset de jeu repris.",
+  "copy": {
+    "front": "Accélère vers sa cible.",
+    "back": "Une cible par point. La position de cette cible est héritée et peut muter."
+  },
+  "scope": "Étude graphique, règles inchangées."
+}

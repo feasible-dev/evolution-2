@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-02",
+  "unchangedFiles": 45,
+  "changes": [
+    {
+      "file": "scripts/vendor/core/BoardGeometry.cs",
+      "originalSha256": "04a6b341a2f98509197135c1ea9e681bc5746a276a260464d84786efa3956c98",
+      "localSha256": "6e02c2b028a2036754afd2aaa3717910ec1753615bb3f9e3030ce0e371ddf9ca",
+      "reason": "Cached outlines and straight-edge fast paths; polygon corners and tie cases retained. Larger shared rink corners and physical radius inset (v23)."
+    },
+    {
+      "file": "scripts/vendor/core/Simulation.cs",
+      "originalSha256": "2e59943ecd7eadaf095b7c8b9191140f17c06ee74a4a9077cc21d4a36e358fc9",
+      "localSha256": "48390f7f54143ec5bb2160fe75d24a45027a959659a91d0db500a358b601e16f",
+      "reason": "Observations based on actual inherited gene needs; stop collision solver only after a pass without corrections. Contact-scale broad-phase cells use actual maximum radius (v23)."
+    },
+    {
+      "file": "scripts/vendor/core/WorldState.cs",
+      "localSha256": "99d6c0e72131a2a308b321185e8b04afd8531ddc0a3643bb80d1166384e63d62",
+      "reason": "Internal size setter keeps live world dimensions synchronized with the full-height arena."
+    }
+  ]
+}

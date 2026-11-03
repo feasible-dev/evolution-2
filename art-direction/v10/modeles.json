@@ -1,0 +1,34 @@
+[
+  {
+    "id": "01-point",
+    "name": "Point"
+  },
+  {
+    "id": "02-croix-ouverte",
+    "name": "Croix ouverte"
+  },
+  {
+    "id": "03-croix-fine",
+    "name": "Croix fine"
+  },
+  {
+    "id": "04-cercle-point",
+    "name": "Cercle et point"
+  },
+  {
+    "id": "05-chevrons",
+    "name": "Quatre chevrons"
+  },
+  {
+    "id": "06-holographique",
+    "name": "Holographique"
+  },
+  {
+    "id": "07-mildot",
+    "name": "Lunette Mil-dot"
+  },
+  {
+    "id": "08-chevron-gradue",
+    "name": "Chevron gradué"
+  }
+]

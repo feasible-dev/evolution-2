@@ -1,0 +1,9 @@
+prototype/.godot/
+prototype/.mono/
+prototype/bin/
+prototype/obj/
+prototype/*.sln
+prototype/*.slnx
+prototype/*.csproj.user
+prototype/playtest*.log
+.cache/

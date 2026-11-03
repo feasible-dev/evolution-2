@@ -1,0 +1,32 @@
+{
+  "build": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "functionalChecks": 9372,
+  "seconds": 30.7,
+  "generations": 40,
+  "referenceSurvivors": 209,
+  "captureSurvivors": 208,
+  "approvedAssetsIdentical": {
+    "frame": true,
+    "cible": true,
+    "poussee": true
+  },
+  "virage": "V2 turned right, curve now ends to the right",
+  "features": [
+    "Budget sliders on both faces",
+    "Flip retains allocation",
+    "Existing 10-credit budget preserved",
+    "Plan queued for next generation",
+    "Pause and time speeds through x20",
+    "5 percent survival band"
+  ],
+  "screenshots": [
+    "01-cartes-et-budget.png",
+    "02-versos.png",
+    "03-selection-5-pourcent.png",
+    "04-quarante-generations.png"
+  ],
+  "shutdown": "short startup/exit check clean after resource cleanup"
+}

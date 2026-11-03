@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-31",
+  "unchangedFiles": 46,
+  "changes": [
+    {
+      "file": "scripts/vendor/core/BoardGeometry.cs",
+      "originalSha256": "04a6b341a2f98509197135c1ea9e681bc5746a276a260464d84786efa3956c98",
+      "localSha256": "3a6b035637aad5f9203e875629b1e5223ce6bd64aa3fee5bdf42c87235bbff6d",
+      "reason": "Cached outlines and straight-edge fast paths; polygon corners and tie cases retained."
+    },
+    {
+      "file": "scripts/vendor/core/Simulation.cs",
+      "originalSha256": "2e59943ecd7eadaf095b7c8b9191140f17c06ee74a4a9077cc21d4a36e358fc9",
+      "localSha256": "0a31df20ad9ffe45ec5837c1db81524807179da2d649dc038df83f0c71f0fa57",
+      "reason": "Observations based on actual inherited gene needs; stop collision solver only after a pass without corrections."
+    }
+  ]
+}

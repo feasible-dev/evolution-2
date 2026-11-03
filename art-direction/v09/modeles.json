@@ -1,0 +1,30 @@
+[
+  {
+    "id": "ivoire-particule",
+    "theme": "ivoire",
+    "art": "particule",
+    "label": "Ivoire / particule",
+    "file": "ivoire-particule.svg"
+  },
+  {
+    "id": "acier-particule",
+    "theme": "acier",
+    "art": "particule",
+    "label": "Acier / particule",
+    "file": "acier-particule.svg"
+  },
+  {
+    "id": "ivoire-viseur",
+    "theme": "ivoire",
+    "art": "viseur",
+    "label": "Ivoire / viseur FPS",
+    "file": "ivoire-viseur.svg"
+  },
+  {
+    "id": "acier-viseur",
+    "theme": "acier",
+    "art": "viseur",
+    "label": "Acier / viseur FPS",
+    "file": "acier-viseur.svg"
+  }
+]

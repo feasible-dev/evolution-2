@@ -1,0 +1,246 @@
+{
+  "copiedFrom": "C:/dev/projects/evolution-game",
+  "date": "2026-10-31",
+  "files": [
+    {
+      "source": "evolution-game/prototype/scripts/core/ActionChannel.cs",
+      "target": "scripts/vendor/core/ActionChannel.cs",
+      "sha256": "7228c98a91fb300cc38ff77125fedf5fa320cfbafd01a959e961e2b5faa47141"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/ActionContribution.cs",
+      "target": "scripts/vendor/core/ActionContribution.cs",
+      "sha256": "aee469221d43c52aa47d4bf3f19b8a992445376818e4b2dc51fc570007cf194e"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/ActionSetResolver.cs",
+      "target": "scripts/vendor/core/ActionSetResolver.cs",
+      "sha256": "2fbffd25779de272027796be3bd256a0eef97bfc12acf0d931da3193d8cbb807"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/Agent.cs",
+      "target": "scripts/vendor/core/Agent.cs",
+      "sha256": "6aacd1f7288bb432e62bed0b6e0e904bd3a97d10f0cdb7e936b581bf7cb99aee"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/AgentBrain.cs",
+      "target": "scripts/vendor/core/AgentBrain.cs",
+      "sha256": "d25ca954eaf4806456dcd41f6ec52ac641bb24caf733ee46a76b8395e7d21c9c"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/AgentGenome.cs",
+      "target": "scripts/vendor/core/AgentGenome.cs",
+      "sha256": "67a577c166a15ac295557c1160fc69604d129c91d6b67f74280d84d04df1b1bc"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/AgentIntent.cs",
+      "target": "scripts/vendor/core/AgentIntent.cs",
+      "sha256": "27e97d3c8e79c575939930a3146ccd6e98a3b6d9a0514290e71401fbaccdb6f7"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/AgentLineageFormatter.cs",
+      "target": "scripts/vendor/core/AgentLineageFormatter.cs",
+      "sha256": "24a923e19c7ca83649e3e51fb02bbd318d84a2d2ba2178bd47b88097e0128238"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/AgentObservation.cs",
+      "target": "scripts/vendor/core/AgentObservation.cs",
+      "sha256": "4cbf87b983d11d4655002fd809ad14493da391a89d0294a70f2a89f3c239c3cc"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/AgentVisualPalette.cs",
+      "target": "scripts/vendor/core/AgentVisualPalette.cs",
+      "sha256": "805f937e93a8385acee9aaa38efdb0d190487db99366efb254fb499f81ca74b6"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/BoardGeometry.cs",
+      "target": "scripts/vendor/core/BoardGeometry.cs",
+      "sha256": "04a6b341a2f98509197135c1ea9e681bc5746a276a260464d84786efa3956c98"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/BoardObstacle.cs",
+      "target": "scripts/vendor/core/BoardObstacle.cs",
+      "sha256": "0c25bae0097f2f24bad49b0e0b9ed3e87c0388d48cfbdc66c7d8fb8f1c14500e"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/BoardObstacleDefinition.cs",
+      "target": "scripts/vendor/core/BoardObstacleDefinition.cs",
+      "sha256": "7abf4e960b48a29e2429a2007c3aa267eb4549acc5d42e4a50bbceed3275eb1a"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/BoardObstacleKind.cs",
+      "target": "scripts/vendor/core/BoardObstacleKind.cs",
+      "sha256": "b5e5e2d2b7a0a52b95cd0b22ba34fc0cbc78a31f0ae972d11142ef2e48bbacea"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/BoardShapeKind.cs",
+      "target": "scripts/vendor/core/BoardShapeKind.cs",
+      "sha256": "f9d422244f7c6b6869e3d78dc2c5d0447f3e3f2dd0c6f47b62d6b2c5e47bea3b"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/GeneActionKind.cs",
+      "target": "scripts/vendor/core/GeneActionKind.cs",
+      "sha256": "72146e9451c6355f5f466df60050b6735e550775ea6cd69f3b39d54f2ac7ca92"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/GeneConditionKind.cs",
+      "target": "scripts/vendor/core/GeneConditionKind.cs",
+      "sha256": "64924f9fb1b4283edd6407e8f0e966e9713a53ffeff0b95e7a33b249e82a0c81"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/GenePoolDefinition.cs",
+      "target": "scripts/vendor/core/GenePoolDefinition.cs",
+      "sha256": "d4f918ff745310f9c45226f27d8c8f54ce34a916d3b55f4acc6d1200f24134b5"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/GeneProgram.cs",
+      "target": "scripts/vendor/core/GeneProgram.cs",
+      "sha256": "ece6bfd9bae57a3a28a687a947c09b26aed172cb016c2fb92689126fdb18a1f8"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/GeneProgramInspector.cs",
+      "target": "scripts/vendor/core/GeneProgramInspector.cs",
+      "sha256": "ba3263719b4e606d8924da94aafa4a32861758bfcae2caaf625db52987616467"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/GeneRule.cs",
+      "target": "scripts/vendor/core/GeneRule.cs",
+      "sha256": "c1323481cdcf6dff575a4f7691b5d9d0afab89e11830617e18ae390edef80dc1"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/GeneRuleEvaluator.cs",
+      "target": "scripts/vendor/core/GeneRuleEvaluator.cs",
+      "sha256": "f164313afb34c46ef3e67912a5cdd5896d919327ab273d666001881da63d85b6"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/GeneRuleFactory.cs",
+      "target": "scripts/vendor/core/GeneRuleFactory.cs",
+      "sha256": "ab2d81fb85dafc1a34039fcb7ea2bbede93a8ecd5796df6f124319edafb29a0f"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/ObstacleFactory.cs",
+      "target": "scripts/vendor/core/ObstacleFactory.cs",
+      "sha256": "49b25aa40196ced662bb9c9c5fa748c7b927a6d2ca68acb46b2b811586f078d0"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/ObstacleLayoutKind.cs",
+      "target": "scripts/vendor/core/ObstacleLayoutKind.cs",
+      "sha256": "fc8c27b4125bf3447ddf009fb1c645ef0d0300d21956e424641f7ec0ee5d4001"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/ParameterDistributionKind.cs",
+      "target": "scripts/vendor/core/ParameterDistributionKind.cs",
+      "sha256": "822b73787bd779b3bbe507a951899ea75a7b1b3b15fe01ef43d1221a39960468"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/ParameterSpec.cs",
+      "target": "scripts/vendor/core/ParameterSpec.cs",
+      "sha256": "73fa3dc2d114e42a4b79e15f4767939cf1f3a2fabfec90ffc656dd85b71cb4c8"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/PhysicsProfile.cs",
+      "target": "scripts/vendor/core/PhysicsProfile.cs",
+      "sha256": "99ba39175b661fa820bfe0683623c1ee45d546d1f0ec8b4a8fbaf3c5b1fc1121"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/RandomDistributions.cs",
+      "target": "scripts/vendor/core/RandomDistributions.cs",
+      "sha256": "d330631333f9dfc073dd148b454b017656969a607a1d2fac4ee687a440628754"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/Simulation.cs",
+      "target": "scripts/vendor/core/Simulation.cs",
+      "sha256": "2e59943ecd7eadaf095b7c8b9191140f17c06ee74a4a9077cc21d4a36e358fc9"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/SimulationFrameMetrics.cs",
+      "target": "scripts/vendor/core/SimulationFrameMetrics.cs",
+      "sha256": "57f2d4e3a42a2b90c1f129e1399c25e88373d142c9cd7a45b922a1656af3cafb"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/SimulationSettings.cs",
+      "target": "scripts/vendor/core/SimulationSettings.cs",
+      "sha256": "d947181ee412d8d1952f4321b9d51da1bb82a700df9d65ba73f872101a271a6e"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/core/WorldState.cs",
+      "target": "scripts/vendor/core/WorldState.cs",
+      "sha256": "48e80dd964535ba06d596abff349c7ea596c55b79cce46e03aa5a5a10b69a44a"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/evolution/CircleSurvivalZone.cs",
+      "target": "scripts/vendor/evolution/CircleSurvivalZone.cs",
+      "sha256": "ddd5010859ff5e5037c9b2cad5f28cf2336e8b46a179451c7357342efb0fdbef"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/evolution/EvolutionCycleController.cs",
+      "target": "scripts/vendor/evolution/EvolutionCycleController.cs",
+      "sha256": "9944fde400ec04f4dd1b79c224c6bffb433a530493603362b63e1bd2ea2bd0a1"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/evolution/EvolutionSettings.cs",
+      "target": "scripts/vendor/evolution/EvolutionSettings.cs",
+      "sha256": "99b66bbb07565194d37111458a7ec4d05d0b7698b23533a4d35d67ef07fa9681"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/evolution/ISurvivalRule.cs",
+      "target": "scripts/vendor/evolution/ISurvivalRule.cs",
+      "sha256": "20e01f4387f80a1a36aa09c65c29a5f7d7745ea52d2a2d8fa40cab87e243118a"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/evolution/ISurvivalZone.cs",
+      "target": "scripts/vendor/evolution/ISurvivalZone.cs",
+      "sha256": "a81ffe44a85722592b86c9d0c2d10a4a47b29f92872ca154b05adf834a1214e3"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/evolution/MutationPolicy.cs",
+      "target": "scripts/vendor/evolution/MutationPolicy.cs",
+      "sha256": "18b688284bc053f903d01b290abe091bfaedbe2436bfb43e9f3c6ce98e3adbef"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/evolution/MutationSystem.cs",
+      "target": "scripts/vendor/evolution/MutationSystem.cs",
+      "sha256": "8cafa36c19ebb50a346b177ba3246a731ce949fe515ff6495e21386cd5cfb50b"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/evolution/RectangleSurvivalZone.cs",
+      "target": "scripts/vendor/evolution/RectangleSurvivalZone.cs",
+      "sha256": "0efb95f24f35e35a14b9c4f83e8c8abc5de328b2907e482cadf79db757354cf4"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/evolution/RegionSurvivalRule.cs",
+      "target": "scripts/vendor/evolution/RegionSurvivalRule.cs",
+      "sha256": "1a639fa1b7f6cd85031d0ecd4ea59fb4a34693bcb13f1bd3a1fd7b7a768c3948"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/evolution/ReproductionSystem.cs",
+      "target": "scripts/vendor/evolution/ReproductionSystem.cs",
+      "sha256": "58b837407dd66db0055ca503de9ccce64565f4e1471de4fc30057e019f43e452"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/evolution/RuleMutationProfile.cs",
+      "target": "scripts/vendor/evolution/RuleMutationProfile.cs",
+      "sha256": "08e0e6a2a6ab49597ab8475edf68efe2221a463ae3dad4bbf5c0d414a507e4ff"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/evolution/SurvivalEvaluation.cs",
+      "target": "scripts/vendor/evolution/SurvivalEvaluation.cs",
+      "sha256": "86f4cfa17a1122df842d328a35e214b17a9df23f17a1b34ad070459c27633b13"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/evolution/SurvivalRegionFactory.cs",
+      "target": "scripts/vendor/evolution/SurvivalRegionFactory.cs",
+      "sha256": "e3120d9c87d594bb74128103bde552d3be595e2cd2dd773c468ea230c8792585"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/evolution/SurvivalZoneDefinition.cs",
+      "target": "scripts/vendor/evolution/SurvivalZoneDefinition.cs",
+      "sha256": "bf69a81a12f3edc1f8f5a4d88adc4efb978e52ec26771a7ba64cd5c6fd08253d"
+    },
+    {
+      "source": "evolution-game/prototype/scripts/evolution/SurvivalZoneLayout.cs",
+      "target": "scripts/vendor/evolution/SurvivalZoneLayout.cs",
+      "sha256": "538c1774da574cee8c618d8097a773519d7acaccf74e6828a8dfa39e8501fc71"
+    }
+  ]
+}

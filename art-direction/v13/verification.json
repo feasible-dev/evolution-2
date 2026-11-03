@@ -1,0 +1,40 @@
+{
+  "build": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "functionalChecks": 9378,
+  "verificationSeconds": 31.23,
+  "generationsVerified": 40,
+  "finalSurvivors": 209,
+  "layout": {
+    "leftBand": 0.15,
+    "centerBoard": 0.7,
+    "rightBand": 0.15,
+    "cardsHiddenDuringPlay": true
+  },
+  "planning": {
+    "pausesWhileOpen": true,
+    "restoresPreviousPauseState": true,
+    "validatesForNextGeneration": true
+  },
+  "portraits": {
+    "nativeSize": [
+      192,
+      128
+    ],
+    "sharedColors": 16,
+    "framesVerified": 16,
+    "gerard": "prototype/assets/gerard-mccautry-v13b.png",
+    "rene": "prototype/assets/rene-le-chevalier-v13.png"
+  },
+  "opponent": "Reserved band; current level keeps its existing single simulation.",
+  "captures": [
+    "01-preparation.png",
+    "02-versos.png",
+    "03-selection-5-pourcent.png",
+    "04-terrain-central.png",
+    "05-modifier-cartes.png",
+    "06-quarante-generations.png"
+  ]
+}

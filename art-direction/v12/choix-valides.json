@@ -1,0 +1,8 @@
+{
+  "cible": "06 — Holographique",
+  "poussee": "P4 — Réacteur",
+  "virage": "V2 — Point et changement de cap ; trajectoire corrigée vers la droite, comme V1",
+  "frame": "v10 / ivoire orné",
+  "assets": "prototype/assets/cards-v12",
+  "scope": "Intégration des trois cartes au prototype jouable"
+}
