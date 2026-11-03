@@ -1,0 +1,36 @@
+{
+  "reference": {
+    "card": "Cible 06 / Holographique",
+    "frame": "../v10/cadre.svg",
+    "fontTitle": "Baskerville Old Face",
+    "fontEffect": "Book Antiqua"
+  },
+  "method": "SVG natifs, même cadre approuvé ; illustration différente pour chaque proposition.",
+  "effects": {
+    "poussee": {
+      "title": "Poussée",
+      "front": "Modifie la poussée.",
+      "backHeading": "Selon le cap du point.",
+      "backLines": [
+        "La valeur héritée renforce",
+        "ou réduit l’accélération."
+      ],
+      "backText": "La valeur héritée renforce ou réduit l’accélération.",
+      "backSummary": "Poussée héritée.",
+      "action": "AddThrottleBias"
+    },
+    "virage": {
+      "title": "Virage",
+      "front": "Modifie la rotation.",
+      "backHeading": "Un biais de rotation.",
+      "backLines": [
+        "Le sens et la force sont",
+        "hérités et peuvent muter."
+      ],
+      "backText": "Le sens et la force sont hérités et peuvent muter.",
+      "backSummary": "Rotation héritée.",
+      "action": "AddTurnBias"
+    }
+  },
+  "scope": "Maquettes graphiques. Aucune modification de la logique du jeu."
+}

@@ -1,0 +1,83 @@
+[
+  {
+    "id": "cible",
+    "title": "Cible",
+    "kind": "Action",
+    "text": "Accélère vers sa cible.",
+    "image": "Réticule, archer ou point visant un objectif.",
+    "state": "Déjà au niveau 1",
+    "code": "SteerToTarget"
+  },
+  {
+    "id": "poussee",
+    "title": "Poussée",
+    "kind": "Action",
+    "text": "Modifie la poussée.",
+    "image": "Soufflet de forge ; trait de propulsion derrière un point.",
+    "state": "Déjà au niveau 1",
+    "code": "AddThrottleBias"
+  },
+  {
+    "id": "virage",
+    "title": "Virage",
+    "kind": "Action",
+    "text": "Infléchit la rotation.",
+    "image": "Gouvernail ; flèche courbe.",
+    "state": "Déjà au niveau 1",
+    "code": "AddTurnBias"
+  },
+  {
+    "id": "frein",
+    "title": "Frein",
+    "kind": "Action",
+    "text": "Réduit la vitesse.",
+    "image": "Ancre ; point avec une courte trace de freinage.",
+    "state": "Présent dans le moteur, à introduire",
+    "code": "AddBrake"
+  },
+  {
+    "id": "orbite",
+    "title": "Orbite",
+    "kind": "Action",
+    "text": "Tourne autour de sa cible.",
+    "image": "Astrolabe ; point sur une trajectoire circulaire.",
+    "state": "Présent dans le moteur, à introduire",
+    "code": "OrbitTarget"
+  },
+  {
+    "id": "delai",
+    "title": "Délai",
+    "kind": "Condition",
+    "text": "S’active après un délai.",
+    "image": "Sablier ; mèche de bougie graduée.",
+    "state": "Présent dans le moteur, à introduire",
+    "code": "TimeGreaterOrEqual"
+  },
+  {
+    "id": "voisins",
+    "title": "Voisins",
+    "kind": "Condition",
+    "text": "S’active dès N voisins.",
+    "image": "Groupe de points dans un cercle.",
+    "state": "Présent dans le moteur, à introduire",
+    "code": "NeighborCountGreaterOrEqual"
+  },
+  {
+    "id": "proximite",
+    "title": "Proximité",
+    "kind": "Condition",
+    "text": "S’active à portée d’un point.",
+    "image": "Compas ; cercle de portée.",
+    "state": "Présent dans le moteur, à introduire",
+    "code": "DistanceToPointLessOrEqual"
+  },
+  {
+    "id": "zone",
+    "title": "Zone",
+    "kind": "Condition",
+    "text": "S’active d’un côté d’une limite.",
+    "image": "Porte ; frontière traversant le terrain.",
+    "state": "Présent dans le moteur, à introduire",
+    "code": "InsideHalfSpace"
+  }
+]

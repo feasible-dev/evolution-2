@@ -1,0 +1,82 @@
+{
+  "mode": "built-in image_gen",
+  "date": "2026-11-01",
+  "scope": "Four complete collectible-card art studies; no game logic changes.",
+  "referencePrior": [
+    "art-direction/v07/images/04-archer.png",
+    "art-direction/v07/images/03-periscope.png"
+  ],
+  "text": {
+    "title": "Cible",
+    "effect": "Accélère vers sa cible."
+  },
+  "cards": [
+    {
+      "number": "01",
+      "id": "verger",
+      "name": "Le serment du verger",
+      "file": "01-verger.png",
+      "source": "exec-71518ae5-ad21-4bad-a1fc-4494c5ff8a93.png",
+      "note": "Enluminure nocturne, pomme rouge et titre gravé.",
+      "prompt": "Use case: stylized-concept / collectible card design.\nCreate ONE finished original portrait-format collectible game card, full flat orthographic front, 2:3 aspect ratio, card fills image with no table/background/mockup perspective. Original fantasy trading-card craft and materiality, with a dominant illustration, a sculpted title plate at top and a small ivory rules panel below. Neo-retro hand-authored pixel painting: clear deliberate pixel clusters, early 16-bit adventure illustration, strong hand drawing, no photographic processing, no plastic 3D. Beautiful tangible card object rather than a computer dashboard. Black and BLUE dominant, ivory lettering/paper and restrained antique gold accents; NO overall brown cast. No animals or fantasy creatures, no franchise logos, no mana symbols, no rarity, cost, combat stats or flavor prose.\nText EXACTLY, concise and clearly readable:\nTop title: \"Cible\"\nSingle rules sentence: \"Accélère vers sa cible.\"\nNo other words, numbers or labels. A single recessed thin horizontal slider with a square brass thumb may sit at the bottom edge, with no numbers and no extra mechanism. Illustration fills about 60-65% of card. The rules text is large enough to read at small game-card size. Keep all text inside its plate and no cropping. No gradients in UI, no neon HUD.\nDIRECTION 1 — LE SERMENT DU VERGER. A medieval illuminated manuscript meets an old fantasy trading card. Elaborate but economical blue enamel and old brass frame, an arched illustration window, tiny carved oak leaf corner details, tall elegant engraved ROMAN SERIF title like Perpetua Titling; rules in a warm readable Garamond-like book serif.\nPicture: RED APPLE in the right foreground on a stone post, a single arrow precisely about to enter its center. A rugged human bowman in blue with a green cap is visible on the left middle ground aiming at it, with a distant blue castle and pale moon. The apple is the focal point, large and vivid, the line from bow to apple unmistakable. The apple is on the POST, never on a person's head. Angular medieval drawing, folktale atmosphere, deep lapis blue shadows and a few yellow highlights. Imaginative collectible illustration, no unnecessary people, no generic scenic landscape. Use the reference only for the human archery concept; redesign composition and frame completely.",
+      "output": "art-direction/v08/cartes/01-verger.png"
+    },
+    {
+      "number": "02",
+      "id": "tournoi",
+      "name": "Le champion du tournoi",
+      "file": "02-tournoi.png",
+      "source": "exec-32231df3-d344-40d0-98ef-bff8a21e1e20.png",
+      "note": "Héraldique, cible de tournoi et titre gothique.",
+      "prompt": "Use case: stylized-concept / collectible card design.\nCreate ONE finished original portrait-format collectible game card, full flat orthographic front, 2:3 aspect ratio, card fills image with no table/background/mockup perspective. Original fantasy trading-card craft and materiality, with a dominant illustration, a sculpted title plate at top and a small ivory rules panel below. Neo-retro hand-authored pixel painting: clear deliberate pixel clusters, early 16-bit adventure illustration, strong hand drawing, no photographic processing, no plastic 3D. Beautiful tangible card object rather than a computer dashboard. Black and BLUE dominant, ivory lettering/paper and restrained antique gold accents; NO overall brown cast. No animals or fantasy creatures, no franchise logos, no mana symbols, no rarity, cost, combat stats or flavor prose.\nText EXACTLY, concise and clearly readable:\nTop title: \"Cible\"\nSingle rules sentence: \"Accélère vers sa cible.\"\nNo other words, numbers or labels. A single recessed thin horizontal slider with a square brass thumb may sit at the bottom edge, with no numbers and no extra mechanism. Illustration fills about 60-65% of card. The rules text is large enough to read at small game-card size. Keep all text inside its plate and no cropping. No gradients in UI, no neon HUD.\nDIRECTION 2 — LE CHAMPION DU TOURNOI. Bold HERALDIC MEDIEVAL card, stronger simplified storybook silhouettes and colorful clean outlines, a collectible tournament prize. Frame is a dark blue shield-shaped arch with cream stone corner brackets, red enamel accents and a tiny gold bow emblem. Title in distinctive readable BLACKLETTER / Gothic calligraphy, not the Roman serif used on the other design; rules use a clear old book serif.\nPicture: confident bearded HUMAN Robin-Hood-like archer in a BLUE tunic and small green cap, torso on left, extended bow sweeping diagonally across the middle. A LARGE ROUND ARCHERY TARGET on the right with navy, ivory and red rings; at its center a red apple has been pierced cleanly by an arrow. An arc of a tournament banner is visible at top, but no crowd or extra text. The human is expressive, a little rough, and the visual instantly means precise aim. Rich blues, scarlet apple, ivory and yellow. Bigger graphic shapes and more character than design1, no realism or soft painted blur.",
+      "output": "art-direction/v08/cartes/02-tournoi.png"
+    },
+    {
+      "number": "03",
+      "id": "veilleur",
+      "name": "Le veilleur de l’Atlantique",
+      "file": "03-veilleur.png",
+      "source": "exec-9e065260-e360-4ec7-b7d5-a4e9c8d01e96.png",
+      "note": "Scène de commandement, acier gravé et lumière rouge.",
+      "prompt": "Use case: stylized-concept / original collectible card design.\nONE finished portrait-format collectible game card, full flat orthographic front, 2:3 ratio, fills image, no tabletop or perspective mockup. Physical collectible-card proportions and hierarchy: sculpted title plate at top, LARGE illustration about 60-65%, small IVORY rules panel beneath. Craft of a fantasy trading card adapted imaginatively to historical naval adventure. Neo-retro hand-authored pixel painting, bold readable pixel clusters and strong illustrated silhouettes. No photographic processing, plastic 3D, modern dashboard or futuristic HUD. Black/BLUE dominant, ivory and restrained metal accents. No animals, monsters, game logos, franchise branding, mana symbols, costs, rarity, combat stats, dates or flavor paragraphs.\nOnly text exactly:\nTitle: \"Cible\"\nRules: \"Accélère vers sa cible.\"\nNo other lettering or numbers. Clear text comfortably within plates. At very bottom a single narrow recessed slider with a square brass thumb, no values.\nNaval setting is fictional SECOND WORLD WAR ERA, 1940s, not modern submarines. Vintage periscopes, riveted steel, brass optics and wool uniforms. No political insignia, no real unit markings, no flags, no explosions or weapons firing. The concept AIM / TARGET must be visually unmistakable.\nDIRECTION 3 — LE VEILLEUR DE L’ATLANTIQUE. Atmospheric illustrated collectible card with an ornamental blackened navy/STEEL frame, silver engraved corner flourishes resembling old nautical instruments, tiny brass screws, small compass rose motif. The shape and craftsmanship feel like a fantasy card, not an equipment UI.\nTop title uses distinct COPPERPLATE engraved serif typography, wide chiselled small capitals. Rules use a clean old book serif.\nIllustration: cramped 1940s submarine control room, a rugged middle-aged HUMAN naval officer at the LEFT in a blue wool sweater and unmarked officer cap, one eye pressed to a large brass-and-black vintage periscope. His hands grip the optical handles. At RIGHT an elegant circular optical-view inset is integrated INTO the painting, showing choppy cobalt Atlantic water, a distant unmarked freighter silhouette precisely centered under a bold ivory/yellow mechanical crosshair. The inset is large enough that AIM is recognizable instantly. Red lamp gives a small red accent on his cheek, deep blue shadows, amber brass highlights. Strong scene with human tension and vintage adventure, no tiny control-panel clutter. The reference gives the crosshair concept only; invent a richer scene and a full physical collectible card.",
+      "output": "art-direction/v08/cartes/03-veilleur.png"
+    },
+    {
+      "number": "04",
+      "id": "lentille",
+      "name": "La lentille des profondeurs",
+      "file": "04-lentille.png",
+      "source": "exec-8ba772c6-b0d0-4d55-8a36-d77a9bfeefb3.png",
+      "note": "Optique mécanique, mer agitée et cadre riveté.",
+      "prompt": "Use case: stylized-concept / original collectible card design.\nONE finished portrait-format collectible game card, full flat orthographic front, 2:3 ratio, fills image, no tabletop or perspective mockup. Physical collectible-card proportions and hierarchy: sculpted title plate at top, LARGE illustration about 60-65%, small IVORY rules panel beneath. Craft of a fantasy trading card adapted imaginatively to historical naval adventure. Neo-retro hand-authored pixel painting, bold readable pixel clusters and strong illustrated silhouettes. No photographic processing, plastic 3D, modern dashboard or futuristic HUD. Black/BLUE dominant, ivory and restrained metal accents. No animals, monsters, game logos, franchise branding, mana symbols, costs, rarity, combat stats, dates or flavor paragraphs.\nOnly text exactly:\nTitle: \"Cible\"\nRules: \"Accélère vers sa cible.\"\nNo other lettering or numbers. Clear text comfortably within plates. At very bottom a single narrow recessed slider with a square brass thumb, no values.\nNaval setting is fictional SECOND WORLD WAR ERA, 1940s, not modern submarines. Vintage periscopes, riveted steel, brass optics and wool uniforms. No political insignia, no real unit markings, no flags, no explosions or weapons firing. The concept AIM / TARGET must be visually unmistakable.\nDIRECTION 4 — LA LENTILLE DES PROFONDEURS. A bolder, more graphic 1940s illustrated adventure collectible. Thick dark NAVY frame with ivory enamel, dark gunmetal sculpted corner shells and narrow red lacquer accents, a circular ARCH opening echoing an optical lens; elaborate tangible card craft but sparse and readable. Distinct robust OLD-FACE BOOK SERIF title with strong curved serifs (Baskerville-like), not futuristic block text and not the other card's Copperplate. Warm ivory rules plaque, big book serif sentence.\nIllustration: we are inside a vintage 1940s SUBMARINE PERISCOPE, a huge black steel and brass optical ring dominating foreground, showing an angry Atlantic sea in blue and ivory. A large crisp YELLOW crosshair aligns with the BRIDGE of a single distant grey unmarked freighter on the horizon; no weapon discharge. Foreground left edge shows a gloved hand turning a brass focus wheel, a short length of coiled cable and a mechanical sight rail; no human face. The composition uses bold diagonal art-deco/linocut rhythms in waves and shadows, chunky pixel clusters and very limited blue, ivory, yellow and red planes. No blue sky with cute clouds; this is dark weather, wartime tension and mechanical optics. No digital HUD or modern sonar. Push a strong memorable silhouette rather than generic game UI.",
+      "output": "art-direction/v08/cartes/04-lentille.png"
+    }
+  ],
+  "fontPairings": [
+    {
+      "id": "roman",
+      "name": "Perpetua Titling MT",
+      "body": "Garamond",
+      "label": "ROMAIN GRAVÉ"
+    },
+    {
+      "id": "gothic",
+      "name": "Old English Text MT",
+      "body": "Book Antiqua",
+      "label": "GOTHIQUE"
+    },
+    {
+      "id": "naval",
+      "name": "Copperplate Gothic Bold",
+      "body": "Palatino Linotype",
+      "label": "GRAVURE NAVALE"
+    },
+    {
+      "id": "book",
+      "name": "Baskerville Old Face",
+      "body": "Garamond",
+      "label": "LIVRE ANCIEN"
+    }
+  ],
+  "note": "Generated text is raster concept art. The gallery specimens use actual locally installed fonts. No installed font files redistributed."
+}

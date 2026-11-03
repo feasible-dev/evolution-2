@@ -13,3 +13,12 @@ obj/
 # IDE files
 .vs/
 .vscode/
+prototype/.godot/
+prototype/.mono/
+prototype/bin/
+prototype/obj/
+prototype/*.sln
+prototype/*.slnx
+prototype/*.csproj.user
+prototype/*.log
+.cache/

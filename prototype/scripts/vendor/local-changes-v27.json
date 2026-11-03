@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-02",
+  "unchangedFiles": 43,
+  "changes": [
+    {
+      "file": "scripts/vendor/core/BoardGeometry.cs",
+      "originalSha256": "04a6b341a2f98509197135c1ea9e681bc5746a276a260464d84786efa3956c98",
+      "localSha256": "6e02c2b028a2036754afd2aaa3717910ec1753615bb3f9e3030ce0e371ddf9ca",
+      "reason": "Cached outlines and straight-edge fast paths; polygon corners and tie cases retained. Larger shared rink corners and physical radius inset (v23)."
+    },
+    {
+      "file": "scripts/vendor/core/Simulation.cs",
+      "originalSha256": "2e59943ecd7eadaf095b7c8b9191140f17c06ee74a4a9077cc21d4a36e358fc9",
+      "localSha256": "f139cbed3391b34da350f5e0315865fbad9c5b8d566e51005798dafce34b4054",
+      "reason": "Observations based on actual inherited gene needs; stop collision solver only after a pass without corrections. Contact-scale broad-phase cells use actual maximum radius (v23)."
+    },
+    {
+      "file": "scripts/vendor/core/WorldState.cs",
+      "localSha256": "99d6c0e72131a2a308b321185e8b04afd8531ddc0a3643bb80d1166384e63d62",
+      "reason": "Internal size setter keeps live world dimensions synchronized with the full-height arena."
+    },
+    {
+      "file": "scripts/vendor/evolution/EvolutionSettings.cs",
+      "reason": "Explicit fixed physical profile for fair duels; null retains original physical evolution.",
+      "localSha256": "84ea1177a2bcdd13d81c348eeebd31c69101ffdffe2665e8c16b4710831d0ada"
+    },
+    {
+      "file": "scripts/vendor/evolution/ReproductionSystem.cs",
+      "reason": "Explicit fixed physical profile for fair duels; null retains original physical evolution.",
+      "localSha256": "5ce0821df6051c1b9e228c49ac2bf53b24a19deb24ee0593cfef131bfdec76eb"
+    }
+  ]
+}

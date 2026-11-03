@@ -1,0 +1,54 @@
+{
+  "build": {
+    "errors": 0,
+    "warnings": 0
+  },
+  "functionalChecks": 11561,
+  "verificationSeconds": 31.62,
+  "generationsVerified": 40,
+  "finalSurvivors": 209,
+  "budget": {
+    "total": 10,
+    "automatic": true,
+    "integerPlansChecked": 66,
+    "requestedValuesPerCard": 11,
+    "example": {
+      "before": [
+        3,
+        3,
+        4
+      ],
+      "pushTo8": [
+        1,
+        8,
+        1
+      ]
+    },
+    "dragReturnRestoresOriginal": true,
+    "appliesNextGeneration": true
+  },
+  "dialogue": {
+    "presentersCentered": true,
+    "gerardBubble": "left",
+    "reneBubble": "right",
+    "lastLineRetained": true,
+    "roleLabelsRemoved": true
+  },
+  "motion": {
+    "gazeAtlases": 2,
+    "paletteColors": 16,
+    "renderedFramesChecked": 28,
+    "clock": "real time",
+    "periodSeconds": 18,
+    "partnerGlanceDuringSpeech": true
+  },
+  "captures": [
+    "01-preparation.png",
+    "02-versos-et-dialogue.png",
+    "03-budget-automatique.png",
+    "04-terrain-central.png",
+    "05-modifier-cartes.png",
+    "06-quarante-generations.png"
+  ],
+  "engineNote": "Headless long-test exit reports ObjectDB instances leaked; interactive capture and portrait review complete successfully."
+}
