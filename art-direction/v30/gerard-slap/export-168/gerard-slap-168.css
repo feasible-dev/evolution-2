@@ -1,0 +1,35 @@
+/* Pixelbolt: atlas coordinates are pixels at the exported scale. */
+.pf-gerard-slap-168 {
+  display: inline-block;
+  width: 168px; height: 168px;
+  background-image: url("gerard-slap-168.png");
+  background-repeat: no-repeat; image-rendering: pixelated;
+}
+.pf-gerard-slap-168-slap { background-position: -1px -1px; animation: pf-gerard-slap-168-slap 2340ms steps(1, end) 1 forwards; }
+@keyframes pf-gerard-slap-168-slap {
+  0% { background-position: -1px -1px; }
+  38.46153846% { background-position: -171px -1px; }
+  43.58974359% { background-position: -341px -1px; }
+  47.86324786% { background-position: -511px -1px; }
+  55.55555556% { background-position: -1px -171px; }
+  58.54700855% { background-position: -171px -171px; }
+  66.23931624% { background-position: -341px -171px; }
+  72.22222222% { background-position: -511px -171px; }
+  100% { background-position: -511px -171px; }
+}
+.pf-gerard-slap-168-review { background-position: -1px -1px; animation: pf-gerard-slap-168-review 2340ms steps(1, end) infinite; }
+@keyframes pf-gerard-slap-168-review {
+  0% { background-position: -1px -1px; }
+  38.46153846% { background-position: -171px -1px; }
+  43.58974359% { background-position: -341px -1px; }
+  47.86324786% { background-position: -511px -1px; }
+  55.55555556% { background-position: -1px -171px; }
+  58.54700855% { background-position: -171px -171px; }
+  66.23931624% { background-position: -341px -171px; }
+  72.22222222% { background-position: -511px -171px; }
+  100% { background-position: -1px -1px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pf-gerard-slap-168-slap { animation: none; }
+  .pf-gerard-slap-168-review { animation: none; }
+}

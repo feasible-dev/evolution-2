@@ -1,0 +1,68 @@
+[
+  {
+    "id": "stand",
+    "title": "Too enthusiastic",
+    "durations": [
+      850,
+      180,
+      220,
+      1000,
+      250,
+      650,
+      500
+    ],
+    "labels": [
+      "Watching",
+      "Hands on desk",
+      "Rising",
+      "Standing — gaze up-left",
+      "Sitting down",
+      "Sideways reaction",
+      "Rest"
+    ]
+  },
+  {
+    "id": "glance",
+    "title": "A knowing look",
+    "durations": [
+      700,
+      200,
+      450,
+      700,
+      600,
+      600,
+      500
+    ],
+    "labels": [
+      "Watching",
+      "Turn toward partner",
+      "Eye contact",
+      "The joke",
+      "Shared amusement",
+      "Return",
+      "Rest"
+    ]
+  },
+  {
+    "id": "slap",
+    "title": "The table slap",
+    "durations": [
+      800,
+      160,
+      180,
+      90,
+      500,
+      650,
+      500
+    ],
+    "labels": [
+      "Watching",
+      "Prepare",
+      "Anticipation",
+      "Impact",
+      "Reaction",
+      "Settle",
+      "Rest"
+    ]
+  }
+]

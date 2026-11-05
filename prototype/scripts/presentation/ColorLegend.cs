@@ -15,7 +15,7 @@ public partial class ColorLegend : Control
         {
             DrawRect(new Rect2(x, 8, 15, 15), d.Color);
             DrawString(font, new Vector2(x + 24, 23), d.Name, fontSize: 16, modulate: Paper);
-            x += d.Id == BehaviorChoice.Target ? 225 : 170;
+            x += d.Id == BehaviorChoice.Direction ? 225 : 170;
         }
         DrawRect(new Rect2(x, 8, 15, 15), Muted, false, 2);
         DrawString(font, new Vector2(x + 25, 23), L10n.Text("plan.no_rule"), fontSize: 15, modulate: Muted);

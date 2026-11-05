@@ -1,4 +1,59 @@
-# Evolution 2 — Révision 21 : largeur complète et défilement lisible
+# Evolution Wars — v41 face continuity and card cleanup
+
+Direction uses one clear arrow. Gerard's smaller excited faces are brought
+closer to the normal portrait scale; speech keeps the chin and neck stable,
+with restrained lip-only animation. Sources, previous art and a before/after
+animation gallery are retained in `../art-direction/v41/`.
+
+## v40 continuous stadium marquee
+
+One full-width LED band now rotates current statistics and broadcast messages.
+Orange/blue dominate; rare result alerts use bold larger red lettering and a
+brief full-screen red treatment. Central score dividers and several decorative
+blue borders are removed. Details: `../art-direction/v40/README.md`.
+
+## v39 upright posture and LED messages
+
+Gerard rests with an upright neck and follows major milestones with a spoken,
+animated seated aftermath and delayed exchange with René. The scrolling message
+strips are stationary multicolor LED dot grids. Details and review gallery:
+`../art-direction/v39/README.md`, `../art-direction/v39/index.html`.
+
+## v38 unified broadcast style
+
+The default commentators now use one refined portrait library for seated,
+speaking, gaze, blink, standing and desk-reaction poses. Shared master poses
+and palette prevent the earlier static/cartoon style switch. The ticker has
+an original colorful pixel alphabet, French accents and occasional letter
+swells. Review gallery: `../art-direction/v38/index.html`; implementation notes:
+`../art-direction/v38/README.md`. Earlier artwork remains preserved.
+
+## v37 direction and rink attention
+
+The first-level action cards are now Turn, Thrust and Direction. Direction is
+an inherited absolute angle, with circular mutation and no target knowledge.
+Commentators follow real concentrations and occasional individual agents, with
+independent irregular timing. Large reactions accompany exceptional outcomes
+and their commentary: 95%, perfect survival or a generation wipeout. Ordinary
+selection does not trigger standing. Details: `../art-direction/v37/README.md`.
+
+## v36 broadcast foundation
+
+The first level now uses the simplified v35 commentators, with independently
+timed conversational glances and new speaking poses for Le Chevalier. The first
+selection triggers a table reaction; strong survival results trigger standing,
+with a delayed partner reaction and a longer standing hold. Animations run in
+real time, including during pause, with a cooldown between big gestures.
+
+Launch normally with `Lancer-Evolution2.ps1` or `Lancer-Evolution2.cmd` from the
+repository root. The older, more textured v34 art study remains preserved in
+`../art-direction/v34/duo-scenes/`. This is a playable style trial; facial texture
+may return in a later compromise. Notes: `../art-direction/v36/broadcast/README.md`.
+
+The earlier revision notes below describe previous implementations; v36
+supersedes their fixed-body portrait rendering and synchronized gaze behavior.
+
+## Earlier layout and gameplay revision notes
 
 Le mode d’affichage `canvas_items / expand` utilise toute la fenêtre, sans bandes noires latérales sur les écrans larges. Au-delà du cadrage de base, la largeur supplémentaire est répartie entre les deux panneaux joueurs ; l’arène reste centrée. Les deux bandes de messages défilent exclusivement de droite à gauche. Captures larges : `../art-direction/v21/captures`.
 

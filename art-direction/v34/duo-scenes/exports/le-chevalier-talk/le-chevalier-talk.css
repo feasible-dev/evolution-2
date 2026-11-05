@@ -1,0 +1,21 @@
+/* Pixelbolt: atlas coordinates are pixels at the exported scale. */
+.pf-le-chevalier-talk {
+  display: inline-block;
+  width: 192px; height: 128px;
+  background-image: url("le-chevalier-talk.png");
+  background-repeat: no-repeat; image-rendering: pixelated;
+}
+.pf-le-chevalier-talk-talk { background-position: -1px -1px; animation: pf-le-chevalier-talk-talk 1420ms steps(1, end) 1 forwards; }
+@keyframes pf-le-chevalier-talk-talk {
+  0% { background-position: -1px -1px; }
+  21.12676056% { background-position: -195px -1px; }
+  30.28169014% { background-position: -389px -1px; }
+  41.54929577% { background-position: -583px -1px; }
+  50.70422535% { background-position: -1px -131px; }
+  61.26760563% { background-position: -195px -131px; }
+  78.87323944% { background-position: -389px -131px; }
+  100% { background-position: -389px -131px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pf-le-chevalier-talk-talk { animation: none; }
+}

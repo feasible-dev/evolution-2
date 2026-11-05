@@ -1,0 +1,185 @@
+{
+  "frames": {
+    "pose-0": {
+      "frame": {
+        "x": 1,
+        "y": 1,
+        "w": 192,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 192,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 128
+      },
+      "duration": 800
+    },
+    "pose-1": {
+      "frame": {
+        "x": 195,
+        "y": 1,
+        "w": 192,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 192,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 128
+      },
+      "duration": 160
+    },
+    "pose-2": {
+      "frame": {
+        "x": 389,
+        "y": 1,
+        "w": 192,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 192,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 128
+      },
+      "duration": 180
+    },
+    "pose-3": {
+      "frame": {
+        "x": 583,
+        "y": 1,
+        "w": 192,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 192,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 128
+      },
+      "duration": 90
+    },
+    "pose-4": {
+      "frame": {
+        "x": 1,
+        "y": 131,
+        "w": 192,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 192,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 128
+      },
+      "duration": 500
+    },
+    "pose-5": {
+      "frame": {
+        "x": 195,
+        "y": 131,
+        "w": 192,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 192,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 128
+      },
+      "duration": 650
+    },
+    "pose-6": {
+      "frame": {
+        "x": 389,
+        "y": 131,
+        "w": 192,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 192,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 128
+      },
+      "duration": 500
+    }
+  },
+  "animations": {
+    "slap": {
+      "frames": [
+        "pose-0",
+        "pose-1",
+        "pose-2",
+        "pose-3",
+        "pose-4",
+        "pose-5",
+        "pose-6"
+      ],
+      "loop": false,
+      "duration": 2880
+    }
+  },
+  "meta": {
+    "app": "Pixelbolt",
+    "version": "1",
+    "image": "gerard-slap.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 776,
+      "h": 260
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "slap",
+        "from": 0,
+        "to": 6,
+        "direction": "forward"
+      }
+    ]
+  }
+}

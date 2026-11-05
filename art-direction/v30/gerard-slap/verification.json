@@ -1,0 +1,55 @@
+{
+  "source": {
+    "width": 1774,
+    "height": 887,
+    "alpha": true
+  },
+  "tools": {
+    "pixelbolt": "0.11.0",
+    "sharp": "0.34.5"
+  },
+  "variants": [
+    {
+      "size": 192,
+      "paletteSize": 15,
+      "provenance": {
+        "format": "pixelforge-raster-import",
+        "version": 1,
+        "sha256": "5e035ae3f6f1e9d3ded71f1d490f50b081ea37eb7f40eb7e9336b243b7523236",
+        "width": 768,
+        "height": 384,
+        "encoding": {
+          "colorType": "indexed",
+          "bitDepth": 4,
+          "tRNS": true
+        },
+        "lossless": true,
+        "hiddenRGB": "not kept: tRNS gives a fully transparent pixel its palette entry's or key's colour",
+        "representation": "palette grids with hidden-RGB corrections",
+        "authoritative": "The imported recipe. Original drawing operations cannot be reconstructed; rebuild generators must explicitly incorporate it."
+      },
+      "gifNotes": []
+    },
+    {
+      "size": 168,
+      "paletteSize": 15,
+      "provenance": {
+        "format": "pixelforge-raster-import",
+        "version": 1,
+        "sha256": "2b13b2513e39870d44dad09acd82992a5a4cf0be4a3da75bf3b1db08ecbed5f3",
+        "width": 672,
+        "height": 336,
+        "encoding": {
+          "colorType": "indexed",
+          "bitDepth": 4,
+          "tRNS": true
+        },
+        "lossless": true,
+        "hiddenRGB": "not kept: tRNS gives a fully transparent pixel its palette entry's or key's colour",
+        "representation": "palette grids with hidden-RGB corrections",
+        "authoritative": "The imported recipe. Original drawing operations cannot be reconstructed; rebuild generators must explicitly incorporate it."
+      },
+      "gifNotes": []
+    }
+  ]
+}

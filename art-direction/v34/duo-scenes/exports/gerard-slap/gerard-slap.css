@@ -1,0 +1,21 @@
+/* Pixelbolt: atlas coordinates are pixels at the exported scale. */
+.pf-gerard-slap {
+  display: inline-block;
+  width: 192px; height: 128px;
+  background-image: url("gerard-slap.png");
+  background-repeat: no-repeat; image-rendering: pixelated;
+}
+.pf-gerard-slap-slap { background-position: -1px -1px; animation: pf-gerard-slap-slap 2880ms steps(1, end) 1 forwards; }
+@keyframes pf-gerard-slap-slap {
+  0% { background-position: -1px -1px; }
+  27.77777778% { background-position: -195px -1px; }
+  33.33333333% { background-position: -389px -1px; }
+  39.58333333% { background-position: -583px -1px; }
+  42.70833333% { background-position: -1px -131px; }
+  60.06944444% { background-position: -195px -131px; }
+  82.63888889% { background-position: -389px -131px; }
+  100% { background-position: -389px -131px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pf-gerard-slap-slap { animation: none; }
+}

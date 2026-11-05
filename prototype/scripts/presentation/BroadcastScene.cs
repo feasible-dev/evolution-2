@@ -36,6 +36,9 @@ public partial class BroadcastScene : Control
     private int _lastBubbleSpeaker = -1;
     private float _lastSpeechAge = -1;
     private double _broadcastTime;
+    private readonly ArenaAttention _attention = new();
+    private BroadcastAnimationAssets? _animationAssets;
+    public BroadcastAnimationDirector? AnimationDirector { get; private set; }
     public IReadOnlyList<PortraitView> Presenters => _portraits;
     public string SpeechFor(int speaker) => _bubbleLines[speaker];
     public Rect2 BubbleArea(int speaker) => new(_bubbles[speaker].Position, _bubbles[speaker].Size);
@@ -64,19 +67,28 @@ public partial class BroadcastScene : Control
         for (var i = 0; i < 2; i++)
         {
             var style = new StyleBoxFlat { BgColor = new Color("09192b"), BorderColor = new Color("263e57"),
-                BorderWidthLeft = 1, BorderWidthRight = 1, BorderWidthTop = 1, BorderWidthBottom = 1,
+                BorderWidthLeft = 0, BorderWidthRight = 0, BorderWidthTop = 0, BorderWidthBottom = 0,
                 CornerRadiusTopLeft = 8, CornerRadiusTopRight = 8, CornerRadiusBottomLeft = 8, CornerRadiusBottomRight = 8 };
             _bubbleStyles[i] = style;
             var panel = new Panel { MouseFilter = MouseFilterEnum.Ignore }; AddChild(panel); panel.AddThemeStyleboxOverride("panel", style);
             _bubbles[i] = panel;
-            _bubbleNames[i] = Text(panel, i == 0 ? "Gérard" : "René", 13, Muted);
+            _bubbleNames[i] = Text(panel, i == 0 ? "Gerard" : "René", 13, Muted);
             _bubbleTexts[i] = Text(panel, "", 17);
             _bubbleTexts[i].AutowrapMode = TextServer.AutowrapMode.WordSmart;
         }
         _portraits = new[] { new PortraitView(), new PortraitView() };
         foreach (var p in _portraits) AddChild(p);
-        _portraits[0].Initialize("res://assets/gerard-mccautry-v13b.png", "res://assets/gerard-gazes-v14.png");
-        _portraits[1].Initialize("res://assets/rene-le-chevalier-v13.png", "res://assets/rene-gazes-v14.png");
+        if (OS.GetCmdlineUserArgs().Contains("--portrait-review") || OS.GetCmdlineUserArgs().Contains("--classic-portraits"))
+        {
+            _portraits[0].Initialize("res://assets/gerard-mccautry-v13b.png", "res://assets/gerard-gazes-v14.png");
+            _portraits[1].Initialize("res://assets/rene-le-chevalier-v13.png", "res://assets/rene-gazes-v14.png");
+        }
+        else
+        {
+            _animationAssets = new BroadcastAnimationAssets();
+            AnimationDirector = new BroadcastAnimationDirector(_animationAssets.EventDurations);
+            for (var i = 0; i < 2; i++) _portraits[i].InitializeAnimation(_animationAssets, i);
+        }
         Preparation = new RulePreparationPanel
         {
             Session = Session, Updated = () => { Click(); SyncUi(); }
@@ -139,9 +151,17 @@ public partial class BroadcastScene : Control
         _sound = Button(this, L10n.Text("ui.sound_on"), () => { AudioEnabled = !AudioEnabled; _sound.Text = AudioEnabled ? L10n.Text("ui.sound_on") : L10n.Text("ui.sound_off"); }, 12);
         _sound.TooltipText = L10n.Text("ui.sound_tip");
         MakeClickSound(); CollectCanvasItems(this);
+        var impactLayer = new CanvasLayer { Layer = 100 };
+        AddChild(impactLayer);
+        impactLayer.AddChild(new BroadcastImpactOverlay { Billboard = Billboard });
         Arrange(); SyncUi();
         var args = OS.GetCmdlineUserArgs();
-        if (args.Contains("--portrait-review"))
+        if (args.Contains("--broadcast-review"))
+        {
+            SetProcess(false);
+            Callable.From(() => { _ = BroadcastAnimationChecks.Review(this); }).CallDeferred();
+        }
+        else if (args.Contains("--portrait-review"))
         {
             SetProcess(false);
             Callable.From(() => { _ = Playtest.ReviewPortraits(this); }).CallDeferred();
@@ -163,6 +183,8 @@ public partial class BroadcastScene : Control
         _broadcastTime += delta;
         var before = Session.SimulatedSeconds;
         Session.Tick(MathF.Min((float)delta, .1f), frameBudgetMilliseconds: 16);
+        _attention.Update(_broadcastTime, delta, Session);
+        Session.TryArenaComment(_attention.Concentration, _attention.TrackingAgent);
         _rateReal += delta; _rateSim += Session.SimulatedSeconds - before;
         if (_rateReal >= .5) { _measuredSpeed = (float)(_rateSim / _rateReal / LevelOneSession.BaseTimeScale); _rateReal = _rateSim = 0; }
         SyncUi();
@@ -172,7 +194,10 @@ public partial class BroadcastScene : Control
     {
         if (what == NotificationResized && _board is not null) Arrange();
         if (what == NotificationPredelete)
+        {
             foreach (var style in _bubbleStyles) style.Dispose();
+            _animationAssets?.Dispose();
+        }
     }
 
     public override void _UnhandledKeyInput(InputEvent @event)
@@ -207,11 +232,20 @@ public partial class BroadcastScene : Control
             }
             _ownState.Text = L10n.Text("plan.locked");
         }
-        var mouth = Session.IsSpeaking && (int)(Session.SpeechAge * 7) % 3 != 0;
-        for (var i = 0; i < 2; i++)
-            _portraits[i].SetFrame(Session.Speaker == i ? Session.Expression : 0, Session.Speaker == i && mouth, Session.Speaker == i);
-        var looks = PresenterMotion.At(_broadcastTime, Session.Speaker, Session.SpeechAge, Session.IsSpeaking);
-        _portraits[0].SetGaze(looks.Gerard); _portraits[1].SetGaze(looks.Rene);
+        if (AnimationDirector is not null)
+        {
+            AnimationDirector.Update(_broadcastTime, Session.SpeechSequence, Session.Speaker, Session.SpeechAge, Session.IsSpeaking,
+                Session.Completed, Session.GestureSequence, Session.Gesture, _attention);
+            for (var i = 0; i < 2; i++) _portraits[i].ShowAnimation(AnimationDirector.Frames[i]);
+        }
+        else
+        {
+            var mouth = Session.IsSpeaking && (int)(Session.SpeechAge * 7) % 3 != 0;
+            for (var i = 0; i < 2; i++)
+                _portraits[i].SetFrame(Session.Speaker == i ? Session.Expression : 0, Session.Speaker == i && mouth, Session.Speaker == i);
+            var looks = PresenterMotion.At(_broadcastTime, Session.Speaker, Session.SpeechAge, Session.IsSpeaking);
+            _portraits[0].SetGaze(looks.Gerard); _portraits[1].SetGaze(looks.Rene);
+        }
         UpdateBubbles();
         _boardTitle.Text = Session.Discovered ? L10n.Text("ui.selection_known") : L10n.Text("ui.selection_unknown");
         _clock.Text = $"G{Session.Period:000}   {Session.Cycle.GenerationElapsedSeconds:00.0} / {LevelOneSession.PeriodSeconds:0} s";
@@ -235,7 +269,7 @@ public partial class BroadcastScene : Control
     {
         var stats = MotionSummary.Measure(team);
         label.Text = L10n.Text("physics.summary", stats.Speed, stats.EnergyPercent,
-            stats.AccelerationCapacity, stats.Mass, stats.Drag, team.Simulation.Settings.FixedTargetAcceleration ?? 0);
+            stats.AccelerationCapacity, stats.Mass, stats.Drag, team.Simulation.Settings.FixedWorldRuleAcceleration ?? 0);
         label.TooltipText = L10n.Text("physics.help", team.Simulation.Settings.MaxSpeed, stats.Exhausted);
     }
 
@@ -254,8 +288,6 @@ public partial class BroadcastScene : Control
             var active = i == Session.Speaker;
             _bubbleTexts[i].VisibleCharacters = active && Session.IsSpeaking ? Math.Max(1, (int)(Session.SpeechAge * 48)) : -1;
             _bubbleTexts[i].Modulate = active ? Colors.White : new Color(.82f, .88f, .94f);
-            var border = active ? new Color("397ea4") : new Color("263e57");
-            if (_bubbleStyles[i].BorderColor != border) _bubbleStyles[i].BorderColor = border;
         }
     }
 
@@ -263,6 +295,8 @@ public partial class BroadcastScene : Control
     {
         Array.Fill(_bubbleLines, "");
         _lastBubbleSpeaker = -1; _lastBubbleText = ""; _lastSpeechAge = -1; _broadcastTime = 0;
+        AnimationDirector?.Reset();
+        _attention.Reset();
     }
 
     private void Arrange()
@@ -273,8 +307,8 @@ public partial class BroadcastScene : Control
         Place(_brand, 26, 8, 350, 24); Place(_status, w - 350, 8, 324, 24);
         Place(OpponentIdentity, 16, 36, side - 32, 128);
         Place(PlayerIdentity, w - side + 16, 36, side - 32, 128);
-        Place(_portraits[0], w * .5f - 188, 36, 192, 128);
-        Place(_portraits[1], w * .5f - 4, 36, 192, 128);
+        Place(_portraits[0], w * .5f - 192, 36, 192, 128);
+        Place(_portraits[1], w * .5f, 36, 192, 128);
         var bubbleWidth = w * .5f - 202 - side;
         Place(_bubbles[0], side, 36, bubbleWidth, 128);
         Place(_bubbles[1], w * .5f + 202, 36, bubbleWidth, 128);
@@ -285,7 +319,7 @@ public partial class BroadcastScene : Control
         }
         Place(Preparation, (w - 660) * .5f, 190, 660, h - 205);
         Preparation.Visible = !running;
-        Place(Billboard, side, 174, middle, 38);
+        Place(Billboard, side, 168, middle, 46);
         var boardHeight = MathF.Max(200, h - 252 - ReservedFooterHeight);
         Place(_board, side, 244, middle, boardHeight);
         Session.ResizeArena(new Vector2(1280, 1280 * (boardHeight - 12) / (middle - 12)));
@@ -330,14 +364,11 @@ public partial class BroadcastScene : Control
     public override void _Draw()
     {
         var side = SideWidth;
-        DrawLine(new Vector2(side, 167), new Vector2(Size.X - side, 167), new Color("2367b2"), 1);
         if (Session.HasStarted)
         {
             DrawRect(new Rect2(side, Size.Y - ReservedFooterHeight, Size.X - side * 2, ReservedFooterHeight - 8), new Color("040a12"));
             DrawRect(new Rect2(8, 210, side - 16, Size.Y - 218), new Color("040d17"));
             DrawRect(new Rect2(Size.X - side + 8, 210, side - 16, Size.Y - 218), new Color("040d17"));
-            DrawLine(new Vector2(side - 8, 179), new Vector2(side - 8, Size.Y - 8), new Color("102b50"), 1);
-            DrawLine(new Vector2(Size.X - side + 8, 179), new Vector2(Size.X - side + 8, Size.Y - 8), new Color("102b50"), 1);
         }
     }
     private void CollectCanvasItems(Node parent)

@@ -62,21 +62,21 @@ public static class Playtest
             {
                 var duel = new LevelOneSession();
                 duel.ResizeArena(new Vector2(1280, 756));
-                duel.SetAllocation(BehaviorChoice.Throttle, 3); duel.SetAllocation(BehaviorChoice.Target, 7);
+                duel.SetAllocation(BehaviorChoice.Throttle, 3); duel.SetAllocation(BehaviorChoice.Direction, 7);
                 duel.Start(new BudgetPlan(2, 2, 6)); duel.SetSpeed(10);
                 AdvanceUntil(duel, () => duel.Period == 12, 50);
                 duel.SetSpeed(1); duel.Tick(9);
                 foreach (var team in new[] { duel, duel.Opponent! })
                 {
-                    var targets = team.Simulation.WorldState.Agents.Where(a => BehaviorCatalog.For(a)?.Id == BehaviorChoice.Target).ToArray();
-                    Check(targets.All(a => MathF.Abs(AgentVisualPalette.GetDisplayRule(a.Genome.Program).Scalar - 1) < .0001f),
-                        "target strength cannot evolve into a team-specific acceleration bonus");
+                    var directions = team.Simulation.WorldState.Agents.Where(a => BehaviorCatalog.For(a)?.Id == BehaviorChoice.Direction).ToArray();
+                    Check(directions.All(a => MathF.Abs(AgentVisualPalette.GetDisplayRule(a.Genome.Program).Scalar - 1) < .0001f),
+                        "direction strength cannot evolve into a team-specific acceleration bonus");
                     Check(team.Simulation.WorldState.Agents.All(a => a.Genome.DecisionIntervalSeconds == .2f
                         && a.Genome.DecisionIntervalJitterSeconds == 0), "all agents share the same decision cadence after twelve generations");
-                    Check(targets.Where(a => a.CurrentIntent.WorldAccelerationWish.LengthSquared() > .000001f)
+                    Check(directions.Where(a => a.CurrentIntent.WorldAccelerationWish.LengthSquared() > .000001f)
                         .All(a => MathF.Abs(a.CurrentIntent.WorldAccelerationWish.Length() - 44) < .001f),
-                        "actual target push has identical magnitude despite different cards and inherited targets");
-                    GD.Print(FormattableString.Invariant($"DUEL {(ReferenceEquals(team, duel) ? "BLUE" : "RED")}: G{team.Period} speed={targets.Average(a => a.Velocity.Length()):0.00}; target strength={targets.Average(a => AgentVisualPalette.GetDisplayRule(a.Genome.Program).Scalar):0.000}; world push={targets.Average(a => a.CurrentIntent.WorldAccelerationWish.Length()):0.000}; decision interval={targets.Average(a => a.Genome.DecisionIntervalSeconds):0.000}; energy={targets.Average(a => a.Energy):0.00}"));
+                        "actual direction push has identical magnitude despite different cards and inherited directions");
+                    GD.Print(FormattableString.Invariant($"DUEL {(ReferenceEquals(team, duel) ? "BLUE" : "RED")}: G{team.Period} speed={directions.Average(a => a.Velocity.Length()):0.00}; direction strength={directions.Average(a => AgentVisualPalette.GetDisplayRule(a.Genome.Program).Scalar):0.000}; world push={directions.Average(a => a.CurrentIntent.WorldAccelerationWish.Length()):0.000}; decision interval={directions.Average(a => a.Genome.DecisionIntervalSeconds):0.000}; energy={directions.Average(a => a.Energy):0.00}"));
                 }
                 scene.GetTree().Quit(0); return;
             }
@@ -85,7 +85,7 @@ public static class Playtest
                 var session = new LevelOneSession(); var plan = new BudgetPlan(7, 3, 0);
                 session.SetAllocation(BehaviorChoice.Turn, plan.Turn);
                 session.SetAllocation(BehaviorChoice.Throttle, plan.Throttle);
-                session.SetAllocation(BehaviorChoice.Target, plan.Target);
+                session.SetAllocation(BehaviorChoice.Direction, plan.Direction);
                 session.SetSpeed(1); session.Start(plan);
                 var rival = session.Opponent!;
                 var sample = MotionSummary.Measure(session);
@@ -208,7 +208,7 @@ public static class Playtest
             CheckLocalization();
             var s = scene.Session;
             Check(scene.Preparation.Cards.Length == 3, "three approved cards are in the playable scene");
-            Check(MathF.Abs(scene.Presenters[1].Position.X - scene.Presenters[0].Position.X - 184) < .01f,
+            Check(MathF.Abs(scene.Presenters[1].Position.X - scene.Presenters[0].Position.X - 192) < .01f,
                 "presenters sit together at the center");
             Check(scene.BubbleArea(0).End.X < scene.Presenters[0].Position.X
                 && scene.BubbleArea(1).Position.X > scene.Presenters[1].Position.X + 192,
@@ -217,8 +217,9 @@ public static class Playtest
             s.Tick(4); s.Tick(1); scene.SyncUi();
             Check(scene.SpeechFor(0) == gerardLine && scene.SpeechFor(1) == s.Speech && s.Speaker == 1,
                 "each presenter keeps his own side of the conversation");
-            Check(scene.Presenters.All(p => p.Gaze == PortraitGaze.Partner && p.HasGazeAtlas),
-                "the presenters briefly look at each other during Rene's explanation");
+            if (scene.AnimationDirector is not null) BroadcastAnimationChecks.Run(scene);
+            else Check(scene.Presenters.All(p => p.Gaze == PortraitGaze.Partner && p.HasGazeAtlas),
+                "legacy portraits briefly look at each other during Rene's explanation");
             s.Tick(2); scene.SyncUi();
             Check(scene.Presenters.All(p => p.Gaze == PortraitGaze.Board), "eyes return to the action after the conversational glance");
             scene.ResetButton.EmitSignal(Button.SignalName.Pressed);
@@ -263,7 +264,7 @@ public static class Playtest
                 "freed points can be assigned independently while cards are flipped");
             propulsion.Flip();
             var beforeInvalid = s.Draft;
-            Check(!s.SetAllocation(BehaviorChoice.Target, 11) && s.Draft == beforeInvalid, "out of range is rejected");
+            Check(!s.SetAllocation(BehaviorChoice.Direction, 11) && s.Draft == beforeInvalid, "out of range is rejected");
             scene.Preparation.ClearButton.EmitSignal(Button.SignalName.Pressed);
             scene.Preparation.Sliders[2].Value = 10;
             Check(s.Draft == new BudgetPlan(0, 0, 10), "ten available points can be assigned to one card");
@@ -271,7 +272,7 @@ public static class Playtest
             CheckPerfectSurvival();
             CheckOpponent();
             scene.Primary.EmitSignal(Button.SignalName.Pressed);
-            Check(s.HasStarted && s.Active.Target == 10 && s.Simulation.WorldState.Agents.Count == LevelOneSession.Population, "start uses actual budget");
+            Check(s.HasStarted && s.Active.Direction == 10 && s.Simulation.WorldState.Agents.Count == LevelOneSession.Population, "start uses actual budget");
             Check(scene.BoardVisible && !scene.Preparation.Visible,
                 "starting hides the large cards and reveals the arena");
             var expectedArena = MathF.Min(scene.Size.X * .7f, 1008);
@@ -279,7 +280,7 @@ public static class Playtest
                 && MathF.Abs(scene.BoardArea.Position.X - (scene.Size.X - expectedArena) / 2) < .01f,
                 "widescreen surplus is assigned equally to both player panels");
             var lockedPlan = s.Draft;
-            Check(!s.SetAllocation(BehaviorChoice.Target, 0) && !s.ApplyPlan(), "running round rejects edits and revalidation");
+            Check(!s.SetAllocation(BehaviorChoice.Direction, 0) && !s.ApplyPlan(), "running round rejects edits and revalidation");
             s.ClearPlan();
             Check(s.Draft == lockedPlan && s.Active == lockedPlan && s.Pending is null, "clear cannot change a running plan");
             scene.SpeedSlider.Value = 7;
@@ -311,22 +312,22 @@ public static class Playtest
             if (OS.GetCmdlineUserArgs().Contains("--cards-test"))
             { GD.Print($"CARDS PASS: {_checks} checks including locked round and sidebars"); scene.GetTree().Quit(0); return; }
             scene.ResetButton.EmitSignal(Button.SignalName.Pressed);
-            s.SetAllocation(BehaviorChoice.Target, 10); scene.SyncUi(); s.SetSpeed(1); scene.Primary.EmitSignal(Button.SignalName.Pressed);
+            s.SetAllocation(BehaviorChoice.Direction, 10); scene.SyncUi(); s.SetSpeed(1); scene.Primary.EmitSignal(Button.SignalName.Pressed);
             Advance(s, LevelOneSession.PeriodSeconds / LevelOneSession.BaseTimeScale - .1f);
             Check(!s.Discovered && s.Completed == 0, "5-percent criterion remains hidden before first selection");
             Advance(s, .22f);
             Check(s.Completed == 1 && s.Stage == BroadcastStage.Selection, "first cutoff records once and holds briefly");
             Advance(s, .12f);
             Check(s.Discovered, "first selection reveals the narrow zone");
-            var zone = (RectangleSurvivalZone)SurvivalRegionFactory.CreateZones(LevelOneSession.WorldSize, LevelOneSession.RightEdge())[0];
-            Check(MathF.Abs(zone.Bounds.Size.X / LevelOneSession.WorldSize.X - .05f) < .00001f
-                && MathF.Abs(zone.Bounds.Position.X / LevelOneSession.WorldSize.X - .95f) < .00001f,
+            var zone = (RectangleSurvivalZone)SurvivalRegionFactory.CreateZones(s.ArenaSize, LevelOneSession.RightEdge())[0];
+            Check(MathF.Abs(zone.Bounds.Size.X / s.ArenaSize.X - .05f) < .00001f
+                && MathF.Abs(zone.Bounds.Position.X / s.ArenaSize.X - .95f) < .00001f,
                 "survival band is exactly the rightmost 5 percent");
             var rule = new RegionSurvivalRule(new ISurvivalZone[] { zone });
             foreach (var agent in s.Simulation.WorldState.Agents)
                 Check(s.Survivors.Contains(agent) == rule.Evaluate(agent, s.Simulation.WorldState, new EvolutionSettings()).Survives,
                     "visible survivors equal original geographical selection");
-            Check(s.Survivors.All(a => a.Position.X > LevelOneSession.WorldSize.X * .95f && a.MaxDistanceFromBirth >= 6),
+            Check(s.Survivors.All(a => a.Position.X > s.ArenaSize.X * .95f && a.MaxDistanceFromBirth >= 6),
                 "survivors are inside narrow strip and have moved");
             Advance(s, .7f);
             Check(s.Period == 2 && s.Stage == BroadcastStage.Running, "generation advances automatically without a review click");
@@ -392,7 +393,7 @@ public static class Playtest
         var profile = BehaviorCatalog.Profile(plan); var pool = BehaviorCatalog.Pool(plan);
         var random = new Random(70); var hits = 0;
         for (var i = 0; i < 3000; i++)
-            if (GeneRuleFactory.CreateRandomRule(random, pool, LevelOneSession.PeriodSeconds, 0, profile).ActionKind == GeneActionKind.SteerToTarget) hits++;
+            if (GeneRuleFactory.CreateRandomRule(random, pool, LevelOneSession.PeriodSeconds, 0, profile).ActionKind == GeneActionKind.AccelerateDirection) hits++;
         Check(MathF.Abs(hits / 3000f - .8f) < .03f, "8/10 budget matches 80 percent conditional action draws");
     }
     private static void CheckLocalization()
@@ -416,7 +417,7 @@ public static class Playtest
     private static void FillBalanced(LevelOneSession s)
     {
         s.ClearPlan(); s.SetAllocation(BehaviorChoice.Turn, 3);
-        s.SetAllocation(BehaviorChoice.Throttle, 3); s.SetAllocation(BehaviorChoice.Target, 4);
+        s.SetAllocation(BehaviorChoice.Throttle, 3); s.SetAllocation(BehaviorChoice.Direction, 4);
     }
     private static void CheckIndependentAllocation()
     {
@@ -462,7 +463,7 @@ public static class Playtest
         var s = new LevelOneSession(); FillBalanced(s); s.SetSpeed(10); s.Start();
         var rival = s.Opponent!;
         Check(rival.HasStarted && rival.Active.Total == 10 && rival.Speed == 10, "opponent commits a full budget and shares speed");
-        Check(!rival.SetAllocation(BehaviorChoice.Target, 0), "opponent cards lock during the round");
+        Check(!rival.SetAllocation(BehaviorChoice.Direction, 0), "opponent cards lock during the round");
         Check(!ReferenceEquals(s.Simulation, rival.Simulation)
             && s.Simulation.WorldState.Agents[0].Position == rival.Simulation.WorldState.Agents[0].Position,
             "teams have separate populations with matched starting positions");
@@ -573,7 +574,7 @@ public static class Playtest
         scene.Preparation.Sliders[1].Value = 8;
         await Save("03-budget-automatique.png");
         if (OS.GetCmdlineUserArgs().Contains("--capture-cards")) return;
-        scene.Session.ClearPlan(); scene.Session.SetAllocation(BehaviorChoice.Target, 10); scene.Preparation.Refresh();
+        scene.Session.ClearPlan(); scene.Session.SetAllocation(BehaviorChoice.Direction, 10); scene.Preparation.Refresh();
         scene.Primary.EmitSignal(Button.SignalName.Pressed);
         scene.SpeedSlider.Value = 10;
         AdvanceUntil(scene.Session, () => scene.Session.Completed >= 1 && scene.Session.Discovered, 4);

@@ -10,5 +10,6 @@ public enum GeneActionKind
     AddThrottleBias,
     SteerToTarget,
     OrbitTarget,
-    AddBrake
+    AddBrake,
+    AccelerateDirection
 }

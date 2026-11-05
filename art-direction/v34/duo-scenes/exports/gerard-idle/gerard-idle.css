@@ -1,0 +1,21 @@
+/* Pixelbolt: atlas coordinates are pixels at the exported scale. */
+.pf-gerard-idle {
+  display: inline-block;
+  width: 192px; height: 128px;
+  background-image: url("gerard-idle.png");
+  background-repeat: no-repeat; image-rendering: pixelated;
+}
+.pf-gerard-idle-idle { background-position: -1px -1px; animation: pf-gerard-idle-idle 4790ms steps(1, end) 1 forwards; }
+@keyframes pf-gerard-idle-idle {
+  0% { background-position: -1px -1px; }
+  31.31524008% { background-position: -195px -1px; }
+  44.88517745% { background-position: -389px -1px; }
+  47.18162839% { background-position: -583px -1px; }
+  49.89561587% { background-position: -1px -131px; }
+  64.50939457% { background-position: -195px -131px; }
+  83.29853862% { background-position: -389px -131px; }
+  100% { background-position: -389px -131px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pf-gerard-idle-idle { animation: none; }
+}

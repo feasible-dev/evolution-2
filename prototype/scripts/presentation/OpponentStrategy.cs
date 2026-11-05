@@ -5,10 +5,10 @@ public static class OpponentStrategy
 {
     public static BudgetPlan Choose(int round)
     {
-        // Favor inherited targets for the right-edge challenge, with a little exploration.
+        // Favor the simple direction action, without setting an angle or knowing the safe zone.
         var random = new Random(1907 + round * 73);
-        var target = random.Next(6, 10);
-        var turn = random.Next(0, Math.Min(2, BudgetPlan.Limit - target) + 1);
-        return new BudgetPlan(turn, BudgetPlan.Limit - target - turn, target);
+        var direction = random.Next(6, 10);
+        var turn = random.Next(0, Math.Min(2, BudgetPlan.Limit - direction) + 1);
+        return new BudgetPlan(turn, BudgetPlan.Limit - direction - turn, direction);
     }
 }

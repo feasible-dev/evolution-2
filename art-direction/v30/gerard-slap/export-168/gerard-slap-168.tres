@@ -1,0 +1,104 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="gerard-slap-168.png" id="1_sheet"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rest"]
+atlas = ExtResource("1_sheet")
+region = Rect2(1, 1, 168, 168)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_prepare"]
+atlas = ExtResource("1_sheet")
+region = Rect2(171, 1, 168, 168)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lift"]
+atlas = ExtResource("1_sheet")
+region = Rect2(341, 1, 168, 168)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_anticipate"]
+atlas = ExtResource("1_sheet")
+region = Rect2(511, 1, 168, 168)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_impact"]
+atlas = ExtResource("1_sheet")
+region = Rect2(1, 171, 168, 168)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hold"]
+atlas = ExtResource("1_sheet")
+region = Rect2(171, 171, 168, 168)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_recover"]
+atlas = ExtResource("1_sheet")
+region = Rect2(341, 171, 168, 168)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rest_end"]
+atlas = ExtResource("1_sheet")
+region = Rect2(511, 171, 168, 168)
+filter_clip = true
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 90.0,
+"texture": SubResource("AtlasTexture_rest")
+}, {
+"duration": 12.0,
+"texture": SubResource("AtlasTexture_prepare")
+}, {
+"duration": 10.0,
+"texture": SubResource("AtlasTexture_lift")
+}, {
+"duration": 18.0,
+"texture": SubResource("AtlasTexture_anticipate")
+}, {
+"duration": 7.0,
+"texture": SubResource("AtlasTexture_impact")
+}, {
+"duration": 18.0,
+"texture": SubResource("AtlasTexture_hold")
+}, {
+"duration": 14.0,
+"texture": SubResource("AtlasTexture_recover")
+}, {
+"duration": 65.0,
+"texture": SubResource("AtlasTexture_rest_end")
+}],
+"loop": false,
+"name": &"slap",
+"speed": 100.0
+}, {
+"frames": [{
+"duration": 90.0,
+"texture": SubResource("AtlasTexture_rest")
+}, {
+"duration": 12.0,
+"texture": SubResource("AtlasTexture_prepare")
+}, {
+"duration": 10.0,
+"texture": SubResource("AtlasTexture_lift")
+}, {
+"duration": 18.0,
+"texture": SubResource("AtlasTexture_anticipate")
+}, {
+"duration": 7.0,
+"texture": SubResource("AtlasTexture_impact")
+}, {
+"duration": 18.0,
+"texture": SubResource("AtlasTexture_hold")
+}, {
+"duration": 14.0,
+"texture": SubResource("AtlasTexture_recover")
+}, {
+"duration": 65.0,
+"texture": SubResource("AtlasTexture_rest_end")
+}],
+"loop": true,
+"name": &"review",
+"speed": 100.0
+}]

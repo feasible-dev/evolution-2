@@ -2,10 +2,10 @@ using EvoPrototype.Core;
 
 namespace EvolutionTwo.Presentation;
 
-/// <summary>Shared action strengths and decision cadence. Only behavior choices and targets evolve.</summary>
+/// <summary>Shared action strengths and cadence. Behavior choices and absolute directions evolve.</summary>
 public static class DuelMotionPolicy
 {
-    public const float TargetAcceleration = 44;
+    public const float DirectionAcceleration = 44;
     public const float DecisionInterval = .2f;
     public const float ExplorationWeight = .121f;
 
@@ -23,6 +23,7 @@ public static class DuelMotionPolicy
         return rule.ActionKind switch
         {
             GeneActionKind.SteerToTarget => rule with { Scalar = 1 },
+            GeneActionKind.AccelerateDirection => rule with { Scalar = 1 },
             GeneActionKind.AddThrottleBias => rule with { Scalar = 1 },
             GeneActionKind.AddTurnBias => rule with { Scalar = rule.Scalar < 0 ? -1 : 1 },
             _ => rule

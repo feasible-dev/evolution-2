@@ -16,8 +16,30 @@ public partial class PortraitView : TextureRect
     private float _mouth, _gazeBlend = 1;
     private int _gazeFrom, _gazeTo;
     private bool _continuous;
+    private BroadcastAnimationAssets? _animations;
+    private int _actor;
+    public bool UsesAnimation => _animations is not null;
+    public BroadcastPortraitFrame AnimationFrame { get; private set; }
     public PortraitGaze Gaze { get; private set; }
     public bool HasGazeAtlas => _gazePoses is not null;
+
+    public void InitializeAnimation(BroadcastAnimationAssets assets, int actor)
+    {
+        _animations = assets; _actor = actor;
+        ExpandMode = ExpandModeEnum.IgnoreSize;
+        StretchMode = StretchModeEnum.KeepAspectCentered;
+        TextureFilter = TextureFilterEnum.Nearest;
+        MouseFilter = MouseFilterEnum.Ignore;
+        ShowAnimation(new("conversation", 0, PortraitGaze.Board));
+    }
+
+    public void ShowAnimation(BroadcastPortraitFrame pose)
+    {
+        if (_animations is null) return;
+        AnimationFrame = pose; Gaze = pose.Gaze;
+        Texture = _animations.Get(_actor, pose);
+        Modulate = Colors.White;
+    }
 
     public void Initialize(string asset, string? gazeAsset = null)
     {
@@ -56,6 +78,7 @@ public partial class PortraitView : TextureRect
 
     public void SetFrame(int pose, bool speaking, bool active)
     {
+        if (UsesAnimation) return;
         _pose = Math.Clamp(pose, 0, 3); _speaking = speaking;
         UpdateFrame();
         Modulate = Colors.White;
@@ -63,6 +86,7 @@ public partial class PortraitView : TextureRect
 
     public void SetGaze(PortraitGaze gaze)
     {
+        if (UsesAnimation) return;
         Gaze = gaze;
         UpdateFrame();
     }

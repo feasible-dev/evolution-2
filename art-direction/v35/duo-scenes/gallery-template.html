@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evolution Wars — Clear faces, delayed reactions</title>
+<style>
+:root{color-scheme:dark}body{margin:0;background:#050b12;color:#dce8f4;font:16px system-ui}header,main,footer{max-width:1050px;margin:auto;padding:24px}header{padding-bottom:0}h1{font-size:30px;margin:8px 0}h2{font-size:22px;margin-top:0}.eyebrow{color:#2bcafa;font-size:13px;letter-spacing:2px}p{color:#a5bdd0;line-height:1.55}article{padding:20px;margin-bottom:26px;background:#091522;border:1px solid #23435b;border-radius:8px}canvas{display:block;width:768px;max-width:100%;aspect-ratio:3/1;image-rendering:pixelated;background:#081522}button,select{font:inherit;padding:7px 12px;background:#132c43;border:1px solid #346480;border-radius:4px;color:white;cursor:pointer}button:hover{background:#25485e}.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px}input{width:200px;vertical-align:middle}a{color:#59d3f5}.status{font-size:14px;color:#a6c3d8;display:block;margin-top:14px}.links,footer{font-size:14px}.note{color:#d3b285}header button{margin-bottom:20px}footer{padding-top:0}
+</style>
+<header><div class="eyebrow">EVOLUTION WARS / ANIMATION STUDIES 35</div><h1>Clear faces. Reactions with a beat.</h1><p>Broad color clusters, restrained eyes and a quieter face. Gerard rises first; Le Chevalier notices, turns, then looks up. The standing sequence includes a longer hold and small arm gestures. The table slap expresses astonishment.</p><button id="all">Pause all</button><p class="note">Review assets, not installed in the game. Generated key poses with separately timed actors; not continuous anatomical interpolation.</p></header>
+<main id="gallery"></main><footer>Built-in image generator · local Sharp preparation · Pixelbolt GIF and Godot exports. Facial contours stay fixed during basic speech. Subtle costume and posture differences remain in the larger generated gestures. <a href="README.md">Asset notes</a> · <a href="generation.json">Generation prompts</a> · <a href="verification.json">Export checks</a></footer>
+<script>
+const scenes = /* SCENE_DATA */;
+const players=[];
+for(const scene of scenes){
+ const el=document.createElement('article');
+ el.innerHTML=`<h2>${scene.title}</h2><p>${scene.description}</p><canvas width="384" height="128" aria-label="${scene.description}"></canvas><div class="controls"><button class="play">Pause</button><button class="replay">Replay</button><select aria-label="Playback speed"><option value="1">Normal speed</option><option value="0.5">Half speed</option><option value="0.25">Quarter speed</option></select><input aria-label="Animation frame" type="range" min="0" max="${scene.steps.length-1}" value="0"></div><span class="status"></span><p class="links"><a href="${scene.id}.gif">Animated GIF</a> · <a href="${scene.source}-source.png">Illustrated poses</a> · <a href="${scene.id}-sheet.png">Timed sprite sheet</a></p>`;
+ document.querySelector('#gallery').append(el);
+ const image=new Image();image.src=scene.id+'-sheet.png';
+ const p={scene,image,el,playing:true,age:0,frame:0,speed:1,ctx:el.querySelector('canvas').getContext('2d')};
+ p.ctx.imageSmoothingEnabled=false;
+ p.setPlaying=value=>{p.playing=value;el.querySelector('.play').textContent=value?'Pause':'Play'};
+ el.querySelector('.play').onclick=()=>p.setPlaying(!p.playing);
+ el.querySelector('.replay').onclick=()=>{p.age=0;p.frame=0;p.setPlaying(true)};
+ el.querySelector('select').onchange=e=>p.speed=Number(e.target.value);
+ el.querySelector('input').oninput=e=>{p.setPlaying(false);p.frame=Number(e.target.value);p.age=scene.steps.slice(0,p.frame).reduce((n,s)=>n+s.ms,0)};
+ players.push(p);
+}
+let last=performance.now(),allPlaying=true;
+document.querySelector('#all').onclick=e=>{allPlaying=!allPlaying;players.forEach(p=>p.setPlaying(allPlaying));e.target.textContent=allPlaying?'Pause all':'Play all'};
+function tick(now){
+ const dt=Math.min(now-last,100);last=now;
+ for(const p of players){
+  if(p.playing){p.age=(p.age+dt*p.speed)%p.scene.steps.reduce((n,s)=>n+s.ms,0);let t=p.age;p.frame=0;while(p.frame<p.scene.steps.length-1&&t>=p.scene.steps[p.frame].ms)t-=p.scene.steps[p.frame++].ms;}
+  if(p.image.complete&&p.image.naturalWidth)p.ctx.drawImage(p.image,0,p.frame*128,384,128,0,0,384,128);
+  p.el.querySelector('input').value=p.frame;
+  p.el.querySelector('.status').textContent=`${p.frame+1}/${p.scene.steps.length} · ${(p.age/1000).toFixed(2)} s · ${p.scene.steps[p.frame].label}`;
+ }
+ requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+</script></html>

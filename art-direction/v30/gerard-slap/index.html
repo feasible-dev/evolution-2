@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evolution Wars — Gerard animation study</title>
+<style>
+body{margin:32px;background:#050b12;color:#dce8f4;font:16px system-ui}h1{font-size:24px}p{max-width:850px;color:#a5bbce}main{display:flex;gap:28px;flex-wrap:wrap}figure{margin:0}canvas{width:384px;height:384px;max-width:90vw;max-height:90vw;image-rendering:pixelated;background:#091522;border:1px solid #25445e}button,input{margin:12px 12px 12px 0}button{background:#152e43;border:1px solid #387397;color:white;padding:9px 18px;cursor:pointer}figcaption{margin:10px 0}a{color:#53cfff}.warning{color:#e7bd83}
+</style>
+<h1>Evolution Wars — Gerard table slap</h1>
+<p>Pose generation: built-in image generator. Sprite import, timing, GIF/APNG and Godot exports: Pixelbolt 0.11.0. These are offline art studies, not replacements for the current game portraits.</p>
+<button id="play">Pause</button><button id="restart">Replay</button><label>Frame <input id="frame" type="range" min="0" max="7" value="0"><span id="label"></span></label>
+<main><figure><canvas id="a" width="192" height="192"></canvas><figcaption>192 × 192 source — <a href="preview-192.gif">GIF</a></figcaption></figure><figure><canvas id="b" width="168" height="168"></canvas><figcaption>168 × 168 source, same display size — <a href="preview-168.gif">GIF</a></figcaption></figure></main>
+<p class="warning">Review points: the shirt motifs and hair silhouette still vary. The arm lift reads clearly; the impact needs a stronger body response. The square crop is an animation study and still needs adaptation to the game's wider seated portrait framing.</p>
+<p>The table is drawn separately and stays fixed. The last frame reuses the exact first frame. Transparency is binary and the palette is shared across each sequence.</p>
+<script>
+const sizes=[192,168], canvases=[document.querySelector('#a'),document.querySelector('#b')];
+const images=sizes.map(size=>{const image=new Image();image.src=`sheet-${size}.png`;return image});
+const durations=[900,120,100,180,70,180,140,650],names=['Rest','Prepare','Lift','Anticipate','Impact','Hold','Recover','Rest'];
+let playing=true,age=0,last=performance.now(),selected=0;
+const slider=document.querySelector('#frame'),button=document.querySelector('#play');
+button.onclick=()=>{playing=!playing;button.textContent=playing?'Pause':'Play'};
+document.querySelector('#restart').onclick=()=>{age=0;selected=0;playing=true;button.textContent='Pause'};
+slider.oninput=()=>{playing=false;button.textContent='Play';selected=Number(slider.value)};
+function tick(now){if(playing){age=(age+Math.min(now-last,100))%durations.reduce((a,b)=>a+b,0);let t=age;selected=0;while(t>=durations[selected]&&selected<7)t-=durations[selected++];}last=now;
+ canvases.forEach((canvas,i)=>{const s=sizes[i],ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,s,s);ctx.fillStyle='#132c43';ctx.fillRect(0,Math.round(s*.95),s,s);if(images[i].complete&&images[i].naturalWidth)ctx.drawImage(images[i],selected%4*s,Math.floor(selected/4)*s,s,s,0,0,s,s);ctx.fillStyle='#326382';ctx.fillRect(0,Math.round(s*.96),s,1)});
+ slider.value=selected;document.querySelector('#label').textContent=`${selected+1}/8 — ${names[selected]}`;requestAnimationFrame(tick)}requestAnimationFrame(tick);
+</script></html>

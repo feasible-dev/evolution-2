@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Evolution Wars — v38 style pass</title>
+<style>body{background:#06101c;color:#e0edff;font:16px system-ui;max-width:1000px;margin:32px auto;padding:0 20px}h1{color:#35e6ff}h2{font-size:20px;color:#ffe64b}img,canvas{image-rendering:pixelated;max-width:100%}section{background:#081522;padding:20px;margin:24px 0;border:1px solid #285680}button{background:#173253;color:white;padding:10px;border:1px solid #35e6ff;cursor:pointer}.swatch{display:inline-block;width:90px;height:28px;margin:5px}p{line-height:1.5}</style>
+<h1>Evolution Wars / v38</h1><p>One refined character style for watching, speaking, glancing and reacting. The previous libraries remain preserved.</p>
+<section><h2>Conversation and rink attention</h2><canvas id="actors" width="768" height="256"></canvas><p>Same neutral body and shared palette; mouths and eyes are registered patches.</p></section>
+<section><h2>Standing — delayed reaction</h2><img src="stand.gif" alt="Gerard stands; Rene reacts after him"></section>
+<section><h2>Desk reaction</h2><img src="slap.gif" alt="A surprised desk slap and delayed listener response"></section>
+<section><h2>Evolution Arena Pixel</h2><canvas id="ticker" width="900" height="70"></canvas><p>Original 5-column alphabet · French accents · right-to-left movement · brief traveling swell.</p><button id="effects">Pause preview</button><div><span class="swatch" style="background:#35e6ff" title="#35e6ff"></span><span class="swatch" style="background:#ff55bb" title="#ff55bb"></span><span class="swatch" style="background:#ffe64b" title="#ffe64b"></span><span class="swatch" style="background:#ff963c" title="#ff963c"></span><span class="swatch" style="background:#8bff76" title="#8bff76"></span><span class="swatch" style="background:#b497ff" title="#b497ff"></span></div><img src="alphabet-preview.png" alt="Full original alphabet"></section>
+<script>
+const spec={"name":"Evolution Arena Pixel","license":"Original project artwork","characters":"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ .,:;!?'\"-/%+=()&*•—’…×ÉÀÈÙÂÊÎÔÛÄËÏÖÜÇŒ","columns":16,"cellWidth":8,"cellHeight":12,"palette":["#35e6ff","#ff55bb","#ffe64b","#ff963c","#8bff76","#b497ff"]},root='../../prototype/assets/broadcast-v38/';
+const load=n=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.src=root+n+'.png'});
+Promise.all(['gerard-conversation','rene-conversation','rink','ticker-alphabet'].map(load)).then(([g,r,rink,font])=>{
+const a=document.querySelector('#actors').getContext('2d'),t=document.querySelector('#ticker').getContext('2d');a.imageSmoothingEnabled=t.imageSmoothingEnabled=false;
+let paused=false,clock=0,last=0;document.querySelector('#effects').onclick=e=>{paused=!paused;e.target.textContent=paused?'Resume preview':'Pause preview'};
+const text='ÉVOLUTION WARS • À VOUS DE JOUER ! 95% / 100% • WHO WILL SURVIVE?   ',advance=16,width=text.length*advance;
+function draw(now){if(!paused)clock+=(now-last)/1000;last=now;
+a.clearRect(0,0,768,256);const phase=clock%12;
+for(let actor=0;actor<2;actor++){const talk=(Math.floor(clock*7)%3),look=phase>4+actor*.7&&phase<7+actor*.5;
+if(phase>8){const f=phase<10?0:2;a.drawImage(rink,actor*192,f*128,192,128,actor*384,0,384,256)}else a.drawImage(actor?r:g,0,(look?(talk?6:5):talk)*128,192,128,actor*384,0,384,256)}
+t.fillStyle='#081522';t.fillRect(0,0,900,70);let word=0;const offset=clock*42%width,p=clock%8;
+for(let x=-offset;x<900;x+=width){word=0;for(let i=0;i<text.length;i++){if(i&&text[i-1]==' '&&text[i]!=' ')word++;const pos=x+i*advance;if(pos<-20||pos>900)continue;const glyph=spec.characters.indexOf(text[i]);if(glyph<0)continue;const swell=p<2.2?Math.max(0,1-Math.abs(pos-p/2.2*900)/70):0,scale=2*(1+.14*swell);t.save();t.translate(pos+(16-8*scale)/2,35-6*scale);t.drawImage(font,glyph%16*8,Math.floor(glyph/16)*12,8,12,0,0,8*scale,12*scale);t.globalCompositeOperation='source-atop';t.fillStyle=spec.palette[word%6];t.fillRect(0,0,8*scale,12*scale);t.restore();}}
+requestAnimationFrame(draw)}requestAnimationFrame(n=>{last=n;draw(n)});
+});</script></html>

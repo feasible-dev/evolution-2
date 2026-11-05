@@ -81,6 +81,6 @@ public partial class GenerationTimeline : Control
         var index = (int)MathF.Floor((mouse.Position.X - Left) / Step);
         TooltipText = index >= 0 && index < rows.Length
             ? L10n.Text("chart.tooltip", rows[index].Period, rows[index].Survivors, LevelOneSession.Population,
-                rows[index].SurvivalRate, rows[index].Plan.Turn, rows[index].Plan.Throttle, rows[index].Plan.Target) : "";
+                rows[index].SurvivalRate, rows[index].Plan.Turn, rows[index].Plan.Throttle, rows[index].Plan.Direction) : "";
     }
 }

@@ -15,6 +15,8 @@ public readonly record struct GeneRule(
 {
     public Vector2 ConditionPointNormalized { get; init; } = new Vector2(0.5f, 0.5f);
     public float ConditionOrientationNormalized { get; init; } = 0.0f;
+    // Absolute world angle, in turns: 0 points right, .25 down. Inherited and circular.
+    public float DirectionAngleNormalized { get; init; }
 
     public static GeneRule Disabled => new(
         Enabled: false,

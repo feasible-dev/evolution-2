@@ -1,0 +1,5 @@
+{
+  "tool": "built-in image_gen",
+  "reference": "rink-gazes-source.png",
+  "prompt": "Edit this exact 2-column by4-row pixel-art animation sheet. Keep its dimensions, eight panels, every character's pose, clothing, hair, glasses, skin shading, head angle, background, desk and placement EXACTLY unchanged. Only close BOTH characters' eyes in every panel for a quick blink: thin warm dark eyelid lines behind their existing glasses, zero white sclera visible. Mouths stay exactly as in source (some open, some closed). This is a precisely registered blink overlay source, not a redesign. Preserve the same pixel scale and tiny eyes. Do not move anything, do not add text."
+}

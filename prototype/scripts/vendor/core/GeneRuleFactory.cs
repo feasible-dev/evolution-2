@@ -9,6 +9,8 @@ namespace EvoPrototype.Core;
 /// </summary>
 public static class GeneRuleFactory
 {
+    public static float MutateDirection(float angle, float sample, float strength)
+        => Mathf.PosMod(angle + (sample * 2 - 1) * MathF.Max(0, strength), 1);
     public static GeneProgram CreateRandomProgram(Random random, GenePoolDefinition genePool, float generationDurationSeconds)
     {
         var primaryRule = CreateRandomRule(random, genePool, generationDurationSeconds, disableChance: 0.35d, RuleMutationProfile.Empty);
@@ -92,7 +94,8 @@ public static class GeneRuleFactory
                 ConditionPointNormalized = new Vector2(
                     GetTargetCoordinateSpec().SampleInitial(random),
                     GetTargetCoordinateSpec().SampleInitial(random)),
-                ConditionOrientationNormalized = GetConditionOrientationSpec(conditionKind).SampleInitial(random)
+                ConditionOrientationNormalized = GetConditionOrientationSpec(conditionKind).SampleInitial(random),
+                DirectionAngleNormalized = actionKind == GeneActionKind.AccelerateDirection ? (float)random.NextDouble() : 0
             };
 
             if (!IsForbiddenRule(candidate))
@@ -278,6 +281,13 @@ public static class GeneRuleFactory
             targetY = Clamp(source.TargetPointNormalized.Y, 0.0f, 1.0f);
         }
 
+        var direction = source.DirectionAngleNormalized;
+        if (actionKind == GeneActionKind.AccelerateDirection)
+        {
+            if (source.ActionKind != actionKind) direction = (float)random.NextDouble();
+            else if (random.NextDouble() < actionParameterMutationChance)
+                direction = MutateDirection(direction, (float)random.NextDouble(), actionMutationStrength);
+        }
         var result = new GeneRule(
             Enabled: true,
             ConditionKind: conditionKind,
@@ -287,7 +297,8 @@ public static class GeneRuleFactory
             TargetPointNormalized: new Vector2(targetX, targetY))
         {
             ConditionPointNormalized = conditionPoint,
-            ConditionOrientationNormalized = conditionOrientation
+            ConditionOrientationNormalized = conditionOrientation,
+            DirectionAngleNormalized = direction
         };
 
         if (IsForbiddenRule(result))
@@ -347,8 +358,8 @@ public static class GeneRuleFactory
 
     private static GeneActionKind PickActionKind(Random random, GenePoolDefinition genePool, RuleMutationProfile ruleMutationProfile)
     {
-        Span<GeneActionKind> available = stackalloc GeneActionKind[5];
-        Span<float> weights = stackalloc float[5];
+        Span<GeneActionKind> available = stackalloc GeneActionKind[6];
+        Span<float> weights = stackalloc float[6];
         var count = 0;
 
         if (genePool.AllowTurnBiasAction)
@@ -363,6 +374,11 @@ public static class GeneRuleFactory
             weights[count++] = GetWeightedPopularity(ruleMutationProfile.GetActionPopularity(GeneActionKind.AddThrottleBias, 0.55f));
         }
 
+        if (genePool.AllowDirectionAction)
+        {
+            available[count] = GeneActionKind.AccelerateDirection;
+            weights[count++] = GetWeightedPopularity(ruleMutationProfile.GetActionPopularity(GeneActionKind.AccelerateDirection, .55f));
+        }
         if (genePool.AllowSteerToTargetAction)
         {
             available[count] = GeneActionKind.SteerToTarget;
@@ -480,6 +496,7 @@ public static class GeneRuleFactory
             GeneActionKind.AddTurnBias => genePool.AllowTurnBiasAction,
             GeneActionKind.AddThrottleBias => genePool.AllowThrottleBiasAction,
             GeneActionKind.SteerToTarget => genePool.AllowSteerToTargetAction,
+            GeneActionKind.AccelerateDirection => genePool.AllowDirectionAction,
             GeneActionKind.OrbitTarget => genePool.AllowOrbitTargetAction,
             GeneActionKind.AddBrake => genePool.AllowBrakeAction,
             GeneActionKind.None => true,
@@ -509,6 +526,7 @@ public static class GeneRuleFactory
                 InitialBeta: 1.8f,
                 MutationConcentrationMin: 3.0f,
                 MutationConcentrationMax: 26.0f),
+            GeneActionKind.AccelerateDirection => new ParameterSpec(1, 1, ParameterDistributionKind.Uniform, ParameterDistributionKind.Uniform),
             GeneActionKind.SteerToTarget => new ParameterSpec(
                 MinValue: 0.0f,
                 MaxValue: 2.0f,
@@ -547,6 +565,7 @@ public static class GeneRuleFactory
             GeneActionKind.AddTurnBias => 0.0f,
             GeneActionKind.AddThrottleBias => 0.0f,
             GeneActionKind.SteerToTarget => 1.0f,
+            GeneActionKind.AccelerateDirection => 1.0f,
             GeneActionKind.OrbitTarget => 1.0f,
             GeneActionKind.AddBrake => 0.5f,
             _ => 0.0f

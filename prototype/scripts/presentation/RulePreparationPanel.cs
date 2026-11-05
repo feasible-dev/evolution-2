@@ -110,7 +110,7 @@ public partial class RulePreparationPanel : Control
         for (var i = 0; i < 4; i++)
             _mix[i].Text = Session.HasStarted ? $"{Session.Composition[i] * 100f / LevelOneSession.Population:0.0} %  ({Session.Composition[i]})" : "—";
         _context.Text = !Session.HasStarted ? L10n.Text("plan.empty_help") : Session.Pending.HasValue ? L10n.Text("plan.pending", Session.Period + 1)
-            : L10n.Text("plan.active", Session.Active.Turn, Session.Active.Throttle, Session.Active.Target, Session.AppliedAtGeneration);
+            : L10n.Text("plan.active", Session.Active.Turn, Session.Active.Throttle, Session.Active.Direction, Session.AppliedAtGeneration);
         QueueRedraw();
     }
 

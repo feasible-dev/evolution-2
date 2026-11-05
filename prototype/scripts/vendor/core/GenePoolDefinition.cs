@@ -16,6 +16,7 @@ public readonly record struct GenePoolDefinition(
     bool AllowBrakeAction,
     int MaxRulesPerAgent)
 {
+    public bool AllowDirectionAction { get; init; }
     public static GenePoolDefinition Default => new(
         AllowTimeCondition: true,
         AllowDistanceToPointCondition: true,

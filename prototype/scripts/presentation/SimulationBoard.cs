@@ -27,7 +27,7 @@ public partial class SimulationBoard : Control
             var teamName = L10n.Text(ReferenceEquals(_inspectedTeam, Session) ? "ui.us" : "ui.opponent");
             return teamName + " / " + (def is null ? L10n.Text("board.no_rule")
                 : L10n.Text("board.rule", def.Name, rule.Scalar)
-                + (def.Id == BehaviorChoice.Target ? L10n.Text("board.target", rule.TargetPointNormalized.X, rule.TargetPointNormalized.Y) : ""));
+                + (def.Id == BehaviorChoice.Direction ? L10n.Text("board.direction", rule.DirectionAngleNormalized * 360) : ""));
         }
     }
     public override void _GuiInput(InputEvent @event)

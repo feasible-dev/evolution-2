@@ -48,7 +48,7 @@ public sealed class SimulationSettings
 
     public RuleMutationProfile RuleMutationProfile { get; init; } = new();
 
-    public float? FixedTargetAcceleration { get; init; }
+    public float? FixedWorldRuleAcceleration { get; init; }
 
     public float? FixedExplorationWeight { get; init; }
 

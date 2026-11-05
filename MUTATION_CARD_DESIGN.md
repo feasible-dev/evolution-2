@@ -180,3 +180,37 @@ Then:
 3. only after that, add more conditions/actions
 
 This keeps the code clean and makes future cards much more meaningful.
+
+## Design discussion November 4 2026
+
+The established vocabulary remains Condition, Action, Rule, Program,
+GeneticLanguage and MutationPolicy. A rule associates a condition with an action;
+a program contains the agent's inherited rules. Cards influence available
+capabilities and evolution rather than directly scripting each individual.
+
+The current design direction separates perception from conditions. Perception
+provides information (position, a point, a region, distance or direction).
+A condition tests information; an action uses it. Target navigation is therefore
+a composed capability, not a basic action with free target knowledge and its own
+hidden propulsion advantage. Region perception could support attraction,
+avoidance, stopping at a boundary, or braking after entry. Detecting a region does
+not automatically reveal whether it is safe or lethal.
+
+Cards should have different costs. Exact costs and whether links themselves are
+purchased remain open. Program capacity and mutation cards remain possible later
+families; no additional family is approved for implementation yet.
+
+The introductory movement should use an inherited absolute direction, before
+target navigation. Distinguish initial velocity, instantaneous impulse,
+continuous propulsion and maximum speed. A common initial launch and no initial
+drag are proposals to test, not implemented settings. Viscosity can later create
+a need for renewed impulses or sustained propulsion. Rotation requires a useful
+relationship with heading-dependent propulsion or sensing; remove meaningless
+rotation rather than inventing a reason to purchase it.
+
+The first survival band may increase from 5 to 10 percent; this remains a tuning
+proposal. Wall contact behavior must be considered alongside the launch model.
+Both teams must retain equal physical capabilities under equal configurations.
+
+Immediate focus returns to the first level and broadcast presentation. See
+[First level direction](FIRST_LEVEL_DIRECTION.md) for the presentation backlog.

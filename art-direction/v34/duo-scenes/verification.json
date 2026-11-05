@@ -1,0 +1,122 @@
+[
+  {
+    "id": "idle",
+    "width": 384,
+    "height": 128,
+    "frames": 7,
+    "originalPoses": 6,
+    "deskAnchors": [
+      278,
+      574,
+      870,
+      1165,
+      1461,
+      1756
+    ],
+    "durations": [
+      1500,
+      650,
+      110,
+      130,
+      700,
+      900,
+      800
+    ]
+  },
+  {
+    "id": "talk",
+    "width": 384,
+    "height": 128,
+    "frames": 7,
+    "originalPoses": 6,
+    "deskAnchors": [
+      283,
+      579,
+      874,
+      1170,
+      1466,
+      1761
+    ],
+    "durations": [
+      300,
+      130,
+      160,
+      130,
+      150,
+      250,
+      300
+    ]
+  },
+  {
+    "id": "stand",
+    "width": 384,
+    "height": 128,
+    "frames": 7,
+    "originalPoses": 6,
+    "deskAnchors": [
+      280,
+      575,
+      871,
+      1167,
+      1462,
+      1758
+    ],
+    "durations": [
+      850,
+      180,
+      220,
+      1000,
+      250,
+      650,
+      500
+    ]
+  },
+  {
+    "id": "glance",
+    "width": 384,
+    "height": 128,
+    "frames": 7,
+    "originalPoses": 6,
+    "deskAnchors": [
+      281,
+      577,
+      872,
+      1168,
+      1464,
+      1759
+    ],
+    "durations": [
+      700,
+      200,
+      450,
+      700,
+      600,
+      600,
+      500
+    ]
+  },
+  {
+    "id": "slap",
+    "width": 384,
+    "height": 128,
+    "frames": 7,
+    "originalPoses": 6,
+    "deskAnchors": [
+      282,
+      578,
+      873,
+      1170,
+      1465,
+      1760
+    ],
+    "durations": [
+      800,
+      160,
+      180,
+      90,
+      500,
+      650,
+      500
+    ]
+  }
+]

@@ -17,7 +17,7 @@ try {
     & dotnet build (Join-Path $projectRoot 'EvolutionTwo.csproj') --nologo
     if ($LASTEXITCODE -ne 0) { throw 'La compilation a echoue.' }
     $needsImport = $false
-    foreach ($portraitAsset in (Get-ChildItem -LiteralPath (Join-Path $projectRoot 'assets') -Filter '*.png')) {
+    foreach ($portraitAsset in (Get-ChildItem -LiteralPath (Join-Path $projectRoot 'assets') -Filter '*.png' -Recurse)) {
         $importedPortrait = Get-ChildItem -LiteralPath (Join-Path $projectRoot '.godot\imported') -Filter ($portraitAsset.Name + '-*.ctex') -ErrorAction SilentlyContinue | Select-Object -First 1
         if (-not $importedPortrait -or $portraitAsset.LastWriteTimeUtc -gt $importedPortrait.LastWriteTimeUtc) { $needsImport = $true }
     }

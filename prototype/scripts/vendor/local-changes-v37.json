@@ -1,0 +1,47 @@
+{
+    "date":  "2026-11-04",
+    "version":  37,
+    "changes":  [
+                    {
+                        "localSha256":  "ba6163df8045de6bc124b6d2e08eb8809c769594afe1b006a5e2d4e79493a7fc",
+                        "file":  "scripts/vendor/core/GeneActionKind.cs",
+                        "reason":  "v37: independent inherited world-direction action; fixed shared strength; first-level target action disabled in the pool."
+                    },
+                    {
+                        "localSha256":  "47ff78fbde57c978d2182134fc7805e479128595c597f13e83f21611d47c4f02",
+                        "file":  "scripts/vendor/core/GenePoolDefinition.cs",
+                        "reason":  "v37: independent inherited world-direction action; fixed shared strength; first-level target action disabled in the pool."
+                    },
+                    {
+                        "localSha256":  "68932c45bc43c17dd55444d20fa59f9252d0449b32e1d8f0fdbe7b975bf11f31",
+                        "file":  "scripts/vendor/core/GeneRule.cs",
+                        "reason":  "v37: independent inherited world-direction action; fixed shared strength; first-level target action disabled in the pool."
+                    },
+                    {
+                        "localSha256":  "52a3e18dd054d1dd8c18bc9860969aa27dfb3d48b85bbb7cf0df39e8560cc2de",
+                        "file":  "scripts/vendor/core/GeneRuleFactory.cs",
+                        "reason":  "v37: independent inherited world-direction action; fixed shared strength; first-level target action disabled in the pool."
+                    },
+                    {
+                        "localSha256":  "a75c8b1249656ddaba05e14ae37fb9b7256179862106f2e429ff2ba0008a0784",
+                        "file":  "scripts/vendor/core/GeneRuleEvaluator.cs",
+                        "reason":  "v37: independent inherited world-direction action; fixed shared strength; first-level target action disabled in the pool."
+                    },
+                    {
+                        "localSha256":  "02d8acae6c9d53903cbb309cbad2d8cfb2438a2c55507c73c36245daa4db3729",
+                        "file":  "scripts/vendor/core/AgentBrain.cs",
+                        "reason":  "v37: independent inherited world-direction action; fixed shared strength; first-level target action disabled in the pool."
+                    },
+                    {
+                        "localSha256":  "5b0b35b2273bd09b3d5b576480a35b9816457fc37d62b83858aac980eeb051e8",
+                        "file":  "scripts/vendor/core/SimulationSettings.cs",
+                        "reason":  "v37: independent inherited world-direction action; fixed shared strength; first-level target action disabled in the pool."
+                    },
+                    {
+                        "localSha256":  "4fd64e8a9373b4219951a3294cbe753a2b76d6167a5570e7066ea7e0dd488de3",
+                        "file":  "scripts/vendor/core/AgentVisualPalette.cs",
+                        "reason":  "v37: independent inherited world-direction action; fixed shared strength; first-level target action disabled in the pool."
+                    }
+                ],
+    "note":  "Additive local changes to the vendored engine; earlier source and change manifests retained."
+}

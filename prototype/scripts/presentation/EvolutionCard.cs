@@ -25,8 +25,8 @@ public partial class EvolutionCard : Control
             L10n.Text("card.thrust.heading"), new[] { L10n.Text("card.thrust.line1"), L10n.Text("card.thrust.line2") }, L10n.Text("card.thrust.summary")),
         BehaviorChoice.Turn => new(L10n.Text("card.turn.title"), L10n.Text("card.turn.effect"), "virage",
             L10n.Text("card.turn.heading"), new[] { L10n.Text("card.turn.line1"), L10n.Text("card.turn.line2") }, L10n.Text("card.turn.summary")),
-        _ => new(L10n.Text("card.target.title"), L10n.Text("card.target.effect"), "cible",
-            L10n.Text("card.target.heading"), new[] { L10n.Text("card.target.line1"), L10n.Text("card.target.line2") }, L10n.Text("card.target.summary"))
+        _ => new(L10n.Text("card.direction.title"), L10n.Text("card.direction.effect"), "direction",
+            L10n.Text("card.direction.heading"), new[] { L10n.Text("card.direction.line1"), L10n.Text("card.direction.line2") }, L10n.Text("card.direction.summary"))
     };
 
     public override void _Ready()

@@ -32,7 +32,7 @@ public static class AgentBrain
         var contributions = new List<ActionContribution>(enabledRuleCount);
         GeneRuleEvaluator.AppendContributions(contributions, agent, observation, settings, 1.0f / enabledRuleCount);
         var intent = ActionSetResolver.Resolve(contributions);
-        if (settings.FixedTargetAcceleration is { } strength && intent.WorldAccelerationWish.LengthSquared() > .000001f)
+        if (settings.FixedWorldRuleAcceleration is { } strength && intent.WorldAccelerationWish.LengthSquared() > .000001f)
             intent = intent with { WorldAccelerationWish = intent.WorldAccelerationWish.Normalized() * strength };
         return intent;
     }

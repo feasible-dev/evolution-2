@@ -1,0 +1,18 @@
+{
+  "version": 38,
+  "date": "2026-11-04",
+  "build": {"errors": 0, "warnings": 0},
+  "godotImport": "passed",
+  "directionAttentionChecks": 29,
+  "broadcastPixelAndSchedulingChecks": 72,
+  "gameCaptures": 11,
+  "reviewedCaptures": ["01-level.png", "07-table-impact.png"],
+  "styleAnchor": "v34 detailed Gerard reference and duo idle source",
+  "runtimePaletteColors": 128,
+  "alphabetGlyphs": 75,
+  "tickerDirection": "right-to-left",
+  "tickerSpeed": 28,
+  "eventEndpointsPixelIdenticalToNeutral": true,
+  "previousAssetsPreserved": true,
+  "limitation": "Discrete event illustrations retain some clothing-fold and silhouette variation; gallery browser playback has not been independently tested."
+}

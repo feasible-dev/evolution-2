@@ -1,0 +1,22 @@
+{
+  "tool": "built-in image_gen",
+  "version": 41,
+  "edits": [
+    {
+      "output": "excited-source.png",
+      "references": [
+        "art-direction/v39/broadcast/excited-source.png",
+        "art-direction/v39/broadcast/seated-source.png"
+      ],
+      "prompt": "Edit IMAGE1 (the 2-column4-row excited animation sheet). IMAGE2 (2-column6-row seated sheet) is ONLY the identity and NORMAL FACE SCALE reference. Fix Gerard's undersized face in the excited poses, especially the second row left-facing gesture. Keep Image1's exact 1536x1024 canvas,2columns4rows,768x256 panels. Keep Rene and ALL bodies, hands, backgrounds, desk and choreography unchanged. Enlarge only Gerard's head/face hair/glasses/headset as a coherent anatomical unit about 10-13%, around the neck anchor, so his hairline-to-chin height and cheek breadth relative to the 256-pixel panel height match Image2's normal seated face. NEVER shrink his face on closed/open mouth alternates. The same head size in all four pose pairs, allowing natural slight width change when turning but no shrunken skull. Do not enlarge mouth or eyes alone. Preserve his refined mature pixel-art features, normal eye whites, warm stubble, wavy chestnut hair, fine glasses, upright relaxed neck; no more cartoon stylization. For each row the two panels are IDENTICAL except the mouth open/closed. Keep the top of all heads inside frame. No text. Do not change the rest of the picture."
+    },
+    {
+      "output": "speech-source.png",
+      "references": [
+        "art-direction/v39/broadcast/seated-source.png"
+      ],
+      "prompt": "Use case: identity-preserve. Edit this exact pixel-art sprite sheet for subtle natural speech. Keep the exact 2-column by 6-row layout, canvas proportions and all twelve frame positions. Every body, background, Rene, hair, eyes, glasses, nose, chin outline and neck must remain unchanged. ONLY adjust Gerard's speaking mouth in frames 1,2,5,6,9,11 (zero-based reading order). Make small understated lip movements: a narrow speaking opening instead of a wide smile or round gaping O. His chin must stay at exactly the closed-mouth height and location; do not stretch his jaw down, shrink his face, move his head or change expression between syllables. Pair closed frame0 with speaking1,2; closed4 with speaking5,6; closed8 with speaking9; closed10 with speaking11. The lower lip may move slightly, the chin may NOT. Keep refined mature warm pixel-art style and identity, not cartoon. Preserve all closed-mouth frames absolutely. No text or new panels."
+    }
+  ],
+  "processing": "build-runtime.mjs preserves closed pose masters, limits lip patches to 19x6 native pixels, and registers partner mouths to the closed-lip position."
+}

@@ -1,0 +1,348 @@
+[
+  {
+    "id": "stand",
+    "source": "stand",
+    "title": "The delayed double take",
+    "description": "Gerard rises first. Le Chevalier notices 490 ms later, turns, then lifts his chin. Gerard stays up for 3.74 seconds before sitting.",
+    "steps": [
+      {
+        "g": 0,
+        "r": 0,
+        "ms": 1000,
+        "label": "Watching the rink"
+      },
+      {
+        "g": 1,
+        "r": 0,
+        "ms": 160,
+        "label": "Gerard pushes up / partner still watching"
+      },
+      {
+        "g": 2,
+        "r": 0,
+        "ms": 180,
+        "label": "Rising / partner has not noticed"
+      },
+      {
+        "g": 3,
+        "r": 0,
+        "ms": 150,
+        "label": "Standing / partner still looking down"
+      },
+      {
+        "g": 3,
+        "r": 2,
+        "ms": 180,
+        "label": "Partner notices: eyes first"
+      },
+      {
+        "g": 3,
+        "r": 3,
+        "ms": 200,
+        "label": "Surprised head turn"
+      },
+      {
+        "g": 3,
+        "r": 4,
+        "ms": 350,
+        "label": "Chin rises toward Gerard"
+      },
+      {
+        "g": 3,
+        "r": 5,
+        "ms": 450,
+        "label": "Standing hold / partner looks up"
+      },
+      {
+        "g": 4,
+        "r": 5,
+        "ms": 240,
+        "label": "Small forearm lift"
+      },
+      {
+        "g": 5,
+        "r": 5,
+        "ms": 380,
+        "label": "Forearms settle"
+      },
+      {
+        "g": 3,
+        "r": 5,
+        "ms": 550,
+        "label": "Standing hold"
+      },
+      {
+        "g": 4,
+        "r": 5,
+        "ms": 240,
+        "label": "Second small gesture"
+      },
+      {
+        "g": 5,
+        "r": 5,
+        "ms": 450,
+        "label": "Forearms settle"
+      },
+      {
+        "g": 3,
+        "r": 5,
+        "ms": 550,
+        "label": "Standing hold"
+      },
+      {
+        "g": 6,
+        "r": 5,
+        "ms": 220,
+        "label": "Gerard sits / partner still looks up"
+      },
+      {
+        "g": 7,
+        "r": 6,
+        "ms": 250,
+        "label": "Seated / partner catches up"
+      },
+      {
+        "g": 0,
+        "r": 3,
+        "ms": 200,
+        "label": "Partner lowers his head"
+      },
+      {
+        "g": 0,
+        "r": 0,
+        "ms": 1000,
+        "label": "Back to the rink"
+      }
+    ]
+  },
+  {
+    "id": "slap",
+    "source": "slap",
+    "title": "A stunned table slap",
+    "description": "Surprise and passionate disbelief, with a downward gaze at impact. Le Chevalier reacts after the hand lands.",
+    "steps": [
+      {
+        "g": 0,
+        "r": 0,
+        "ms": 950,
+        "label": "Watching"
+      },
+      {
+        "g": 1,
+        "r": 0,
+        "ms": 180,
+        "label": "Notice the play"
+      },
+      {
+        "g": 2,
+        "r": 0,
+        "ms": 120,
+        "label": "Hand lifts"
+      },
+      {
+        "g": 3,
+        "r": 0,
+        "ms": 140,
+        "label": "Anticipation"
+      },
+      {
+        "g": 4,
+        "r": 0,
+        "ms": 90,
+        "label": "Impact / eyes down"
+      },
+      {
+        "g": 5,
+        "r": 0,
+        "ms": 90,
+        "label": "Rebound / partner has not reacted"
+      },
+      {
+        "g": 5,
+        "r": 5,
+        "ms": 180,
+        "label": "Partner startles after impact"
+      },
+      {
+        "g": 6,
+        "r": 6,
+        "ms": 650,
+        "label": "Astonished exhale"
+      },
+      {
+        "g": 7,
+        "r": 6,
+        "ms": 300,
+        "label": "Gerard settles first"
+      },
+      {
+        "g": 0,
+        "r": 0,
+        "ms": 900,
+        "label": "Watching again"
+      }
+    ]
+  },
+  {
+    "id": "idle",
+    "source": "basic",
+    "title": "Following the rink",
+    "description": "A stable face and body, small eye movements and a short blink. No cycling wrinkle pixels.",
+    "steps": [
+      {
+        "g": 0,
+        "r": 0,
+        "ms": 1400,
+        "label": "Watch"
+      },
+      {
+        "g": 1,
+        "r": 0,
+        "ms": 650,
+        "label": "Small eye movement"
+      },
+      {
+        "g": 2,
+        "r": 0,
+        "ms": 110,
+        "label": "Blink"
+      },
+      {
+        "g": 0,
+        "r": 0,
+        "ms": 850,
+        "label": "Watch"
+      },
+      {
+        "g": 3,
+        "r": 0,
+        "ms": 700,
+        "label": "Small eye movement"
+      },
+      {
+        "g": 0,
+        "r": 0,
+        "ms": 1100,
+        "label": "Watch"
+      }
+    ]
+  },
+  {
+    "id": "talk",
+    "source": "basic",
+    "title": "Commentating the play",
+    "description": "Stable hair, glasses and face contours. Only the mouth changes for syllables, followed by a small hand gesture.",
+    "steps": [
+      {
+        "g": 0,
+        "r": 0,
+        "ms": 400,
+        "label": "Listen"
+      },
+      {
+        "g": 4,
+        "r": 0,
+        "ms": 130,
+        "label": "Begin"
+      },
+      {
+        "g": 5,
+        "r": 0,
+        "ms": 140,
+        "label": "Rounded syllable"
+      },
+      {
+        "g": 4,
+        "r": 0,
+        "ms": 110,
+        "label": "Syllable"
+      },
+      {
+        "g": 0,
+        "r": 0,
+        "ms": 90,
+        "label": "Closed mouth"
+      },
+      {
+        "g": 6,
+        "r": 0,
+        "ms": 220,
+        "label": "Small hand gesture"
+      },
+      {
+        "g": 7,
+        "r": 0,
+        "ms": 180,
+        "label": "Hand settles"
+      },
+      {
+        "g": 0,
+        "r": 0,
+        "ms": 500,
+        "label": "Listen"
+      }
+    ]
+  },
+  {
+    "id": "glance",
+    "source": "glance",
+    "title": "A quiet aside",
+    "description": "Gerard looks over first. Le Chevalier answers the glance, then they return to the rink.",
+    "steps": [
+      {
+        "g": 0,
+        "r": 0,
+        "ms": 900,
+        "label": "Watching"
+      },
+      {
+        "g": 1,
+        "r": 0,
+        "ms": 180,
+        "label": "Eyes first"
+      },
+      {
+        "g": 2,
+        "r": 0,
+        "ms": 230,
+        "label": "Gerard turns"
+      },
+      {
+        "g": 3,
+        "r": 3,
+        "ms": 300,
+        "label": "Partner notices"
+      },
+      {
+        "g": 4,
+        "r": 4,
+        "ms": 650,
+        "label": "The aside"
+      },
+      {
+        "g": 5,
+        "r": 5,
+        "ms": 700,
+        "label": "Dry amusement"
+      },
+      {
+        "g": 6,
+        "r": 5,
+        "ms": 250,
+        "label": "Gerard returns to rink"
+      },
+      {
+        "g": 7,
+        "r": 7,
+        "ms": 800,
+        "label": "Both watching"
+      },
+      {
+        "g": 0,
+        "r": 0,
+        "ms": 400,
+        "label": "Rest"
+      }
+    ]
+  }
+]

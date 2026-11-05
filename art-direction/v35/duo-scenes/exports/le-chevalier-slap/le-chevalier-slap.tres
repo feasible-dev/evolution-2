@@ -1,0 +1,91 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="le-chevalier-slap.png" id="1_sheet"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pose_0"]
+atlas = ExtResource("1_sheet")
+region = Rect2(1, 1, 192, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pose_1"]
+atlas = ExtResource("1_sheet")
+region = Rect2(195, 1, 192, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pose_2"]
+atlas = ExtResource("1_sheet")
+region = Rect2(389, 1, 192, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pose_3"]
+atlas = ExtResource("1_sheet")
+region = Rect2(583, 1, 192, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pose_4"]
+atlas = ExtResource("1_sheet")
+region = Rect2(1, 131, 192, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pose_5"]
+atlas = ExtResource("1_sheet")
+region = Rect2(195, 131, 192, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pose_6"]
+atlas = ExtResource("1_sheet")
+region = Rect2(389, 131, 192, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pose_7"]
+atlas = ExtResource("1_sheet")
+region = Rect2(583, 131, 192, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pose_8"]
+atlas = ExtResource("1_sheet")
+region = Rect2(1, 261, 192, 128)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pose_9"]
+atlas = ExtResource("1_sheet")
+region = Rect2(195, 261, 192, 128)
+filter_clip = true
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 95.0,
+"texture": SubResource("AtlasTexture_pose_0")
+}, {
+"duration": 18.0,
+"texture": SubResource("AtlasTexture_pose_1")
+}, {
+"duration": 12.0,
+"texture": SubResource("AtlasTexture_pose_2")
+}, {
+"duration": 14.0,
+"texture": SubResource("AtlasTexture_pose_3")
+}, {
+"duration": 9.0,
+"texture": SubResource("AtlasTexture_pose_4")
+}, {
+"duration": 9.0,
+"texture": SubResource("AtlasTexture_pose_5")
+}, {
+"duration": 18.0,
+"texture": SubResource("AtlasTexture_pose_6")
+}, {
+"duration": 65.0,
+"texture": SubResource("AtlasTexture_pose_7")
+}, {
+"duration": 30.0,
+"texture": SubResource("AtlasTexture_pose_8")
+}, {
+"duration": 90.0,
+"texture": SubResource("AtlasTexture_pose_9")
+}],
+"loop": false,
+"name": &"slap",
+"speed": 100.0
+}]

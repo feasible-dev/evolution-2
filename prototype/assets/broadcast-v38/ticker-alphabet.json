@@ -1,0 +1,16 @@
+{
+  "name": "Evolution Arena Pixel",
+  "license": "Original project artwork",
+  "characters": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ .,:;!?'\"-/%+=()&*•—’…×ÉÀÈÙÂÊÎÔÛÄËÏÖÜÇŒ",
+  "columns": 16,
+  "cellWidth": 8,
+  "cellHeight": 12,
+  "palette": [
+    "#35e6ff",
+    "#ff55bb",
+    "#ffe64b",
+    "#ff963c",
+    "#8bff76",
+    "#b497ff"
+  ]
+}

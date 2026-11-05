@@ -5,7 +5,7 @@ using Godot;
 namespace EvolutionTwo.Presentation;
 
 public enum BroadcastStage { Preparation, Running, Selection }
-public sealed record Commentary(int Speaker, int Pose, string Text);
+public sealed record Commentary(int Speaker, int Pose, string Text, string? Gesture = null);
 
 public sealed class LevelOneSession
 {
@@ -30,7 +30,13 @@ public sealed class LevelOneSession
     private readonly int[] _composition = new int[4];
     private double _accumulator;
     private float _commentCooldown;
+    private float _speechHoldSeconds;
     private int _lastMilestone;
+    private int _observedResult, _ambientLine;
+    private readonly bool[] _announced95 = new bool[2];
+    private readonly bool[] _announcedWipe = new bool[2];
+    public int GestureSequence { get; private set; }
+    public string? Gesture { get; private set; }
     public Simulation Simulation { get; private set; } = null!;
     public EvolutionCycleController Cycle { get; private set; } = null!;
     public BroadcastStage Stage { get; private set; }
@@ -54,6 +60,7 @@ public sealed class LevelOneSession
     public int Speaker { get; private set; }
     public int Expression { get; private set; }
     public float SpeechAge { get; private set; }
+    public int SpeechSequence { get; private set; }
     public bool IsSpeaking => SpeechAge < MathF.Min(5, Speech.Length / 30f + .4f);
     public int Revision { get; private set; }
     public int Period => Cycle.GenerationIndex + 1;
@@ -77,6 +84,8 @@ public sealed class LevelOneSession
         PerfectSurvivalReached = Discovered = Paused = HasStarted = false;
         Extinctions = 0; _accumulator = 0; SimulatedSeconds = 0;
         Speed = 5; _commentCooldown = 0; _lastMilestone = 0;
+        _observedResult = _ambientLine = 0; Array.Clear(_announced95); Gesture = null; GestureSequence = 0;
+        Array.Clear(_announcedWipe);
         Notice = L10n.Text("notice.initial");
         _arenaRule = new RegionSurvivalRule(SurvivalRegionFactory.CreateZones(ArenaSize, RightEdge()));
         var settings = BuildSimulationSettings(Active);
@@ -167,7 +176,7 @@ public sealed class LevelOneSession
             var plan = opponentPlan ?? OpponentStrategy.Choose(++_roundNumber);
             rival.SetAllocation(BehaviorChoice.Turn, plan.Turn);
             rival.SetAllocation(BehaviorChoice.Throttle, plan.Throttle);
-            rival.SetAllocation(BehaviorChoice.Target, plan.Target);
+            rival.SetAllocation(BehaviorChoice.Direction, plan.Direction);
             rival.SetSpeed(Speed);
             if (!rival.Start()) throw new InvalidOperationException("Opponent could not commit its plan.");
         }
@@ -189,7 +198,7 @@ public sealed class LevelOneSession
         if (realDelta <= 0) return;
         SpeechAge += realDelta;
         _commentCooldown -= realDelta;
-        if (SpeechAge >= MathF.Max(3.5f, Speech.Length / 27f + 1) && _commentary.Count > 0)
+        if (SpeechAge >= MathF.Max(_speechHoldSeconds, MathF.Max(3.5f, Speech.Length / 27f + 1)) && _commentary.Count > 0)
             Show(_commentary.Dequeue());
         if (Paused) return;
         if (!HasStarted) return;
@@ -200,6 +209,7 @@ public sealed class LevelOneSession
             _accumulator = Math.Max(0, _accumulator - ClockStep);
             StepSimulation();
             Opponent?.StepSimulation();
+            if (!_isOpponent) ObserveMatchHighlights();
             if (Opponent is { PerfectSurvivalReached: true } && !_opponentCelebrated)
             {
                 _opponentCelebrated = true;
@@ -207,7 +217,8 @@ public sealed class LevelOneSession
                 if (!PerfectSurvivalReached)
                 {
                     Notice = L10n.Text("notice.opponent_perfect");
-                    Conversation(new Commentary(1, 1, L10n.Text("speech.opponent_perfect")));
+                    Conversation(new Commentary(1, 1, L10n.Text("speech.opponent_perfect"), "stand"),
+                        new Commentary(0, 2, L10n.Text("speech.after_perfect"), "excited"));
                     _commentCooldown = 12;
                 }
             }
@@ -292,7 +303,8 @@ public sealed class LevelOneSession
         {
             PerfectSurvivalReached = true; Discovered = true; Paused = !_isOpponent;
             Notice = L10n.Text("notice.perfect");
-            Conversation(new Commentary(0, 2, L10n.Text("speech.perfect_gerard")),
+            Conversation(new Commentary(0, 2, L10n.Text("speech.perfect_gerard"), "stand"),
+                new Commentary(0, 2, L10n.Text("speech.after_perfect"), "excited"),
                 new Commentary(1, 1, L10n.Text("speech.perfect_rene")));
             _commentCooldown = 12;
         }
@@ -304,7 +316,48 @@ public sealed class LevelOneSession
     }
     private void Show(Commentary line)
     {
-        Speaker = line.Speaker; Expression = line.Pose; Speech = line.Text; SpeechAge = 0; Revision++;
+        _speechHoldSeconds = line.Gesture == "stand" ? 7.2f : line.Gesture == "excited" ? 8 : 0;
+        Speaker = line.Speaker; Expression = line.Pose; Speech = line.Text; SpeechAge = 0; SpeechSequence++; Revision++;
+        if (line.Gesture is not null) { Gesture = line.Gesture; GestureSequence++; }
+    }
+
+    private void ObserveMatchHighlights()
+    {
+        if (Completed <= _observedResult) return;
+        _observedResult = Completed;
+        var teams = new[] { this, Opponent! };
+        var first95 = -1;
+        for (var i=0;i<2;i++)
+            if (!_announced95[i] && teams[i].LastResult?.SurvivalRate >= .95f)
+            { _announced95[i]=true; if(first95<0)first95=i; }
+        // Perfect-result dialogue is emitted by the selection path, with the pause.
+        if (teams.Any(t=>t.LastResult?.Survivors==Population)) return;
+        var wiped = Enumerable.Range(0,2).FirstOrDefault(i=>teams[i].LastResult?.Survivors==0 && !_announcedWipe[i],-1);
+        if (wiped>=0)
+        {
+            _announcedWipe[wiped]=true;
+            Discovered=true;
+            Conversation(new Commentary(1,2,L10n.Text("speech.wipeout",L10n.Text(wiped==0?"ui.us":"ui.opponent")),"slap"));
+            _commentCooldown=14;
+        }
+        else if(first95>=0)
+        {
+            Discovered=true;
+            Conversation(new Commentary(0,2,L10n.Text("speech.ninetyfive"),"stand"),
+                new Commentary(0,2,L10n.Text("speech.after_ninetyfive"),"excited"),
+                new Commentary(1,0,L10n.Text("speech.ninetyfive_rene",L10n.Text(first95==0?"ui.us":"ui.opponent"),teams[first95].LastResult!.SurvivalRate*100)));
+            _commentCooldown=14;
+        }
+    }
+
+    public void TryArenaComment(float concentration, bool trackingAgent)
+    {
+        if(!HasStarted || Paused || IsSpeaking || _commentary.Count>0 || _commentCooldown>0 || SpeechAge<8) return;
+        var id = concentration>=.9f && _ambientLine%3==0 ? "speech.focus"
+            : trackingAgent ? "speech.follow" : _ambientLine%2==0 ? "speech.direction_coach" : "speech.calm_gerard";
+        var speaker = id is "speech.focus" or "speech.direction_coach" ? 1 : 0;
+        Conversation(new Commentary(speaker,0,L10n.Text(id,concentration*100)));
+        _commentCooldown=16+(_ambientLine++%3)*3;
     }
     public static SurvivalZoneDefinition RightEdge() => SurvivalZoneDefinition.Default with
     {
@@ -318,7 +371,7 @@ public sealed class LevelOneSession
         AgentCount = Population, AgentRadius = 2, // Drag is inherited per-agent via PhysicsProfile.
         GenerationDurationSeconds = PeriodSeconds, ContinuousBaselineBrownianMotion = true,
         BaseRandomJerkRuleWeight = .55f, BaseRandomJerkFadeGenerations = 8,
-        FixedExplorationWeight = DuelMotionPolicy.ExplorationWeight, FixedTargetAcceleration = DuelMotionPolicy.TargetAcceleration,
+        FixedExplorationWeight = DuelMotionPolicy.ExplorationWeight, FixedWorldRuleAcceleration = DuelMotionPolicy.DirectionAcceleration,
         GenePool = BehaviorCatalog.Pool(plan), RuleMutationProfile = BehaviorCatalog.Profile(plan)
     };
     private EvolutionSettings BuildEvolutionSettings() => new()

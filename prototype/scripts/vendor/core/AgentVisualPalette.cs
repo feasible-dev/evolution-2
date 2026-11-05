@@ -49,6 +49,7 @@ public static class AgentVisualPalette
             GeneActionKind.AddTurnBias => new Color(1.00f, 0.54f, 0.08f, 1.0f),
             GeneActionKind.AddThrottleBias => new Color(1.00f, 0.92f, 0.08f, 1.0f),
             GeneActionKind.SteerToTarget => new Color(0.12f, 0.76f, 1.00f, 1.0f),
+            GeneActionKind.AccelerateDirection => new Color(0.12f, 0.76f, 1.00f, 1.0f),
             GeneActionKind.OrbitTarget => new Color(0.18f, 0.94f, 1.00f, 1.0f),
             GeneActionKind.AddBrake => new Color(1.00f, 0.12f, 0.16f, 1.0f),
             _ => new Color(1.00f, 1.00f, 1.00f, 1.0f)

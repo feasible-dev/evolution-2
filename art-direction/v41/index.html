@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Evolution Wars — v41 face continuity</title>
+<style>
+body{margin:32px auto;max-width:1100px;padding:0 20px;background:#081522;color:#eee5d5;font:17px system-ui}
+h1{color:#ff941f}section{margin:28px 0}canvas{width:100%;image-rendering:pixelated;background:#061323}
+button{font:inherit;padding:8px 18px;background:#a95b11;color:white;border:0;cursor:pointer}
+.labels{display:flex;justify-content:space-around;color:#a8bfd0}img{max-width:100%;image-rendering:pixelated}
+</style>
+<h1>Stable faces, quieter speech</h1>
+<p>Left: previous speech. Right: corrected lips and stable chin. Both use the same syllable rhythm.</p>
+<button id="toggle">Pause</button><main id="pairs"></main>
+<section><h2>Excited face proportions — before / after</h2><img src="broadcast/before-after.png" alt="Four excited poses before and after face scale corrections"></section>
+<script>
+const root='../../prototype/assets/', views=[];
+const specs=[['Front speech','gerard-conversation',0,1,2],['Speaking to Rene','gerard-conversation',5,6,7],
+ ['Watching the rink','rink',0,1,1],['Relaxed excitement','excited',0,1,1],['Excited left glance','excited',2,3,3],
+ ['Excited right glance','excited',4,5,5],['Inviting Rene','excited',6,7,7]];
+for(const [title,sheet,...frames] of specs){
+ const section=document.createElement('section'),heading=document.createElement('h2');heading.textContent=title;
+ const labels=document.createElement('div');labels.className='labels';labels.innerHTML='<span>Before</span><span>v41</span>';
+ const canvas=document.createElement('canvas');canvas.width=384;canvas.height=128;
+ section.append(heading,labels,canvas);document.querySelector('main').append(section);
+ const images=[39,41].map(v=>{const im=new Image();im.src=root+'broadcast-v'+v+'/'+sheet+'.png';return im});
+ views.push({canvas,images,frames});
+}
+let paused=false,clock=0,last=0;
+document.querySelector('#toggle').onclick=e=>{paused=!paused;e.target.textContent=paused?'Resume':'Pause'};
+function draw(now){if(last&&!paused)clock+=(now-last)/1000;last=now;
+ const shape=[0,1,2,1,0,1,1,2,0][Math.floor(clock*8)%9];
+ for(const {canvas,images,frames} of views){const ctx=canvas.getContext('2d');ctx.imageSmoothingEnabled=false;
+  images.forEach((im,i)=>{if(im.complete&&im.naturalWidth)ctx.drawImage(im,0,frames[shape]*128,192,128,i*192,0,192,128)})}
+ requestAnimationFrame(draw);
+}requestAnimationFrame(draw);
+</script></html>

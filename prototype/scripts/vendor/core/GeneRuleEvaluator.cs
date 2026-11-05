@@ -35,6 +35,12 @@ public static class GeneRuleEvaluator
 
         switch (rule.ActionKind)
         {
+            case GeneActionKind.AccelerateDirection:
+                // Open-loop action: no position, target, region or observation is read.
+                contributions.Add(ActionContribution.WorldAcceleration(
+                    Vector2.FromAngle(rule.DirectionAngleNormalized * Mathf.Tau)
+                    * (rule.Scalar * settings.Acceleration * .20f), weight));
+                break;
             case GeneActionKind.AddTurnBias:
                 contributions.Add(ActionContribution.Turn(rule.Scalar, weight));
                 break;
