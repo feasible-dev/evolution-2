@@ -140,7 +140,7 @@ public static class BroadcastAnimationChecks
         {
             Run(scene);
             if (DisplayServer.GetName() == "headless") { scene.GetTree().Quit(); return; }
-            var folder=ProjectSettings.GlobalizePath("res://../art-direction/v41/captures");
+            var folder=ProjectSettings.GlobalizePath("res://../art-direction/v43/captures");
             Directory.CreateDirectory(folder);
             await scene.ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
             using(var cards=scene.GetViewport().GetTexture().GetImage())cards.SavePng(Path.Combine(folder,"00-direction-cards.png"));

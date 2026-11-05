@@ -1,4 +1,19 @@
-# Evolution Wars — v41 face continuity and card cleanup
+# Evolution Wars — v43 portrait scale
+
+Nico's portrait is imported at 128x128 and displayed at 128 logical pixels with
+nearest filtering, matching the commentators' pixel scale. Name and origin move
+below it on narrower screens. The player has no portrait or placeholder panel.
+The full-resolution approved source remains preserved.
+
+## v42 first opponent identity
+
+Nico Valdés, from Havana, is the first opponent's visible identity. The selected
+portrait is design 3: thinning hair, crooked oval glasses and a mustard T-shirt.
+English and French name/origin labels are available. Concept studies are kept
+in `../art-direction/v42/nico/`. This identity change does not modify simulation
+parameters or the opponent's card strategy.
+
+## v41 face continuity and card cleanup
 
 Direction uses one clear arrow. Gerard's smaller excited faces are brought
 closer to the normal portrait scale; speech keeps the chin and neck stable,

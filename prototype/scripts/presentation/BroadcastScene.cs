@@ -16,7 +16,6 @@ public partial class BroadcastScene : Control
     public Rect2 BoardArea => new(_board.Position, _board.Size);
     // Extra widescreen space belongs to the player panels, rather than black margins.
     private float SideWidth => (Size.X - MathF.Min(Size.X * .70f, 1008)) / 2;
-    public CompetitorIdentity PlayerIdentity { get; private set; } = null!;
     public CompetitorIdentity OpponentIdentity { get; private set; } = null!;
     private SimulationBoard _board = null!;
     public ArenaBillboard Billboard { get; private set; } = null!;
@@ -58,9 +57,8 @@ public partial class BroadcastScene : Control
         Theme = new Theme { DefaultFont = ThemeDB.FallbackFont, DefaultFontSize = 18 };
         Theme.SetStylebox("panel", "TooltipPanel", Style("06152b", "2f8ae8"));
         Theme.SetColor("font_color", "TooltipLabel", Paper);
-        PlayerIdentity = new CompetitorIdentity { Profile = CompetitorProfile.Player, TeamColor = TeamPalette.Us };
         OpponentIdentity = new CompetitorIdentity { Profile = CompetitorProfile.Opponent, TeamColor = TeamPalette.Opponent };
-        AddChild(PlayerIdentity); AddChild(OpponentIdentity);
+        AddChild(OpponentIdentity);
         _brand = Text(this, L10n.Text("app.title"), 15, Accent);
         _status = Text(this, "", 14, Muted); _status.HorizontalAlignment = HorizontalAlignment.Right;
         _bubbles = new Panel[2]; _bubbleTexts = new Label[2]; _bubbleNames = new Label[2]; _bubbleStyles = new StyleBoxFlat[2];
@@ -305,8 +303,7 @@ public partial class BroadcastScene : Control
         var side = SideWidth; var middle = w - side * 2;
         var running = Session.HasStarted;
         Place(_brand, 26, 8, 350, 24); Place(_status, w - 350, 8, 324, 24);
-        Place(OpponentIdentity, 16, 36, side - 32, 128);
-        Place(PlayerIdentity, w - side + 16, 36, side - 32, 128);
+        Place(OpponentIdentity, 16, 36, side - 32, 172);
         Place(_portraits[0], w * .5f - 192, 36, 192, 128);
         Place(_portraits[1], w * .5f, 36, 192, 128);
         var bubbleWidth = w * .5f - 202 - side;

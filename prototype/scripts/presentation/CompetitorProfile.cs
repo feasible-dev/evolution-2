@@ -5,5 +5,6 @@ namespace EvolutionTwo.Presentation;
 public sealed record CompetitorProfile(string Id, string NameKey, string CharacterKey, string? PortraitPath = null)
 {
     public static CompetitorProfile Player { get; } = new("player", "profile.player", "profile.generic");
-    public static CompetitorProfile Opponent { get; } = new("opponent-local", "profile.opponent", "profile.generic");
+    public static CompetitorProfile Opponent { get; } = new("nico-valdes", "profile.nico.name", "profile.nico.origin",
+        "res://assets/opponents/nico-valdes.png");
 }

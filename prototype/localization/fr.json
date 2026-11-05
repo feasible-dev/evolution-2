@@ -128,6 +128,8 @@
   "ui.side_compact": "{0}/{1} survivants  /  G{2}",
   "profile.player": "VOUS",
   "profile.opponent": "ADVERSAIRE",
+  "profile.nico.name": "Nico Valdés",
+  "profile.nico.origin": "La Havane, Cuba",
   "profile.generic": "Personnage générique",
   "speech.ninetyfive": "Quatre-vingt-quinze pour cent ! Voilà une génération qui mérite qu’on se lève.",
   "speech.ninetyfive_rene": "{0} atteint {1:0.0}% de survie. Un beau résultat ; les agents restants comptent aussi.",
