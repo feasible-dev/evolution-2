@@ -1,4 +1,13 @@
-# Evolution Wars — v43 portrait scale
+# Evolution Wars — v44 Nico match reactions
+
+Nico celebrates a first perfect-survival win with small fist pumps, or reacts to
+a loss with a sigh and a shrug. The first completed 100% result determines the
+reaction; simultaneous perfect results are ties. Reactions play once in real
+time during the result pause and return to the exact approved resting portrait.
+Restart clears the outcome. Earlier leads and later resumed generations do not
+trigger a new win/loss. Animated review: `../art-direction/v44/index.html`.
+
+## v43 portrait scale
 
 Nico's portrait is imported at 128x128 and displayed at 128 logical pixels with
 nearest filtering, matching the commentators' pixel scale. Name and origin move

@@ -36,6 +36,7 @@ public partial class BroadcastScene : Control
     private float _lastSpeechAge = -1;
     private double _broadcastTime;
     private readonly ArenaAttention _attention = new();
+    private readonly OpponentReactionDirector _opponentReaction = new();
     private BroadcastAnimationAssets? _animationAssets;
     public BroadcastAnimationDirector? AnimationDirector { get; private set; }
     public IReadOnlyList<PortraitView> Presenters => _portraits;
@@ -210,6 +211,8 @@ public partial class BroadcastScene : Control
 
     public void SyncUi()
     {
+        _opponentReaction.Update(_broadcastTime, Session.HasStarted, Session.LastResult, Session.Opponent?.LastResult);
+        OpponentIdentity.ShowReaction(_opponentReaction.Pose);
         if (_revision != Session.Revision)
         {
             _revision = Session.Revision;
@@ -295,6 +298,7 @@ public partial class BroadcastScene : Control
         _lastBubbleSpeaker = -1; _lastBubbleText = ""; _lastSpeechAge = -1; _broadcastTime = 0;
         AnimationDirector?.Reset();
         _attention.Reset();
+        _opponentReaction.Reset();
     }
 
     private void Arrange()

@@ -68,6 +68,7 @@ public static class BroadcastAnimationChecks
             "LED messages step through fixed columns at the preserved reading speed");
         DirectionAndAttentionChecks.Run();
         MarqueeChecks.Run(scene);
+        OpponentReactionChecks.Run(scene.OpponentIdentity);
 
         // Verify actual pixel resources, not only scheduling labels.
         for (var actor=0;actor<2;actor++)
@@ -140,8 +141,10 @@ public static class BroadcastAnimationChecks
         {
             Run(scene);
             if (DisplayServer.GetName() == "headless") { scene.GetTree().Quit(); return; }
-            var folder=ProjectSettings.GlobalizePath("res://../art-direction/v43/captures");
+            var folder=ProjectSettings.GlobalizePath("res://../art-direction/v44/captures");
             Directory.CreateDirectory(folder);
+            using (var neutral = scene.OpponentIdentity.DisplayedPortrait!.GetImage())
+                neutral.SavePng(Path.Combine(folder,"nico-neutral.png"));
             await scene.ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
             using(var cards=scene.GetViewport().GetTexture().GetImage())cards.SavePng(Path.Combine(folder,"00-direction-cards.png"));
             scene.Session.Tick(4); scene.Session.Tick(1.2f); scene.SyncUi();
@@ -182,6 +185,15 @@ public static class BroadcastAnimationChecks
             await scene.ToSignal(scene.GetTree().CreateTimer(4),SceneTreeTimer.SignalName.Timeout);
             await scene.ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
             using(var settled=scene.GetViewport().GetTexture().GetImage())settled.SavePng(Path.Combine(folder,"15-settled.png"));
+            foreach(var reaction in new[] { OpponentReaction.Win, OpponentReaction.Lose })
+            {
+                // Explicit art preview; the live path only uses measured match results.
+                scene.OpponentIdentity.ShowReaction(new(reaction, reaction==OpponentReaction.Win?4:3));
+                await scene.ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
+                using var screen=scene.GetViewport().GetTexture().GetImage();
+                screen.SavePng(Path.Combine(folder,$"nico-{reaction.ToString().ToLowerInvariant()}.png"));
+            }
+            scene.OpponentIdentity.ShowReaction(default);
             scene.GetTree().Quit();
         }
         catch(Exception ex) { GD.PushError(ex.ToString()); scene.GetTree().Quit(1); }

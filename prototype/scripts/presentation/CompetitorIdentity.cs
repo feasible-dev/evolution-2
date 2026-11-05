@@ -14,6 +14,10 @@ public partial class CompetitorIdentity : Control
     public Color TeamColor { get; set; } = TeamPalette.Us;
     private TextureRect _portrait = null!;
     private Label _name = null!, _character = null!;
+    private Texture2D? _neutral;
+    private readonly Dictionary<OpponentReaction, AtlasTexture[]> _reactions = new();
+    public OpponentReactionPose ReactionPose { get; private set; }
+    public Texture2D? DisplayedPortrait => _portrait?.Texture;
     // One imported portrait pixel occupies one logical UI pixel, just like
     // the commentators' 192x128 frames. Never squeeze it into a thumbnail.
     private const float Tile = 128;
@@ -37,11 +41,45 @@ public partial class CompetitorIdentity : Control
     {
         _name.Text = L10n.Text(Profile.NameKey);
         _character.Text = L10n.Text(Profile.CharacterKey);
-        _portrait.Texture = Profile.PortraitPath is { } path && ResourceLoader.Exists(path)
+        _neutral = Profile.PortraitPath is { } path && ResourceLoader.Exists(path)
             ? GD.Load<Texture2D>(path) : null;
-        _portrait.Visible = _portrait.Texture is not null;
+        ClearReactions();
+        if (Profile.Id == "nico-valdes")
+        {
+            foreach (var reaction in new[] { OpponentReaction.Win, OpponentReaction.Lose })
+            {
+                var sheet = GD.Load<Texture2D>($"res://assets/opponents/nico-v44/{reaction.ToString().ToLowerInvariant()}.png");
+                if (sheet is null || sheet.GetSize() != new Vector2(128, 1024))
+                    throw new InvalidOperationException($"Invalid Nico reaction sheet: {reaction}");
+                _reactions[reaction] = Enumerable.Range(0,8).Select(i => new AtlasTexture
+                {
+                    Atlas = sheet, Region = new Rect2(0, i * 128, 128, 128), FilterClip = true
+                }).ToArray();
+            }
+        }
+        ShowReaction(default);
+        _portrait.Visible = _neutral is not null;
         Arrange();
         QueueRedraw();
+    }
+
+    public void ShowReaction(OpponentReactionPose pose)
+    {
+        ReactionPose = pose;
+        // Exact approved rest pixels bookend every clip; no generated near-copy.
+        _portrait.Texture = pose.Frame is > 0 and < 7 && _reactions.TryGetValue(pose.Kind, out var frames)
+            ? frames[pose.Frame] : _neutral;
+    }
+
+    private void ClearReactions()
+    {
+        foreach (var frames in _reactions.Values) foreach (var frame in frames) frame.Dispose();
+        _reactions.Clear();
+    }
+
+    public override void _Notification(int what)
+    {
+        if (what == NotificationPredelete) ClearReactions();
     }
 
     private void Arrange()
