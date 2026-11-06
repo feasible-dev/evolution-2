@@ -1,0 +1,9 @@
+Precise animation continuity correction to the supplied1254x1254 sprite atlas. KEEP the square canvas, exact4columns x3rows grid, background, character identity, body/head scale, clothes, palette, rendering, and all poses not explicitly listed. Fictional adult20-year-old Nao. Do not zoom, crop, redesign or resize.
+There is a choreography error: both opening motions currently face viewer RIGHT. Fix the FIRST opening to face viewer LEFT, leaving the second opening viewer RIGHT.
+Change ONLY frames2,3,4,5 (numbered row-major1..12):
+- frame2 = top row second cell: preparation, both open palms, turn nose, head, sternum and torso toward LEFT side of IMAGE.
+- frame3 = top row third cell: high-V rising arms, turn the whole upper body to face LEFT three-quarter. Nose must clearly point LEFT. Near shoulder on IMAGE RIGHT is visibly nearer camera.
+- frame4 = top row fourth cell: big open-arm pose with chest lifted and body pressing FORWARD-LEFT. Three-quarter almost side view facing LEFT. Nose and sternum point LEFT, opposite to original reference. Arms spread up/out/back with softly bent elbows. Whole body/hip weight transfer follows the LEFT diagonal.
+- frame5 = second row first cell: same LEFT-facing opening with a soft rebound.
+Frames1,6,7,8,9,10,11,12 stay unchanged. In particular frame9 (third row first cell) must retain RIGHT-facing chest opening, clearly opposite to frame4.
+Maintain original face identity at the new view, plausible two arms/two hands/five fingers, constant head size, natural athletic anatomy. Retain the little red/white stripe on her own LEFT chest as her body turns; do not simply mirror the whole character. Preserve the upper thigh crop and all hand margins. Same friendly expression, same approved style. No other changes.

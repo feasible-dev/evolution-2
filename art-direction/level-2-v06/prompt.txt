@@ -1,0 +1,21 @@
+Built-in imagegen. Correction: closed fists / vertical forearms near head, torso accents left and right.
+
+Identity-preserving animation of the APPROVED fictional adult20-year-old Nao.
+Reference1 defines ONLY the exact approved fictional character identity, face, hair, clothes, palette and illustration style. Reference2 defines ONLY the ARM MECHANICS: closed fists next to the head, elbows bent about90degrees, FOREARMS UPRIGHT. Do NOT copy the real woman's face, body, hairstyle, cat ears or costume.
+Critical correction: the previous animation incorrectly spread straight arms with open palms. In this new animation, BOTH FISTS MUST REMAIN CLOSED, BOTH FOREARMS MUST REMAIN VERTICAL AND CLOSE BESIDE THE HEAD, elbows bent, hands near temples/ears throughout the torso accents. This is a compact bent-arm 'muscle man' / goalpost-like pose, not an open-arm highV. Never open palms, never spread fingers, never straighten elbows, never reach arms horizontally outward. Move the bent-arm frame together with the torso, keeping fists near head. Maintain this restriction across ALL twelve frames.
+Nao wears the SAME navy short-sleeve cropped crewneck sports T-shirt with small red/white stripe on her own left chest, plain white high-waisted shorts, simple shoulder-length brown hair, identical natural adult face. Same approved colors and illustrated pixel-sprite rendering, original body proportions, no added accessories. Athletic everyday stadium dance, not bodybuilder anatomy. Mild friendly smile, no giant grin.
+NEW SQUARE1254x1254 atlas: exact FOUR columns by THREE rows, each cell about313.5x418. Flat opaque #101827 background. No letters, labels, borders, motion marks, shadows, scenery. Frame head to upper thighs at identical fixed camera/scale. Head roughly80pxwide95pxtall, crown normally around40px, chin135px, waist280px, thighs end400px within each cell. Entire hands/elbows fit every cell. All heads same size. Small natural up/down movements only. Same physical stripe placement as torso turns; do not flip entire character.
+Choreography is torso/chest forward accents with hip counterbalance, going LEFT then RIGHT, arms remaining bent vertically near face:
+1. Centered ready stance with both CLOSED FISTS beside temples, elbows below fists at shoulder level, forearms straight upright, compact pose.
+2. Preparation for LEFT: hips shift viewer-right, torso begins turning LEFT, small knee dip. Both fists follow head and remain near ears, forearms vertical.
+3. LEFT turn: torso and nose distinctly face viewer LEFT in three-quarter view, elbows draw a little backward while still bent90degrees; both fists beside head. No spreading.
+4. LEFT forward accent: chest/sternum and upper body travel forward-left, shoulders retract slightly, elbows move BACK a few centimeters, forearms stay UPRIGHT, fists remain near temples. Hips counterbalance. Small buoyant athletic motion, no extreme spinal arch.
+5. LEFT recoil: torso settles back slightly, knees soften, same closed fists and upright forearms; hair trails a little.
+6. Return toward center keeping both fists up beside head.
+7. Centered compact goalpost stance, slight anticipation dip; no lowering or uncurling fists.
+8. RIGHT turn: torso and nose distinctly face viewer RIGHT in three-quarter view, hips shift viewer-left, both fists stay near ears, upright forearms.
+9. RIGHT forward accent: sternum/upper body moves forward-right with elbows nudging back, forearms still vertical, fists close to temples. Same arm shape as frame4, opposite torso direction.
+10. RIGHT recoil, soft body bounce with fists still beside head.
+11. Return toward center, hips/shoulders settle, closed fists remain raised.
+12. Exact same centered compact pose as frame1 for loop.
+Strongly prioritize: CLOSED FISTS; VERTICAL FOREARMS; HANDS NEAR HEAD; BENT ELBOWS; LEFT/RIGHT torso accents. Do not drift into the open-handed pose at any time. Preserve adult identity and face scale exactly.

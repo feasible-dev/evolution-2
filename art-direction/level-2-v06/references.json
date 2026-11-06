@@ -1,0 +1,10 @@
+{
+  "armPosition": {
+    "name": "Muscle Man",
+    "url": "https://www.hawkscheer.com/cheers-chants-motions",
+    "scope": "Reference for bent arms with upright forearms; not identification of the exact dance."
+  },
+  "visualReference": "User-supplied fourth screenshot, codex-clipboard-Og7NH9.png; used for arm mechanics only.",
+  "correction": "Closed fists beside head throughout. Forearms upright, elbows bent. Torso presses forward-left, recovers, then forward-right. No open palms or extended arms.",
+  "approvedCharacter": "../level-2-v04/nao-paws-grid.png"
+}

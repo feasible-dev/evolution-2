@@ -1,0 +1,423 @@
+{
+  "status": "Animation preview, not installed in game",
+  "generator": "Built-in imagegen",
+  "source": "nao-fists-corrected.png",
+  "previousFrames": "../level-2-v04/frames",
+  "nativeFrame": {
+    "width": 192,
+    "height": 192
+  },
+  "grid": {
+    "columns": 4,
+    "rows": 6
+  },
+  "sourceScale": 0.45,
+  "crops": [
+    {
+      "left": 0,
+      "top": 0,
+      "width": 314,
+      "height": 427
+    },
+    {
+      "left": 314,
+      "top": 0,
+      "width": 313,
+      "height": 427
+    },
+    {
+      "left": 627,
+      "top": 0,
+      "width": 314,
+      "height": 427
+    },
+    {
+      "left": 941,
+      "top": 0,
+      "width": 313,
+      "height": 427
+    },
+    {
+      "left": 0,
+      "top": 414,
+      "width": 314,
+      "height": 427
+    },
+    {
+      "left": 314,
+      "top": 414,
+      "width": 313,
+      "height": 427
+    },
+    {
+      "left": 627,
+      "top": 414,
+      "width": 314,
+      "height": 427
+    },
+    {
+      "left": 941,
+      "top": 414,
+      "width": 313,
+      "height": 427
+    },
+    {
+      "left": 0,
+      "top": 827,
+      "width": 314,
+      "height": 427
+    },
+    {
+      "left": 314,
+      "top": 827,
+      "width": 313,
+      "height": 427
+    },
+    {
+      "left": 627,
+      "top": 827,
+      "width": 314,
+      "height": 427
+    },
+    {
+      "left": 941,
+      "top": 827,
+      "width": 313,
+      "height": 427
+    }
+  ],
+  "poseNames": [
+    "Ready",
+    "Anticipation",
+    "Paws up",
+    "Left cheek",
+    "Left paw pulse",
+    "Center",
+    "Right cheek",
+    "Hip sway",
+    "Left paw forward",
+    "Right paw forward",
+    "Settle",
+    "Ready",
+    "Fists beside head",
+    "Left preparation",
+    "Turn left",
+    "Left torso accent",
+    "Left recoil",
+    "Return through center",
+    "Center",
+    "Turn right",
+    "Right torso accent",
+    "Right recoil",
+    "Recover",
+    "Fists beside head"
+  ],
+  "clips": {
+    "full": [
+      {
+        "frame": 0,
+        "durationMs": 850
+      },
+      {
+        "frame": 1,
+        "durationMs": 150
+      },
+      {
+        "frame": 2,
+        "durationMs": 180
+      },
+      {
+        "frame": 3,
+        "durationMs": 190
+      },
+      {
+        "frame": 4,
+        "durationMs": 140
+      },
+      {
+        "frame": 3,
+        "durationMs": 140
+      },
+      {
+        "frame": 4,
+        "durationMs": 160
+      },
+      {
+        "frame": 5,
+        "durationMs": 160
+      },
+      {
+        "frame": 6,
+        "durationMs": 300
+      },
+      {
+        "frame": 5,
+        "durationMs": 140
+      },
+      {
+        "frame": 6,
+        "durationMs": 250
+      },
+      {
+        "frame": 5,
+        "durationMs": 140
+      },
+      {
+        "frame": 7,
+        "durationMs": 150
+      },
+      {
+        "frame": 8,
+        "durationMs": 180
+      },
+      {
+        "frame": 9,
+        "durationMs": 200
+      },
+      {
+        "frame": 8,
+        "durationMs": 180
+      },
+      {
+        "frame": 9,
+        "durationMs": 200
+      },
+      {
+        "frame": 12,
+        "durationMs": 200
+      },
+      {
+        "frame": 13,
+        "durationMs": 150
+      },
+      {
+        "frame": 14,
+        "durationMs": 150
+      },
+      {
+        "frame": 15,
+        "durationMs": 240
+      },
+      {
+        "frame": 16,
+        "durationMs": 150
+      },
+      {
+        "frame": 15,
+        "durationMs": 180
+      },
+      {
+        "frame": 16,
+        "durationMs": 150
+      },
+      {
+        "frame": 17,
+        "durationMs": 160
+      },
+      {
+        "frame": 18,
+        "durationMs": 180
+      },
+      {
+        "frame": 19,
+        "durationMs": 160
+      },
+      {
+        "frame": 20,
+        "durationMs": 240
+      },
+      {
+        "frame": 21,
+        "durationMs": 150
+      },
+      {
+        "frame": 20,
+        "durationMs": 180
+      },
+      {
+        "frame": 21,
+        "durationMs": 150
+      },
+      {
+        "frame": 22,
+        "durationMs": 160
+      },
+      {
+        "frame": 23,
+        "durationMs": 180
+      },
+      {
+        "frame": 10,
+        "durationMs": 180
+      },
+      {
+        "frame": 1,
+        "durationMs": 150
+      },
+      {
+        "frame": 0,
+        "durationMs": 1000
+      }
+    ],
+    "paws": [
+      {
+        "frame": 0,
+        "durationMs": 850
+      },
+      {
+        "frame": 1,
+        "durationMs": 150
+      },
+      {
+        "frame": 2,
+        "durationMs": 180
+      },
+      {
+        "frame": 3,
+        "durationMs": 190
+      },
+      {
+        "frame": 4,
+        "durationMs": 140
+      },
+      {
+        "frame": 3,
+        "durationMs": 140
+      },
+      {
+        "frame": 4,
+        "durationMs": 160
+      },
+      {
+        "frame": 5,
+        "durationMs": 160
+      },
+      {
+        "frame": 6,
+        "durationMs": 300
+      },
+      {
+        "frame": 5,
+        "durationMs": 140
+      },
+      {
+        "frame": 6,
+        "durationMs": 250
+      },
+      {
+        "frame": 5,
+        "durationMs": 140
+      },
+      {
+        "frame": 7,
+        "durationMs": 150
+      },
+      {
+        "frame": 8,
+        "durationMs": 180
+      },
+      {
+        "frame": 9,
+        "durationMs": 200
+      },
+      {
+        "frame": 8,
+        "durationMs": 180
+      },
+      {
+        "frame": 9,
+        "durationMs": 200
+      },
+      {
+        "frame": 10,
+        "durationMs": 180
+      },
+      {
+        "frame": 1,
+        "durationMs": 150
+      },
+      {
+        "frame": 0,
+        "durationMs": 1000
+      }
+    ],
+    "opening": [
+      {
+        "frame": 12,
+        "durationMs": 800
+      },
+      {
+        "frame": 13,
+        "durationMs": 150
+      },
+      {
+        "frame": 14,
+        "durationMs": 150
+      },
+      {
+        "frame": 15,
+        "durationMs": 240
+      },
+      {
+        "frame": 16,
+        "durationMs": 150
+      },
+      {
+        "frame": 15,
+        "durationMs": 180
+      },
+      {
+        "frame": 16,
+        "durationMs": 150
+      },
+      {
+        "frame": 17,
+        "durationMs": 160
+      },
+      {
+        "frame": 18,
+        "durationMs": 180
+      },
+      {
+        "frame": 19,
+        "durationMs": 160
+      },
+      {
+        "frame": 20,
+        "durationMs": 240
+      },
+      {
+        "frame": 21,
+        "durationMs": 150
+      },
+      {
+        "frame": 20,
+        "durationMs": 180
+      },
+      {
+        "frame": 21,
+        "durationMs": 150
+      },
+      {
+        "frame": 22,
+        "durationMs": 160
+      },
+      {
+        "frame": 23,
+        "durationMs": 180
+      },
+      {
+        "frame": 12,
+        "durationMs": 800
+      }
+    ]
+  },
+  "notes": [
+    "Approved character style and colors retained.",
+    "Both fists remain closed beside the head, forearms upright, elbows bent.",
+    "Torso accents alternate left and right with soft hip counterbalance.",
+    "First and last raised-fist poses share identical pixels.",
+    "Full sequence begins and ends with the exact approved neutral pixels.",
+    "Opaque review background; no runtime or gameplay changes."
+  ]
+}

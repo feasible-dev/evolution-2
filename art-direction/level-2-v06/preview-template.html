@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evolution Wars — Nao closed-fist correction</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0b0e14;color:#e9e6df;font:16px/1.5 system-ui}main{max-width:1160px;margin:auto;padding:28px}h1{font-size:30px;margin:0}h2{font-size:18px}p{color:#b0bbca}button,select{font:inherit}button{background:#dededb;color:#111827;border:0;border-radius:3px;padding:9px 14px;cursor:pointer}button[aria-pressed=true]{background:#8ecaf0}button:focus-visible,a:focus-visible{outline:3px solid #e2c28e}select{background:#152130;color:#e9e6df;padding:8px}.controls,.clips{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0}.stages{display:flex;gap:24px;flex-wrap:wrap;align-items:start}.stage{background:#101827;padding:18px}.stage h2{font-size:14px;font-weight:500;margin:0 0 12px;color:#b8c6d8}.sprite{width:192px;height:192px;background-image:url(nao-dance-native.png);background-size:768px 1152px;image-rendering:pixelated}.large{width:384px;height:384px;background-size:1536px 2304px}.status{color:#b5c6d9;font-variant-numeric:tabular-nums}input{width:100%;accent-color:#83b5df;margin:16px 0 24px}a{color:#8fc2ee}.notes{max-width:790px}.sheet{width:768px;max-width:100%;image-rendering:pixelated}summary{cursor:pointer;margin:24px 0 12px}footer{font-size:14px;margin-top:24px}.old{image-rendering:pixelated}
+</style>
+<main><h1>Nao — closed fists, upright forearms</h1><p>Corrected choreography · torso accents left / right · animation study</p>
+<div class="clips"><button data-clip="full" aria-pressed="true">Full dance</button><button data-clip="opening" aria-pressed="false">Corrected move only</button><button data-clip="paws" aria-pressed="false">Cat paws only</button></div>
+<div class="controls"><button id="play">Pause</button><button id="replay">Replay</button><button id="previous">← Frame</button><button id="next">Frame →</button><label>Speed <select id="speed"><option value="0.5">½×</option><option value="1" selected>1×</option><option value="1.5">1½×</option></select></label><span class="status" id="status"></span></div>
+<input id="timeline" type="range" min="0" step="1" value="0" aria-label="Animation step">
+<div class="stages"><section class="stage"><h2>Native pixels · 192 × 192</h2><div class="sprite" id="native" role="img" aria-label="Animated Nao at native scale"></div></section><section class="stage"><h2>Inspection · 2×</h2><div class="sprite large" id="large" role="img" aria-label="Animated Nao enlarged"></div></section></div>
+<p class="notes">Both fists stay closed near the temples. The forearms stay upright, with elbows bent. The elbows draw back slightly as the torso accents forward-left, returns through center, then repeats forward-right. No open palms or extended arms.</p>
+<p class="notes">The new motion replaces the rejected open-arm version. The cat-paw dance remains intact. This is a preview on a dark background, not a level-2 game integration.</p>
+<h2>Previous approved choreography</h2><img class="old" src="../level-2-v04/nao-paws-preview.gif" width="128" height="192" alt="Previous cat-paw dance">
+<details><summary>All key poses</summary><img class="sheet" src="nao-dance-native.png" alt="Twenty-four poses for the combined dance"></details>
+<details><summary>Movement references</summary><p class="notes">The user's fourth screenshot shows closed fists beside the head with bent elbows and upright forearms. The <a href="https://www.hawkscheer.com/cheers-chants-motions">Muscle Man arm position</a> provides a corresponding cheer vocabulary reference. This identifies the arm posture, not the exact named dance. The left/right torso accents follow the user's correction.</p></details>
+<footer><a href="nao-full-preview.gif">Full dance GIF</a> · <a href="nao-opening-preview.gif">Corrected move GIF</a> · <a href="animation.json">Animation data</a> · <a href="prompt.txt">Imagegen prompt</a> · <a href="prompt-left-correction.txt">Direction correction</a></footer>
+</main><script>
+/* CLIPS */
+let clip='full',step=0,elapsed=0,playing=!matchMedia('(prefers-reduced-motion: reduce)').matches,last=performance.now();
+const el=id=>document.getElementById(id);
+function render(){const sequence=clips[clip],f=sequence[step][0];for(const[id,scale]of[['native',1],['large',2]])el(id).style.backgroundPosition=`${-(f%4)*192*scale}px ${-Math.floor(f/4)*192*scale}px`;el('status').textContent=`${step+1} / ${sequence.length} · ${names[f]}`;el('timeline').max=sequence.length-1;el('timeline').value=step;el('play').textContent=playing?'Pause':'Play';document.querySelectorAll('[data-clip]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.clip===clip));}
+function select(index){step=(index+clips[clip].length)%clips[clip].length;elapsed=0;playing=false;render();}
+document.querySelectorAll('[data-clip]').forEach(b=>b.onclick=()=>{clip=b.dataset.clip;step=0;elapsed=0;playing=true;render();});
+el('play').onclick=()=>{playing=!playing;render();};el('replay').onclick=()=>{step=0;elapsed=0;playing=true;render();};el('previous').onclick=()=>select(step-1);el('next').onclick=()=>select(step+1);el('timeline').oninput=e=>select(Number(e.target.value));
+function tick(now){const delta=Math.min(now-last,100);last=now;if(playing){elapsed+=delta*Number(el('speed').value);if(elapsed>=clips[clip][step][1]){elapsed-=clips[clip][step][1];step=(step+1)%clips[clip].length;render();}}requestAnimationFrame(tick);}
+render();requestAnimationFrame(tick);
+</script></html>

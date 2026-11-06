@@ -1,0 +1,8 @@
+Precise edit of supplied sprite atlas. Preserve everything except the facing direction of FOUR poses. Keep1254x1254 canvas,4columns3rows, character, head size, original art style, navy tee/red-white chest stripe/white shorts, original background and every pose's CLOSED FISTS beside ears and UPRIGHT FOREARMS.
+Frames2,3,4,5 must face the LEFT edge of the image. Currently they incorrectly face right.
+Frame2 top row second cell: turn torso and head slightly LEFT, nose points LEFT.
+Frame3 top row third cell: three-quarter LEFT-facing torso and head, nose points LEFT, fists near ears.
+Frame4 top row fourth cell: torso/chest forward accent toward LEFT, clearly LEFT-facing three-quarter almost profile; nose points LEFT, near shoulder on imageRIGHT. Keep closed fists close beside head, forearms vertical, elbows bent and nudging back. Do not open hands, extend elbows, or spread arms.
+Frame5 second row first cell: LEFT-facing recoil from frame4, still nose points LEFT and fists beside ears.
+All other frames1,6,7,8,9,10,11,12 stay unchanged. Frame9 third row first cell retains RIGHT-facing forward accent. Opposite facing directions of frames4 and9 must be visually unmistakable.
+Do not merely mirror the character: keep stripe on the same physical side of the shirt while rendering the opposite view. Same face identity, smile and pixel/illustrated rendering. No more changes. This is ordinary athletic dance by a fictional adult woman20, with compact closed-fist bent arms throughout.
