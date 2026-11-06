@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evolution Wars — Nao cat-paw dance</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0b0e14;color:#e9e6df;font:16px/1.5 system-ui}main{max-width:1180px;margin:auto;padding:28px}h1{font-size:30px;margin:0}p{color:#aeb8c8}button,a{font:inherit}button{background:#e7e6e1;color:#111827;border:0;border-radius:3px;padding:9px 16px;cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid #73c9ff}.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.stages{display:flex;gap:24px;flex-wrap:wrap;margin:28px 0;align-items:start}.stage{background:#101827;padding:18px;min-height:282px}.stage h2{font-size:14px;font-weight:500;margin:0 0 12px;color:#b8c6d8}.sprite{width:128px;height:192px;background-image:url(nao-paws-native.png);background-size:512px 576px;image-rendering:pixelated}.large{width:256px;height:384px;background-size:1024px 1152px}.game-tile{display:flex;align-items:center;gap:10px}.name{font-size:22px;font-weight:800;line-height:1.1;max-width:110px}.name small{display:block;font-size:12px;font-weight:400;color:#aab9c9;margin-top:10px}.status{font-variant-numeric:tabular-nums;color:#b5c6d9}.compare{display:flex;align-items:end;gap:14px;flex-wrap:wrap;background:#101827;padding:20px}.compare img{image-rendering:pixelated;display:block}.gerard{width:192px;height:128px;background:url(../../prototype/assets/broadcast-v41/gerard-conversation.png) 0 0;image-rendering:pixelated}figure{margin:0}figcaption{font-size:12px;color:#9fadc0;margin-top:10px}a{color:#82bcf5}.sheet{max-width:100%;width:512px;image-rendering:pixelated}.notes{max-width:740px}input{accent-color:#7caee6}.timeline{width:100%;margin:18px 0}footer{margin:24px 0;font-size:14px}details{margin:24px 0}summary{cursor:pointer}
+</style>
+<main><h1>Nao — cat-paw dance</h1>
+<p>Approved style and colors · new cat-paw choreography</p>
+<div class="controls"><button id="play">Pause</button><button id="replay">Replay</button><button id="previous">← Frame</button><button id="next">Frame →</button><label>Speed <select id="speed"><option value="0.5">½</option><option value="1" selected>1×</option><option value="1.5">1½×</option></select></label><span class="status" id="status"></span></div>
+<input class="timeline" id="timeline" type="range" min="0" max="19" value="0" step="1" aria-label="Animation step">
+<div class="stages">
+<section class="stage"><h2>Portrait footprint · 128 × 192</h2><div class="game-tile"><div class="sprite" id="native" role="img" aria-label="Animated Nao portrait"></div><div class="name">NAO<br>MORITA<small>Fukuoka, Japan<br>Level 02 concept</small></div></div></section>
+<section class="stage"><h2>Pixel inspection · 2×</h2><div class="sprite large" id="large" role="img" aria-label="Double-size animated Nao portrait"></div></section>
+</div>
+<h2>Previous dance</h2><p>The approved style is unchanged. Compare the first celebration with the new choreography above.</p><img src="../level-2-v03/nao-celebration-preview.gif" width="128" height="192" style="image-rendering:pixelated" alt="Previous celebration"><h2>Native pixel comparison</h2><div class="compare"><figure><div class="sprite" id="comparison"></div><figcaption>Nao · proposed portrait</figcaption></figure><figure><img src="../../prototype/assets/studio-v52/nico.png" width="128" height="192" alt="Current Nico portrait"><figcaption>Nico · current native asset</figcaption></figure><figure><div class="gerard" role="img" aria-label="Current Gerard sprite"></div><figcaption>Gerard · current native asset, before 1.125× game scaling</figcaption></figure></div>
+<p class="notes">Bent wrists and softly curled fingers, paws beside the left cheek then the right, hip sways with opposing shoulder movement, alternating paw reaches, then a settled return. Same approved neutral pixels at both ends.</p>
+<p class="notes">This is a timing and silhouette preview, not a level-2 game integration. It still uses a dark review background. Final cutouts and additional in-between poses will be prepared after review.</p>
+<details><summary>All generated key poses</summary><img class="sheet" src="nao-paws-native.png" alt="Twelve cat-paw key poses"></details>
+<footer><a href="nao-paws-preview.gif">Animated GIF</a> · <a href="animation.json">Timing and frame data</a> · <a href="prompt.txt">Imagegen prompt</a></footer>
+</main>
+<script>
+const sequence=[[0,850],[1,150],[2,180],[3,190],[4,140],[3,140],[4,160],[5,160],[6,300],[5,140],[6,250],[5,140],[7,150],[8,180],[9,200],[8,180],[9,200],[10,180],[1,150],[0,1000]];
+const names=["Ready","Anticipation","Paws up","Left cheek","Left paw pulse","Center","Right cheek","Hip sway","Left paw forward","Right paw forward","Settle","Ready"];
+let step=0,elapsed=0,playing=!matchMedia('(prefers-reduced-motion: reduce)').matches,last=performance.now();
+const byId=id=>document.getElementById(id);
+function render(){const f=sequence[step][0];for(const [id,scale] of [['native',1],['large',2],['comparison',1]])byId(id).style.backgroundPosition=`${-(f%4)*128*scale}px ${-Math.floor(f/4)*192*scale}px`;byId('status').textContent=`${step+1} / ${sequence.length} · ${names[f]}`;byId('timeline').value=step;byId('play').textContent=playing?'Pause':'Play';}
+function select(index){step=(index+sequence.length)%sequence.length;elapsed=0;playing=false;render();}
+byId('play').onclick=()=>{playing=!playing;render();};byId('replay').onclick=()=>{step=0;elapsed=0;playing=true;render();};byId('previous').onclick=()=>select(step-1);byId('next').onclick=()=>select(step+1);byId('timeline').oninput=e=>select(Number(e.target.value));
+function tick(now){const delta=Math.min(now-last,100);last=now;if(playing){elapsed+=delta*Number(byId('speed').value);if(elapsed>=sequence[step][1]){elapsed-=sequence[step][1];step=(step+1)%sequence.length;render();}}requestAnimationFrame(tick);}
+render();requestAnimationFrame(tick);
+</script></html>

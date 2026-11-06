@@ -1,0 +1,191 @@
+{
+  "status": "Choreography preview; not installed in game",
+  "generator": "Built-in imagegen",
+  "approvedStyle": "../level-2-v03/nao-celebration-grid.png",
+  "source": "nao-paws-grid.png",
+  "nativeFrame": {
+    "width": 128,
+    "height": 192
+  },
+  "grid": {
+    "columns": 4,
+    "rows": 3
+  },
+  "crops": [
+    {
+      "left": 0,
+      "top": 49,
+      "width": 241,
+      "height": 427
+    },
+    {
+      "left": 241,
+      "top": 49,
+      "width": 242,
+      "height": 427
+    },
+    {
+      "left": 483,
+      "top": 49,
+      "width": 241,
+      "height": 427
+    },
+    {
+      "left": 724,
+      "top": 49,
+      "width": 241,
+      "height": 427
+    },
+    {
+      "left": 0,
+      "top": 561,
+      "width": 241,
+      "height": 427
+    },
+    {
+      "left": 241,
+      "top": 561,
+      "width": 242,
+      "height": 427
+    },
+    {
+      "left": 483,
+      "top": 561,
+      "width": 241,
+      "height": 427
+    },
+    {
+      "left": 724,
+      "top": 561,
+      "width": 241,
+      "height": 427
+    },
+    {
+      "left": 0,
+      "top": 1068,
+      "width": 241,
+      "height": 427
+    },
+    {
+      "left": 241,
+      "top": 1068,
+      "width": 242,
+      "height": 427
+    },
+    {
+      "left": 483,
+      "top": 1068,
+      "width": 241,
+      "height": 427
+    },
+    {
+      "left": 724,
+      "top": 1068,
+      "width": 241,
+      "height": 427
+    }
+  ],
+  "scale": 0.45,
+  "poseNames": [
+    "Ready",
+    "Anticipation",
+    "Paws up",
+    "Left cheek",
+    "Left paw pulse",
+    "Center",
+    "Right cheek",
+    "Hip sway",
+    "Left paw forward",
+    "Right paw forward",
+    "Settle",
+    "Ready"
+  ],
+  "sequence": [
+    {
+      "frame": 0,
+      "durationMs": 850
+    },
+    {
+      "frame": 1,
+      "durationMs": 150
+    },
+    {
+      "frame": 2,
+      "durationMs": 180
+    },
+    {
+      "frame": 3,
+      "durationMs": 190
+    },
+    {
+      "frame": 4,
+      "durationMs": 140
+    },
+    {
+      "frame": 3,
+      "durationMs": 140
+    },
+    {
+      "frame": 4,
+      "durationMs": 160
+    },
+    {
+      "frame": 5,
+      "durationMs": 160
+    },
+    {
+      "frame": 6,
+      "durationMs": 300
+    },
+    {
+      "frame": 5,
+      "durationMs": 140
+    },
+    {
+      "frame": 6,
+      "durationMs": 250
+    },
+    {
+      "frame": 5,
+      "durationMs": 140
+    },
+    {
+      "frame": 7,
+      "durationMs": 150
+    },
+    {
+      "frame": 8,
+      "durationMs": 180
+    },
+    {
+      "frame": 9,
+      "durationMs": 200
+    },
+    {
+      "frame": 8,
+      "durationMs": 180
+    },
+    {
+      "frame": 9,
+      "durationMs": 200
+    },
+    {
+      "frame": 10,
+      "durationMs": 180
+    },
+    {
+      "frame": 1,
+      "durationMs": 150
+    },
+    {
+      "frame": 0,
+      "durationMs": 1000
+    }
+  ],
+  "notes": [
+    "Same approved palette, clothing and identity.",
+    "Human cat-paw hand gestures, cheek-to-cheek movement, hip shifts and counter-rotating shoulders.",
+    "First and last playback frames use the exact approved v03 neutral image.",
+    "Opaque review background; no gameplay code changed."
+  ]
+}

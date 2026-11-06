@@ -1,0 +1,9 @@
+{
+  "character": "Nao Morita",
+  "age": 20,
+  "designStatus": "User approved v03 style and colors; preserve for future work",
+  "approvedReference": "../level-2-v03/nao-celebration-grid.png",
+  "keep": ["Face identity", "Head proportions", "Simple shoulder-length brown hair", "Navy cropped stadium tee", "Small red and white chest stripes", "Plain white shorts", "Existing skin and clothing palette"],
+  "choreography": ["Human hands curled like cat paws", "Bent wrists", "Hands beside one cheek, then the other", "Clearly visible hip shifts and rotations", "Shoulders counterbalance hips", "Soft knee rebounds", "Subtle head and hair follow-through"],
+  "use": "Celebration or short encouragement; keep ordinary match attention quieter"
+}

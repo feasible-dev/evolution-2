@@ -1,0 +1,21 @@
+Built-in imagegen; fictional adult character, celebration animation study.
+
+Use case: identity-preserve / pixel-art animation sprite sheet.
+Create ONE production-oriented 12-frame sprite sheet of the same fictional ADULT 20-year-old woman Nao in the supplied character reference, performing a cheerful sports victory dance. Maintain her exact adult face, dark brown simple shoulder-length straight hair, navy cropped short-sleeved crew-neck T-shirt with the tiny red/white chest stripes, plain white high-waisted shorts, and natural adult anatomy. Friendly restrained expression; lips sometimes part slightly, no huge fixed grin. Original fictional person, not a real dancer likeness.
+TRANSPARENT background, no shadows on background, no scenery, labels, dividers, numbers, captions or panels. Flat neutral consistent lighting.
+Sheet layout: exactly FOUR columns by THREE rows of identically sized rectangular cells, reading left to right then top to bottom. Requested canvas 1536x1728, each cell 384x576. Each cell has generous clear space above for a raised hand. Character framed head to mid-thigh, all hands entirely inside each cell. Camera and scale LOCKED across all 12 frames; head width about 76 pixels, head height about 98 pixels in every cell. Crown normally around y130, chin y228, shorts waistband around y420, mid thighs at y570. Never enlarge the face in quiet poses or shrink the person in raised-arm poses. All frames share same center x192 and hip baseline, with only small natural dance shifts.
+True deliberate pixel-art with clean clustered colors and crisp pixels, realistic face proportions matching reference, no anime eyes, no continuous painted gradients. Animation should redraw torso/shoulders/weight distribution, not pasted arms on an immobile body. No motion blur, ghosts or duplicated limbs.
+The 12 successive keyframes:
+1. Quiet starting pose, body three-quarter slightly to viewer right toward arena, right arm relaxed, left hand at waist, calm attentive expression.
+2. Anticipation: body dips very slightly, both elbows bending and hands near waist; excitement begins.
+3. Rising out of dip, both elbows out, loose fists at chest level.
+4. Both bent arms raised, loose fists at temple height, small proud smile, body upright.
+5. Same raised-arm pose with weight shifting to viewer left, shoulders gently counter-tilted and head following slightly.
+6. Return through center with both fists raised, hair trails subtly.
+7. Shift weight to viewer right, elbows still raised, head tilts subtly the other way.
+8. Left hand returns to waist while right arm begins extending upwards at diagonal, gaze following upward slightly.
+9. Right arm fully raised straight overhead, complete fist visible with space above it, left hand on waist, upright confident celebratory pose. Face remains SAME SIZE as frame1.
+10. Raised hand lowers beside cheek in a brief friendly wave, torso gently three-quarter right, left hand stays at waist.
+11. Hand lowering toward chest, shoulders relaxing, eyes return toward arena to viewer right.
+12. Exact return to frame1 quiet pose and expression, matching framing and scale so it can loop.
+Prioritize identity and stable anatomy across every frame. Keep shorts and shirt plain and practical, no costume additions or accessories.

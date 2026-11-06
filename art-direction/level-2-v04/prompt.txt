@@ -1,0 +1,21 @@
+Built-in imagegen. Approved v03 identity, style, clothing and colors locked; choreography-only revision.
+
+Use case: identity-preserve animation edit. Create a NEW 12-keyframe cat-paw dance sprite atlas for the SAME fictional ADULT 20-year-old Nao in the supplied approved atlas.
+STRICTLY PRESERVE the approved art style, face identity, natural adult proportions, face/head size, simple shoulder-length brown hair, navy short-sleeve cropped crew-neck T-shirt with tiny red-white chest stripes, plain white high-waisted shorts, skin palette, rendering quality and lighting. User has APPROVED these and requests CHOREOGRAPHY ONLY. Do not redesign her, enlarge eyes, make her younger, add ears/tail/props/gloves/jewelry, or change clothes/colors.
+Flat opaque dark navy #101827 background, no scenery, labels, dividers, numbers, text, floor shadow, motion lines or ghosted limbs.
+Exact layout FOUR columns by THREE rows, same canvas aspect and evenly spaced cells as reference. Frame head to upper thighs in all12 cells, same scale and camera; all elbows and fingers safely inside cell. Keep chin/face/head size stable, not bobblehead. Allow strong readable HIP and WAIST movement but do not morph anatomy. Each head about80 source pixels wide, each figure about400 pixels high like reference. Clear gutters, cells containing entire subject.
+Dance quality: playful, charming sports celebration, human hands imitating cat paws by gently curling fingers and flexing wrists DOWNWARD (not clenched boxing fists). Fluid torso involvement, conspicuous lateral hip shifts, slight hip rotations, alternating knee flexion suggested at lower crop, shoulders counterbalance hips, hair follows with a small delay. Soft smile changing subtly, mouth sometimes relaxed; friendly natural adult expression. Not robotic, not identical body repeated with different arms. No suggestive posing or sexual emphasis; ordinary energetic stadium choreography.
+12 distinct consecutive key poses, row-major:
+1 Neutral ready pose matching approved frame1, looking toward viewer right, right hand on viewer left at waist, left arm relaxed.
+2 Anticipation dip, knees softly flexed, hips centered and slightly lower, both elbows bend bringing loose hands up from waist.
+3 Both little paws below chin, wrists bent, elbows out softly; shoulders rise a little, hips starting to travel toward VIEWER RIGHT.
+4 Both paw hands clustered beside the VIEWER LEFT cheek, one slightly above the other without overlapping face; head tilts left toward hands. Hips visibly shifted RIGHT, torso forms a gentle diagonal counterbalance.
+5 Same left-cheek paw gesture with a small downward paw pulse; hip RIGHT rolls slightly forward, shoulders subtly turn left, body a little lower to show rebound. Do not change face size.
+6 Transition through center: hands separate into two paws at shoulder height, body rising gently, hips passing center.
+7 Both paw hands clustered beside VIEWER RIGHT cheek, one above the other; head tilts right toward hands. Hips visibly shifted LEFT, shoulders counterbalance right.
+8 Same right-cheek paw gesture with small downward paw pulse; hip LEFT rolls slightly forward, shoulders subtly turn right, body slightly lower.
+9 Two paws separated at shoulder height, playful alternating paw reach: viewer-left paw slightly forward, viewer-right paw nearer shoulder. Hip swings RIGHT while chest gently twists LEFT.
+10 Reverse the alternating reach: viewer-right paw slightly forward, viewer-left nearer shoulder. Hip swings LEFT while chest twists RIGHT. Face, hairstyle and stripe placement stay continuous; no mirroring entire body.
+11 Settle through center, both hands lowering toward waist, gentle exhale smile, hips completing small rotation and returning to neutral, gaze returning to arena viewer right.
+12 Exact match of frame1 ready posture, face and scale for clean loop.
+The hip shifts must be clearly visible across4/7 and9/10, not just head tilts. Keep abdomen/waist/shorts coherent, limbs natural and readable at a small128x192 game portrait size. Preserve original warm, realistic illustrated pixel-sprite style, no anime or photorealistic restyling.
