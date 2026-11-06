@@ -1,4 +1,53 @@
-# Evolution Wars — v49 compact studio
+# Evolution Wars — v52 character framing and emotional continuity
+
+The presenters are 12.5% larger, anchored at the same gallery fascia. Speech
+bubbles leave room for the wider figures. Nico uses 128x192 waist-up sprites,
+including both result animations; his name and origin sit beside his body.
+
+Gerard's final standing frames now lower into an alert seated performance.
+The animation director carries that energy into the aftermath without an idle
+frame or restarting it when the associated spoken cue arrives. He holds the
+reaction, shares it with Rene, and settles toward the rink instead of scanning
+left-right. Closed lips and astonished speaking shapes replace the aftermath's
+constant smile. Speaking pairs share the exact skull, chin and torso pixels.
+
+Runtime captures, the sitting sequence and prompts: `../art-direction/v52/index.html`.
+Sprites: `assets/studio-v52/`. Original v50/v51 art is retained.
+
+## v51 gallery proportions and celebrations
+
+The studio backdrop is cropped with a uniform scale. The LED fascia uses rigid,
+uniformly scaled end caps; only its undecorated horizontal center changes length.
+Texture coordinates account for the generated source resolution. Round rivets,
+lamps and structural pieces therefore retain their proportions across layouts.
+
+The flat tabletop is gone. The vertical fascia begins at y=150, masking the
+bottom six rows of the seated hands. Seated characters return to y=36; the arena
+begins at y=224, four units below the fascia. The approved wordmark is unchanged.
+
+Gerard's standing frames 2–13 now use an excited upward gaze, with the top of
+his head cropped by the viewport. Native-size pose comparisons and runtime
+captures at 1920×1080 and 1280×800 are in `../art-direction/v51/index.html`.
+The seated frames, delayed Rene reaction, and event-only standing triggers remain.
+Built-in imagegen source and prompt are retained in `../art-direction/v51/`.
+
+## v50 unified press gallery
+
+The header uses one continuous painted set spanning Nico's corner, the analyst
+desk and the logo bay. The desk front is drawn from the same image in front of
+the sprites; the live LED strip occupies its painted recess. The previous grey
+overlay bar and separate opponent backdrop are gone.
+
+Speech bubbles measure their text, have no speaker-name labels, and still fade
+after a reading interval. Both presenters have 192x192 display canvases with the
+seated pixels preserved at native scale. Gerard's completed standing poses extend
+above the former crop and are clipped only by the top of the game viewport.
+
+The new ivory/copper wordmark uses angular lettering rising roughly 12 degrees.
+Runtime captures and built-in imagegen prompts: `../art-direction/v50/index.html`.
+Hand props and additional desk interactions remain future work.
+
+## v49 compact studio
 
 The playable broadcast now follows the approved compact black-studio concept.
 One warehouse backdrop continues behind both animated commentators into the

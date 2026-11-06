@@ -6,10 +6,13 @@ namespace EvolutionTwo.Presentation;
 /// Original RGB values and the source assets remain untouched.</summary>
 internal static class StudioSpriteCompositor
 {
+    // The headless renderer can return an ImageTexture's retained image itself.
+    // Callers that dispose or modify an image must own a duplicate.
+    public static Image CopyImage(Texture2D texture) => (Image)texture.GetImage().Duplicate();
     public static ImageTexture Create(Texture2D source, int tileWidth, int tileHeight, int matteTolerance = 0,
         IReadOnlySet<int>? mattePalette = null)
     {
-        using var image = source.GetImage();
+        using var image = CopyImage(source);
         image.Convert(Image.Format.Rgba8);
         var width = image.GetWidth();
         var height = image.GetHeight();

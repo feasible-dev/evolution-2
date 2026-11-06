@@ -53,7 +53,33 @@ internal static class StudioPresentationChecks
             Check(cleared > 100 && opaque > 1000, "real sprite silhouette survives matte removal: " + actor + "/" + pose.Clip);
         }
         var hold = SpeechBubble.ReadingSeconds(160);
-        using (var nico = scene.OpponentIdentity.DisplayedPortrait!.GetImage())
+        var font = scene.GetThemeDefaultFont();
+        var shortLine = SpeechBubble.Measure(font, "Wow!", 290);
+        var longLine = SpeechBubble.Measure(font, "Every agent survived. This is the first perfect round of the match, and Nico can hardly believe it!", 290);
+        Check(shortLine.Size.X < longLine.Size.X && shortLine.Size.Y < longLine.Size.Y,
+            "bubble dimensions follow the amount of text");
+        Check(longLine.Size.X <= 290, "long commentary respects the available column width");
+        foreach (var actor in new[] { 0, 1 })
+        {
+            var pose = new BroadcastPortraitFrame("conversation", 0, PortraitGaze.Board);
+            using var display = StudioSpriteCompositor.CopyImage(assets.GetDisplay(actor, pose));
+            using var original = assets.GetCutout(actor, pose).GetImage();
+            using var seated = display.GetRegion(new Rect2I(0, 64, 192, 120));
+            using var character = original.GetRegion(new Rect2I(0, 0, 192, 120));
+            Check(display.GetHeight() == 192 && character.GetData().SequenceEqual(seated.GetData()),
+                "extra headroom preserves every seated character pixel: " + actor);
+            Check(display.GetPixel(191, 185).A == 0, "old blue desk strip cannot bleed over the painted table: " + actor);
+        }
+        using (var standing = StudioSpriteCompositor.CopyImage(assets.GetDisplay(0, new("stand", 8, PortraitGaze.Board))))
+        {
+            var headPixels = 0;
+            for (var y = 0; y < 64; y++) for (var x = 0; x < 192; x++)
+                if (standing.GetPixel(x, y).A > .5f) headPixels++;
+            Check(headPixels > 500, "standing head occupies the newly available upper space");
+        }
+        Check(scene.Presenters.All(p => p.Position.Y < 0 && p.Size.Y == 216),
+            "the screen edge, not the old portrait frame, crops the standing pose");
+        using (var nico = StudioSpriteCompositor.CopyImage(scene.OpponentIdentity.DisplayedPortrait!))
         {
             Check(nico.GetPixel(0, 64).A == 0 && nico.GetPixel(127, 64).A == 0,
                 "Nico's varying matte is transparent on both sides");
@@ -63,7 +89,8 @@ internal static class StudioPresentationChecks
         Check(SpeechBubble.Opacity(hold, 160) == 1, "bubble remains fully readable through its hold");
         Check(SpeechBubble.Opacity(hold + .3, 160) is > 0 and < 1, "bubble fades instead of vanishing abruptly");
         Check(SpeechBubble.Opacity(hold + 1, 160) == 0, "stale commentary reveals the studio");
-        Check(scene.BoardArea.Position.Y == 244, "studio decoration does not move the arena down");
+        Check(scene.BoardArea.Position.Y == StudioBackdrop.ArenaTop, "studio decoration does not move the arena down");
+        Check(scene.Preparation.Position.Y >= 222, "the gallery does not cover the preparation budget heading");
         Check(TeamPalette.Opponent == new Color("f58b23") && TeamPalette.Us == new Color("24d0ff"), "team palette is orange versus cyan");
         GD.Print($"STUDIO PRESENTATION PASS: {checks} alpha, timing and layout checks");
     }

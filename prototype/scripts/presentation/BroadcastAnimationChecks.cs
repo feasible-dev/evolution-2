@@ -45,7 +45,9 @@ public static class BroadcastAnimationChecks
         Sample(24,10,2,"slap");
         Check(director.CurrentEvent == "stand", "reaction continues while match state is paused");
         Sample(26,10,2,"slap");
-        Check(director.CurrentEvent is null, "standing settles back to conversation");
+        Check(director.CurrentEvent is null, "standing finishes its physical movement");
+        Check(director.IsExcited && director.Frames[0].Clip == "excited",
+            "standing flows directly into excited seated delivery without a calm idle frame");
         director.Reset(); Sample(0);
         Check(director.CurrentEvent is null && director.Frames.All(f=>f.Clip=="conversation"), "restart clears pending gestures");
         Sample(.1,1,1,"stand");
@@ -56,7 +58,7 @@ public static class BroadcastAnimationChecks
         director.Update(0,1,0,.2,true,1,1,"excited");
         Check(director.IsExcited && director.Frames[0].Clip=="excited", "spoken aftermath starts a seated performance");
         director.Update(1.4,1,0,1.4,true,1,1,"excited");
-        Check(director.Frames[0].Frame/2==1, "excited torso shifts toward the left rink");
+        Check(director.Frames[0].Frame/2==0, "excited aftermath holds its first emotional beat");
         director.Update(3.1,1,0,3.1,true,1,1,"excited");
         Check(director.Frames[0].Gaze==PortraitGaze.Partner && director.Frames[1].Gaze==PortraitGaze.Board, "Gerard invites his colleague before the response");
         director.Update(3.8,1,0,3.8,true,1,1,"excited");
@@ -65,6 +67,21 @@ public static class BroadcastAnimationChecks
         Check(!director.IsExcited && director.Frames[0].Clip!="excited", "aftermath settles without looping forever");
         director.Reset();
         Check(!director.IsExcited, "restart clears the seated aftermath");
+        using (var seatedExit = StudioSpriteCompositor.CopyImage(assets.GetDisplay(0, new("stand",17,PortraitGaze.Board))))
+        using (var aftermath = StudioSpriteCompositor.CopyImage(assets.GetDisplay(0, new("excited",0,PortraitGaze.Board))))
+            Check(seatedExit.GetData().SequenceEqual(aftermath.GetData()),
+                "the seated exit and aftermath share exact pixels");
+        for (var frame = 0; frame < 8; frame += 2)
+        {
+            using var closed = StudioSpriteCompositor.CopyImage(assets.GetDisplay(0, new("excited",frame,PortraitGaze.Board)));
+            using var speaking = StudioSpriteCompositor.CopyImage(assets.GetDisplay(0, new("excited",frame+1,PortraitGaze.Board)));
+            var changed = 0; var minY = 192; var maxY = -1;
+            for (var y = 0; y < 192; y++) for (var x = 0; x < 192; x++)
+                if (closed.GetPixel(x,y) != speaking.GetPixel(x,y))
+                { changed++; minY = Math.Min(minY,y); maxY = Math.Max(maxY,y); }
+            Check(changed > 0 && maxY - minY < 8 && maxY < 134,
+                "new emotional speech moves only lips, preserving the chin and body");
+        }
         Check(TickerStrip.ScrollColumn(1)==11 && TickerStrip.ScrollColumn(1.01)==11 && TickerStrip.ScrollColumn(2)==22,
             "LED messages step through fixed columns at the preserved reading speed");
         DirectionAndAttentionChecks.Run();
@@ -140,23 +157,24 @@ public static class BroadcastAnimationChecks
     {
         try
         {
-            Run(scene);
+            if (OS.GetCmdlineUserArgs().Contains("--visual-only")) StudioPresentationChecks.Run(scene);
+            else Run(scene);
             if (DisplayServer.GetName() == "headless") { scene.GetTree().Quit(); return; }
-            var folder=ProjectSettings.GlobalizePath("res://../art-direction/v49/captures");
+            var folder=ProjectSettings.GlobalizePath("res://../art-direction/v52/captures");
             Directory.CreateDirectory(folder);
             using (var neutral = scene.OpponentIdentity.DisplayedPortrait!.GetImage())
                 neutral.SavePng(Path.Combine(folder,"nico-neutral.png"));
-            using (var pixelScale = Image.CreateEmpty(512,128,false,Image.Format.Rgba8))
+            using (var pixelScale = Image.CreateEmpty(512,192,false,Image.Format.Rgba8))
             {
                 pixelScale.Fill(new Color("080f1c"));
                 using var opponent=scene.OpponentIdentity.DisplayedPortrait!.GetImage();
                 opponent.Convert(Image.Format.Rgba8);
-                pixelScale.BlitRect(opponent,new Rect2I(0,0,128,128),Vector2I.Zero);
+                pixelScale.BlitRect(opponent,new Rect2I(0,0,128,192),Vector2I.Zero);
                 for(var actor=0;actor<2;actor++)
                 {
                     using var presenter=scene.Presenters[actor].Texture.GetImage();
                     presenter.Convert(Image.Format.Rgba8);
-                    pixelScale.BlitRect(presenter,new Rect2I(0,0,192,128),new Vector2I(128+actor*192,0));
+                    pixelScale.BlitRect(presenter,new Rect2I(0,0,192,192),new Vector2I(128+actor*192,0));
                 }
                 pixelScale.SavePng(Path.Combine(folder,"portrait-native-pixels.png"));
             }
@@ -175,6 +193,10 @@ public static class BroadcastAnimationChecks
                 ("04-reply",new("conversation",5,PortraitGaze.Partner),new("conversation",6,PortraitGaze.Partner)),
                 ("05-standing-unnoticed",new("stand",3,PortraitGaze.Board),new("stand",3,PortraitGaze.Board)),
                 ("06-standing-reaction",new("stand",8,PortraitGaze.Board),new("stand",8,PortraitGaze.Partner)),
+                ("06a-lowering",new("stand",14,PortraitGaze.Board),new("stand",14,PortraitGaze.Partner)),
+                ("06b-sitting",new("stand",15,PortraitGaze.Board),new("stand",15,PortraitGaze.Partner)),
+                ("06c-seated-excited",new("stand",16,PortraitGaze.Board),new("stand",16,PortraitGaze.Board)),
+                ("06d-seated-hold",new("stand",17,PortraitGaze.Board),new("stand",17,PortraitGaze.Board)),
                 ("07-table-impact",new("slap",4,PortraitGaze.Board),new("slap",4,PortraitGaze.Board)),
                 ("08-rink-left",new("rink",0,PortraitGaze.Board),new("rink",0,PortraitGaze.Board)),
                 ("09-rink-right",new("rink",2,PortraitGaze.Board),new("rink",3,PortraitGaze.Board)),
@@ -254,6 +276,10 @@ public static class BroadcastAnimationChecks
                 quiet.SavePng(Path.Combine(folder, "28-quiet-studio.png"));
             scene.GetWindow().Size = new Vector2I(1280, 800);
             await scene.ToSignal(scene.GetTree().CreateTimer(.3), SceneTreeTimer.SignalName.Timeout);
+            var stripLeft = scene.Billboard.Position.X + scene.Billboard.Strip.Position.X;
+            if (MathF.Abs(stripLeft - StudioBackdrop.MatrixRect(scene.Size.X).Position.X) > .1f ||
+                MathF.Abs(scene.Billboard.Strip.Size.X - StudioBackdrop.MatrixRect(scene.Size.X).Size.X) > .1f)
+                throw new InvalidOperationException("LED pixels must stay in the painted recess after a window resize.");
             scene.Billboard.Strip.SetCue(new("WHO WILL SURVIVE?", MarqueePalette.Orange, true, Motion: MarqueeMotion.Hold));
             scene.Billboard.Strip.RenderAt(0);
             await scene.ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);

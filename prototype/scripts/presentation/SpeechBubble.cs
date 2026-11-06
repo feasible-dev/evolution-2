@@ -7,6 +7,18 @@ public partial class SpeechBubble : Control
     public bool PointsRight { get; set; }
     private double _age = 100;
     private int _length;
+    public static (Vector2 Size, int FontSize) Measure(Font font, string text, float maxWidth)
+    {
+        var size = 17;
+        var width = Math.Clamp(font.GetStringSize(text, fontSize: size).X + 24, 72, maxWidth);
+        var measured = font.GetMultilineStringSize(text, width: width - 24, fontSize: size);
+        while (size > 12 && measured.Y > 112)
+        {
+            size--;
+            measured = font.GetMultilineStringSize(text, width: width - 24, fontSize: size);
+        }
+        return (new Vector2(MathF.Ceiling(width), MathF.Ceiling(measured.Y) + 20), size);
+    }
     public static double ReadingSeconds(int length) => Math.Max(4.5, length / 20.0 + 1.5);
     public static float Opacity(double age, int length)
     {

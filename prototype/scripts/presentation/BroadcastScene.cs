@@ -26,10 +26,11 @@ public partial class BroadcastScene : Control
     private GenerationTimeline _timeline = null!, _opponentTimeline = null!;
     private Label _speedLabel = null!;
     private PortraitView[] _portraits = null!;
-    private Label _brand = null!, _status = null!, _metrics = null!, _rate = null!;
+    private TextureRect _brand = null!;
+    private Label _status = null!, _metrics = null!, _rate = null!;
     private SpeechBubble[] _bubbles = Array.Empty<SpeechBubble>();
-    private StudioBackdrop _studio = null!;
-    private Label[] _bubbleTexts = Array.Empty<Label>(), _bubbleNames = Array.Empty<Label>();
+    private StudioBackdrop _studio = null!, _studioFront = null!;
+    private Label[] _bubbleTexts = Array.Empty<Label>();
     private readonly string[] _bubbleLines = { "", "" };
     private string _lastBubbleText = "";
     private int _lastBubbleSpeaker = -1;
@@ -61,17 +62,16 @@ public partial class BroadcastScene : Control
         _studio = new StudioBackdrop(); AddChild(_studio);
         OpponentIdentity = new CompetitorIdentity { Profile = CompetitorProfile.Opponent, TeamColor = TeamPalette.Opponent };
         AddChild(OpponentIdentity);
-        _brand = Text(this, "EVOLUTION\nWARS", 28, BroadcastHardware.Cream);
-        _brand.AddThemeFontOverride("font", GD.Load<Font>("res://assets/fonts/RacingSansOne-Regular.ttf"));
-        _brand.HorizontalAlignment = HorizontalAlignment.Center;
+        _brand = new TextureRect { Texture = GD.Load<Texture2D>("res://assets/studio-v50/wordmark-source.png"),
+            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+            StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered, MouseFilter = MouseFilterEnum.Ignore };
+        AddChild(_brand);
         _status = Text(this, "", 14, Muted); _status.HorizontalAlignment = HorizontalAlignment.Right;
-        _bubbles = new SpeechBubble[2]; _bubbleTexts = new Label[2]; _bubbleNames = new Label[2];
+        _bubbles = new SpeechBubble[2]; _bubbleTexts = new Label[2];
         for (var i = 0; i < 2; i++)
         {
             var panel = new SpeechBubble { PointsRight = i == 0 }; AddChild(panel);
             _bubbles[i] = panel;
-            _bubbleNames[i] = Text(panel, i == 0 ? "Gerard" : "René", 14, new Color("53616a"));
-            _bubbleNames[i].AddThemeFontOverride("font", GD.Load<Font>("res://assets/fonts/RacingSansOne-Regular.ttf"));
             _bubbleTexts[i] = Text(panel, "", 17, new Color("172932"));
             _bubbleTexts[i].AutowrapMode = TextServer.AutowrapMode.WordSmart;
         }
@@ -132,6 +132,8 @@ public partial class BroadcastScene : Control
             AddChild(_deckButtons[i]); AddChild(_opponentCards[i]);
         }
         ResetButton = Button(this, L10n.Text("ui.restart"), ResetRun, 13);
+        _studioFront = new StudioBackdrop { ForegroundOnly = true }; AddChild(_studioFront);
+        MoveChild(_studioFront, Billboard.GetIndex());
         _sound = Button(this, L10n.Text("ui.sound_on"), () => { AudioEnabled = !AudioEnabled; _sound.Text = AudioEnabled ? L10n.Text("ui.sound_on") : L10n.Text("ui.sound_off"); }, 12);
         _sound.TooltipText = L10n.Text("ui.sound_tip");
         MakeClickSound(); CollectCanvasItems(this);
@@ -290,26 +292,20 @@ public partial class BroadcastScene : Control
         var w = Size.X; var h = Size.Y;
         var side = SideWidth; var middle = w - side * 2;
         var running = Session.HasStarted;
-        Place(_studio, side, 0, w - side, 184);
-        Place(_brand, w - side + 24, 48, side - 48, 92);
+        Place(_studio, 0, 0, w, 222);
+        Place(_studioFront, 0, 0, w, 222);
+        Place(_brand, w - side + 6, 24, side - 12, 160);
         Place(_status, w - 350, 8, 324, 24);
-        Place(OpponentIdentity, 16, 28, side - 32, 201);
-        Place(_portraits[0], w * .5f - 192, 36, 192, 128);
-        Place(_portraits[1], w * .5f, 36, 192, 128);
-        var bubbleWidth = w * .5f - 202 - side;
-        Place(_bubbles[0], side, 36, bubbleWidth, 128);
-        Place(_bubbles[1], w * .5f + 202, 36, bubbleWidth, 128);
-        for (var i = 0; i < 2; i++)
-        {
-            Place(_bubbleNames[i], 12, 6, bubbleWidth - 24, 21);
-            Place(_bubbleTexts[i], 12, 29, bubbleWidth - 24, 94);
-            FitBubbleText(i);
-        }
-        Place(Preparation, (w - 660) * .5f, 190, 660, h - 205);
+        Place(OpponentIdentity, 16, 12, side - 32, 201);
+        Place(_portraits[0], w * .5f - 216, _portraits[0].UsesAnimation ? -51 : 36, 216, _portraits[0].UsesAnimation ? 216 : 144);
+        Place(_portraits[1], w * .5f, _portraits[1].UsesAnimation ? -51 : 36, 216, _portraits[1].UsesAnimation ? 216 : 144);
+        for (var i = 0; i < 2; i++) FitBubbleText(i);
+        Place(Preparation, (w - 660) * .5f, 234, 660, h - 249);
         Preparation.Visible = !running;
-        Place(Billboard, side, 168, middle, 70);
-        var boardHeight = MathF.Max(200, h - 252 - ReservedFooterHeight);
-        Place(_board, side, 244, middle, boardHeight);
+        Place(Billboard, side, 150, middle, 70);
+        Billboard.Arrange();
+        var boardHeight = MathF.Max(200, h - 232 - ReservedFooterHeight);
+        Place(_board, side, StudioBackdrop.ArenaTop, middle, boardHeight);
         Session.ResizeArena(new Vector2(1280, 1280 * (boardHeight - 12) / (middle - 12)));
         var ownX = w - side + 16;
         var sidebarWidth = side - 32;
@@ -350,11 +346,13 @@ public partial class BroadcastScene : Control
     private void FitBubbleText(int speaker)
     {
         var label = _bubbleTexts[speaker];
-        if (label.Size.X <= 0) return;
-        var font = label.GetThemeDefaultFont();
-        var size = 17;
-        while (size > 12 && font.GetMultilineStringSize(label.Text, width: label.Size.X, fontSize: size).Y > 90) size--;
-        label.AddThemeFontSizeOverride("font_size", size);
+        var maxWidth = MathF.Max(120, Size.X * .5f - 238 - SideWidth);
+        var layout = SpeechBubble.Measure(label.GetThemeDefaultFont(), label.Text, maxWidth);
+        label.AddThemeFontSizeOverride("font_size", layout.FontSize);
+        var x = speaker == 0 ? Size.X * .5f - 226 - layout.Size.X : Size.X * .5f + 226;
+        var y = Math.Clamp(82 - layout.Size.Y / 2, 8, MathF.Max(8, 142 - layout.Size.Y));
+        Place(_bubbles[speaker], x, y, layout.Size.X, layout.Size.Y);
+        Place(label, 12, 10, layout.Size.X - 24, layout.Size.Y - 20);
     }
 
     public override void _Draw()

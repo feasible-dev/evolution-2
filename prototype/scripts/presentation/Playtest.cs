@@ -289,9 +289,9 @@ public static class Playtest
             Check(s.Speed == 10 && !s.SetSpeed(20) && !s.SetSpeed(0), "speed is capped at ten");
             scene._UnhandledKeyInput(new InputEventKey { Keycode = Key.Key4, Pressed = true });
             Check(s.Speed == 10, "old speed shortcut cannot bypass slider cap");
-            Check(MathF.Abs(scene.BubbleArea(0).Position.X - scene.BoardArea.Position.X) < .01f
-                && MathF.Abs(scene.BubbleArea(1).End.X - scene.BoardArea.End.X) < .01f,
-                "commentary panels align with the arena edges");
+            Check(scene.BubbleArea(0).Position.X >= scene.BoardArea.Position.X
+                && scene.BubbleArea(1).End.X <= scene.BoardArea.End.X,
+                "text-sized commentary bubbles remain within the arena's horizontal span");
             Check(scene.SpeedSlider.Position.X > scene.BoardArea.End.X && scene.PauseButton.Position.X > scene.BoardArea.End.X,
                 "speed and pause sit in our sidebar");
             Check(MathF.Abs(scene.BoardArea.End.Y - (scene.Size.Y - 8 - BroadcastScene.ReservedFooterHeight)) < .01f && scene.BoardArea.Size.Y > scene.Size.Y * .65f,
@@ -299,8 +299,8 @@ public static class Playtest
             Check(scene.Billboard.Position.Y > scene.BubbleArea(0).End.Y
                 && scene.Billboard.Position.Y + scene.Billboard.Size.Y < scene.BoardArea.Position.Y,
                 "score strip fits between commentary and arena");
-            Check(scene.Billboard.GetChildren().OfType<TickerStrip>().Count(t => t.ClipContents) == 2,
-                "both scrolling message lanes clip their content");
+            Check(scene.Billboard.GetChildren().OfType<TickerStrip>().Count(t => t.ClipContents) == 1,
+                "the continuous scrolling sign clips its content");
             scene.PauseButton.EmitSignal(Button.SignalName.Pressed);
             var still = s.Simulation.WorldState.Agents.Select(a => a.Position).ToArray();
             var speechBeforePause = s.SpeechAge;
@@ -449,9 +449,13 @@ public static class Playtest
         Check(s.LastResult?.Survivors == 240 && s.Paused && (s.PerfectSurvivalReached || s.Opponent?.PerfectSurvivalReached == true) && s.Discovered,
             "perfect survival pauses at selection with the full population counted");
         var elapsed = s.SimulatedSeconds;
-        s.Tick(5);
+        var openingLine = s.SpeechSequence;
+        // The standing cue and Gerard's seated aftermath now precede Rene.
+        // Allow both spoken beats to finish, including the longer French copy.
+        s.Tick(12); s.Tick(12);
         Check(s.SimulatedSeconds == elapsed && s.Period == 1 && s.Speaker == 1,
             "celebration dialogue continues while physics and generation remain paused");
+        Check(s.SpeechSequence > openingLine, "paused celebration advances to later dialogue");
         s.TogglePause(); s.Tick(1);
         Check(!s.Paused && s.Period == 2 && s.PerfectSurvivalReached, "player can resume after the first perfect result");
         s.Reset();

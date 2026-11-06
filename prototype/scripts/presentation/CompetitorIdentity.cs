@@ -15,21 +15,18 @@ public partial class CompetitorIdentity : Control
     private TextureRect _portrait = null!;
     private Label _name = null!, _character = null!;
     private Texture2D? _neutral;
-    private Texture2D _stage = null!;
     private Font _displayFont = null!;
     private readonly List<ImageTexture> _cutouts = new();
     private readonly Dictionary<OpponentReaction, AtlasTexture[]> _reactions = new();
     public OpponentReactionPose ReactionPose { get; private set; }
     public Texture2D? DisplayedPortrait => _portrait?.Texture;
-    // One imported portrait pixel occupies one logical UI pixel, just like
-    // the commentators' 192x128 frames. Never squeeze it into a thumbnail.
+    // Keep the waist-up participant at native pixel scale; captions live beside it.
     private const float Tile = 128;
     private bool Compact => Size.X < Tile + 122;
 
     public override void _Ready()
     {
         MouseFilter = MouseFilterEnum.Ignore;
-        _stage = GD.Load<Texture2D>("res://assets/studio-v49/opponent-stage.png");
         _displayFont = GD.Load<Font>("res://assets/fonts/RacingSansOne-Regular.ttf");
         _portrait = new TextureRect { ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
             StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered, MouseFilter = MouseFilterEnum.Ignore,
@@ -54,12 +51,12 @@ public partial class CompetitorIdentity : Control
         {
             foreach (var reaction in new[] { OpponentReaction.Win, OpponentReaction.Lose })
             {
-                var sheet = GD.Load<Texture2D>($"res://assets/opponents/nico-v44/{reaction.ToString().ToLowerInvariant()}.png");
-                if (sheet is null || sheet.GetSize() != new Vector2(128, 1024))
+                var sheet = GD.Load<Texture2D>($"res://assets/studio-v52/nico-{reaction.ToString().ToLowerInvariant()}.png");
+                if (sheet is null || sheet.GetSize() != new Vector2(128, 1536))
                     throw new InvalidOperationException($"Invalid Nico reaction sheet: {reaction}");
                 _reactions[reaction] = Enumerable.Range(0,8).Select(i => new AtlasTexture
                 {
-                    Atlas = CutoutSheet(sheet), Region = new Rect2(0, i * 128, 128, 128), FilterClip = true
+                    Atlas = CutoutSheet(sheet), Region = new Rect2(0, i * 192, 128, 192), FilterClip = true
                 }).ToArray();
             }
         }
@@ -90,7 +87,7 @@ public partial class CompetitorIdentity : Control
     {
         // Nico's approved source has a subtly varying purple matte, unlike the
         // flat commentator sheets. Limit tolerance to this portrait family.
-        var cutout = StudioSpriteCompositor.Create(texture, 128, 128, matteTolerance: 8);
+        var cutout = StudioSpriteCompositor.Create(texture, 128, 192, matteTolerance: 12);
         _cutouts.Add(cutout); return cutout;
     }
     private ImageTexture CutoutSheet(Texture2D sheet)
@@ -108,32 +105,19 @@ public partial class CompetitorIdentity : Control
     private void Arrange()
     {
         if (_portrait is null) return;
-        _name.AutowrapMode = Compact ? TextServer.AutowrapMode.Off : TextServer.AutowrapMode.Word;
-        var nameSize = 24;
-        if (Compact)
-            while (nameSize > 14 && _displayFont.GetStringSize(_name.Text, fontSize: nameSize).X > Size.X - 12) nameSize--;
-        _name.AddThemeFontSizeOverride("font_size", nameSize);
-        _name.HorizontalAlignment = _character.HorizontalAlignment = Compact
-            ? HorizontalAlignment.Center : HorizontalAlignment.Left;
-        if (Compact)
-        {
-            Place(_portrait, MathF.Floor((Size.X - Tile) / 2), 28, Tile, Tile);
-            Place(_name, 6, 158, Size.X - 12, 24);
-            Place(_character, 6, 182, Size.X - 12, 16);
-        }
-        else
-        {
-            Place(_portrait, 6, 46, Tile, Tile);
-            Place(_name, Tile + 16, 68, Size.X - Tile - 24, 64);
-            Place(_character, Tile + 16, 136, Size.X - Tile - 24, 30);
-        }
+        _name.AutowrapMode = TextServer.AutowrapMode.Word;
+        var textX = Compact ? 108 : 138;
+        var textWidth = MathF.Max(62, Size.X - textX - 4);
+        _name.AddThemeFontSizeOverride("font_size", Compact ? 17 : 24);
+        _name.HorizontalAlignment = _character.HorizontalAlignment = HorizontalAlignment.Left;
+        Place(_portrait, Compact ? -8 : 0, 18, Tile, 192);
+        Place(_name, textX, 56, textWidth, 56);
+        Place(_character, textX, 110, textWidth, 32);
         QueueRedraw();
     }
 
     public override void _Draw()
     {
-        if (_stage is null) return;
-        DrawTextureRect(_stage, new Rect2(0, 0, Size.X, 201), false);
         var x = Size.X - 88;
         DrawColoredPolygon(new[] { new Vector2(x + 4, 6), new Vector2(Size.X - 2, 2),
             new Vector2(Size.X - 6, 23), new Vector2(x, 27) }, TeamColor);

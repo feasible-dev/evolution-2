@@ -63,14 +63,14 @@ public static class OpponentReactionChecks
         }
 
         identity.ShowReaction(default);
-        using var neutral=identity.DisplayedPortrait!.GetImage();
+        using var neutral=StudioSpriteCompositor.CopyImage(identity.DisplayedPortrait!);
         foreach(var reaction in new[] { OpponentReaction.Win, OpponentReaction.Lose })
         {
             for(var frame=0;frame<8;frame++)
             {
                 identity.ShowReaction(new(reaction,frame));
-                using var pixels=identity.DisplayedPortrait!.GetImage();
-                Check(pixels.GetSize()==new Vector2I(128,128),"every reaction preserves native pixel dimensions");
+                using var pixels=StudioSpriteCompositor.CopyImage(identity.DisplayedPortrait!);
+                Check(pixels.GetSize()==new Vector2I(128,192),"every reaction preserves native pixel dimensions");
                 var same=pixels.GetData().SequenceEqual(neutral.GetData());
                 Check(frame is 0 or 7 ? same : !same,"neutral endpoints are exact; gestures have actual drawn motion");
             }

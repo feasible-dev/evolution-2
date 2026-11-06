@@ -6,5 +6,5 @@ public sealed record CompetitorProfile(string Id, string NameKey, string Charact
 {
     public static CompetitorProfile Player { get; } = new("player", "profile.player", "profile.generic");
     public static CompetitorProfile Opponent { get; } = new("nico-valdes", "profile.nico.name", "profile.nico.origin",
-        "res://assets/opponents/nico-valdes.png");
+        "res://assets/studio-v52/nico.png");
 }

@@ -4,7 +4,7 @@ namespace EvolutionTwo.Presentation;
 
 public enum PortraitGaze { Board, Outer, Partner, Across }
 
-/// <summary>Expression and gaze atlases share the same 192x128 viewport and finite palette.</summary>
+/// <summary>Native-size portraits with additional headroom above the seated frames.</summary>
 public partial class PortraitView : TextureRect
 {
     private TextureRect _frame = null!;
@@ -37,7 +37,7 @@ public partial class PortraitView : TextureRect
     {
         if (_animations is null) return;
         AnimationFrame = pose; Gaze = pose.Gaze;
-        Texture = _animations.GetCutout(_actor, pose);
+        Texture = _animations.GetDisplay(_actor, pose);
         Modulate = Colors.White;
     }
 

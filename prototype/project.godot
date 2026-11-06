@@ -1,7 +1,7 @@
 config_version=5
 
 [application]
-config/name="Evolution Wars — Gerard & René / v49"
+config/name="Evolution Wars — Gerard & René / v52"
 run/main_scene="res://Main.tscn"
 config/features=PackedStringArray("4.6", "C#", "GL Compatibility")
 

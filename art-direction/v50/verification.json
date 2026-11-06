@@ -1,0 +1,13 @@
+{
+  "version": "v50",
+  "branch": "feat/unified-press-gallery-v50",
+  "build": "dotnet build prototype/EvolutionTwo.csproj --nologo",
+  "buildResult": "Passed with zero warnings and errors",
+  "studioVisualChecks": 46,
+  "broadcastRegressionChecks": { "directionAttention": 35, "marquee": 27, "opponent": 58, "animation": 109 },
+  "frenchHeadlessPlaytest": { "checks": 28579, "generations": 40, "result": "Passed", "shutdownWarning": "ObjectDB instances leaked at exit" },
+  "captures": ["01-level", "06-standing-reaction", "28-quiet-studio", "29-compact-layout", "00-direction-cards"],
+  "resolutions": ["1920x1080", "1280x800"],
+  "sourceSprites": "Original sheets retained. Seated character pixels stay native; old desk rows are omitted at display time. New standing tiles are used only for Gerard frames 2 through 13.",
+  "assetTool": "Built-in image_gen; prompts and generated standing source retained alongside this report"
+}

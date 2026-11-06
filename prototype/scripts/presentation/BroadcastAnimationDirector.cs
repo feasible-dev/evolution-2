@@ -49,8 +49,10 @@ public sealed class BroadcastAnimationDirector
         _completed = completed;
         if (_event is not null && time - _eventStarted >= _durations[_event].Sum())
         {
+            if (_event == "stand") _excitedStarted = _eventStarted + _durations[_event].Sum();
             _event = null;
-            // Return directly to a coherent seated pose after the event's own settle.
+            // Carry the celebration through sitting down; never insert a calm
+            // idle frame between the standing reaction and its spoken aftermath.
             Array.Fill(_partner, false); Array.Fill(_lookChanged, time - 1);
         }
         if (gestureSequence != _gestureSequence)
@@ -58,7 +60,9 @@ public sealed class BroadcastAnimationDirector
             _gestureSequence = gestureSequence;
             // React with this line or stay seated; never replay an old event later.
             if (gesture == "excited" && _event is null)
-                _excitedStarted = time;
+            {
+                if (!IsExcited) _excitedStarted = time;
+            }
             else if (gesture is not null && _event is null && time >= _nextGestureAt)
             {
                 _excitedStarted = -100;
@@ -76,12 +80,13 @@ public sealed class BroadcastAnimationDirector
         if (IsExcited)
         {
             var age = time - _excitedStarted;
-            // Settle back, notice the rink on either side, then invite the colleague in.
-            var pose = age < 1.2 ? 0 : age < 2.1 ? 2 : age < 3.0 ? 4 : age < 5.1 ? 6 : age < 6.2 ? 4 : 0;
+            // Hold the emotional beat, share it with Rene, then settle toward
+            // the rink. Avoid an automatic left-right scan after every event.
+            var pose = age < 2.6 ? 0 : age < 5.8 ? 6 : 0;
             var talking = speaking && speaker == 0 && MouthAt(speechAge) != 0;
             Frames[0] = new("excited", pose + (talking ? 1 : 0), pose == 6 ? PortraitGaze.Partner : PortraitGaze.Board);
             // René answers the invitation later and can keep speaking independently.
-            var partner = age >= 3.55 && age < 6.55;
+            var partner = age >= 3.25 && age < 6.4;
             var mouth = speaking && speaker == 1 ? MouthAt(speechAge) : 0;
             Frames[1] = new("conversation", partner ? (mouth == 0 ? 5 : mouth + 5) : mouth,
                 partner ? PortraitGaze.Partner : PortraitGaze.Board);
