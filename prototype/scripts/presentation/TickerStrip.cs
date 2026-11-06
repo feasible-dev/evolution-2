@@ -18,10 +18,14 @@ public partial class TickerStrip : Control
     private double _time;
     private MarqueePalette _paletteMode;
     private bool _centered;
+    private bool _bold = true;
+    private MarqueeMotion _motion;
+    private int _rasterWidth;
     public float Impact { get; set; }
     public void SetCue(MarqueeCue cue, bool restart = true)
     {
         _message = cue.Text ?? ""; _paletteMode = cue.Palette; _centered = cue.Centered;
+        _bold = cue.Bold; _motion = cue.Motion;
         if (restart) _time = 0;
         RebuildMessage();
     }
@@ -49,7 +53,7 @@ public partial class TickerStrip : Control
         using var white = Image.CreateEmpty(1, 1, false, Image.Format.Rgba8);
         white.Fill(Colors.White);
         _whiteTexture = ImageTexture.CreateFromImage(white);
-        _ledMaterial = new ShaderMaterial { Shader = GD.Load<Shader>("res://assets/broadcast-v40/led-matrix.gdshader") };
+        _ledMaterial = new ShaderMaterial { Shader = GD.Load<Shader>("res://assets/broadcast-v45/led-matrix.gdshader") };
         _panel = new TextureRect
         {
             Texture = _whiteTexture, Material = _ledMaterial,
@@ -64,7 +68,7 @@ public partial class TickerStrip : Control
     private void RebuildMessage()
     {
         if (_alphabet is null || _ledMaterial is null) return;
-        var text = _message.ToUpperInvariant() + (_centered ? "" : "   •   ");
+        var text = _message.ToUpperInvariant() + (_motion == MarqueeMotion.Scroll && !_centered ? "   •   " : "");
         if (text.Length == 0) text = " ";
         using var raster = Image.CreateEmpty(text.Length * _cellWidth, _cellHeight, false, Image.Format.Rgba8);
         raster.Fill(Colors.Transparent);
@@ -85,6 +89,7 @@ public partial class TickerStrip : Control
         }
         var previous = _messageTexture;
         _messageTexture = ImageTexture.CreateFromImage(raster);
+        _rasterWidth = raster.GetWidth();
         _ledMaterial.SetShaderParameter("message_texture", _messageTexture);
         _ledMaterial.SetShaderParameter("message_size", new Vector2(raster.GetWidth(), raster.GetHeight()));
         previous?.Dispose();
@@ -93,16 +98,27 @@ public partial class TickerStrip : Control
     public override void _Process(double delta)
     {
         _time += delta;
+        RenderAt(_time);
+    }
+
+    // Also allows deterministic captures of a stopped sign or a flash beat.
+    public void RenderAt(double age)
+    {
         if (_ledMaterial is null) return;
+        var frame = MarqueePerformance.Sample(_motion, age, _rasterWidth, (int)(Size.X / DotPitch));
         _panel.Size = Size;
         _ledMaterial.SetShaderParameter("panel_size", Size);
         _ledMaterial.SetShaderParameter("pitch", DotPitch);
-        _ledMaterial.SetShaderParameter("scroll_columns", (float)ScrollColumn(_time));
-        _ledMaterial.SetShaderParameter("effect_time", (float)(_time + EffectPhase));
+        _ledMaterial.SetShaderParameter("scroll_columns", (float)frame.ScrollColumns);
+        _ledMaterial.SetShaderParameter("effect_time", (float)(age + EffectPhase));
         var fit = MathF.Min(1.38f, Size.X / MathF.Max(1, _message.Length * _cellWidth * DotPitch));
         _ledMaterial.SetShaderParameter("glyph_scale", _centered ? MathF.Max(.65f, 1 + (fit - 1) * Impact) : 1f);
-        _ledMaterial.SetShaderParameter("bold_amount", _centered ? 1f : 0f);
-        _ledMaterial.SetShaderParameter("centered", _centered);
+        _ledMaterial.SetShaderParameter("bold_amount", _bold ? 1f : 0f);
+        _ledMaterial.SetShaderParameter("centered", _centered || frame.Centered);
+        _ledMaterial.SetShaderParameter("repeat_message", frame.Repeat && !_centered);
+        _ledMaterial.SetShaderParameter("text_visibility", frame.TextVisibility);
+        _ledMaterial.SetShaderParameter("burst_progress", frame.BurstProgress);
+        _ledMaterial.SetShaderParameter("burst_red", _paletteMode == MarqueePalette.Red);
         _ledMaterial.SetShaderParameter("red_amount", Impact);
     }
 

@@ -1,5 +1,10 @@
 {
   "app.title": "EVOLUTION / 01",
+  "profile.challenger": "OPPONENT / LVL",
+  "profile.level": "LEVEL {0:00}",
+  "ui.active_cards": "ACTIVE CARDS",
+  "ui.card_points": "{0} PTS",
+  "sign.live": "LIVE ARENA FEED",
   "ui.pause": "PAUSE",
   "ui.resume": "RESUME",
   "ui.opponent": "OPPONENT",

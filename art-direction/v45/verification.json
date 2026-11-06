@@ -1,0 +1,23 @@
+{
+  "version": 45,
+  "prototypeBuild": {"warnings": 0, "errors": 0},
+  "directionChecks": 35,
+  "marqueeChecks": 27,
+  "opponentReactionChecks": 58,
+  "broadcastChecks": 109,
+  "totalChecks": 229,
+  "reviewLogErrors": 0,
+  "defaultWeight": "bold",
+  "motions": ["scroll", "hold", "stop-three-flashes-resume", "burst"],
+  "flashPulses": 3,
+  "flashPeriodSeconds": 0.6,
+  "dotPitchLogicalPixels": 2.5,
+  "dotGeometryAnimated": false,
+  "longMessagesFallBackToScrolling": true,
+  "liveRefreshPreservesCueAge": true,
+  "actualShaderPreviewFrames": 102,
+  "nativePortraitComparison": "captures/portrait-native-pixels.png",
+  "reviewedCaptures": ["captures/21-type-bold.png", "captures/27-sign-burst.png", "captures/portrait-native-pixels.png"],
+  "newOpponentGazeAnimations": "deferred",
+  "simulationChanged": false
+}

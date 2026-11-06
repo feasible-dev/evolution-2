@@ -48,25 +48,13 @@ public partial class GenerationTimeline : Control
             DrawCircle(points[i], rows.Length == 1 ? 2 : 1, TeamColor);
             if (i > 0 && rows[i].Plan != rows[i - 1].Plan)
                 DrawLine(new Vector2(SampleX(i), top), new Vector2(SampleX(i), baseline), new Color(Pink, .35f), 1);
-            if (i == 0 || i == rows.Length - 1)
+            // At the start, adjacent generations do not have room for two labels.
+            if (i == rows.Length - 1 || (i == 0 && (rows.Length - 1) * Step >= 42))
             {
                 var label = $"G{rows[i].Period}";
                 DrawLine(new Vector2(SampleX(i), baseline), new Vector2(SampleX(i), baseline + 3), axis, 1);
                 DrawString(font, new Vector2(SampleX(i) - font.GetStringSize(label, fontSize: 10).X / 2, baseline + 14), label, fontSize: 10, modulate: Muted);
             }
-        }
-        DrawString(font, new Vector2(0, 282), L10n.Text("chart.mix"), fontSize: 12, modulate: Muted);
-        var colors = new[] { BehaviorCatalog.All[0].Color, BehaviorCatalog.All[1].Color, BehaviorCatalog.All[2].Color, new Color("476488") };
-        for (var j = 0; j < 4; j++)
-        {
-            var y = 303 + j * 21;
-            var name = j == 3 ? L10n.Text("plan.no_rule") : BehaviorCatalog.All[j].Name;
-            var share = Team.Composition[j] / (float)LevelOneSession.Population;
-            var value = (share * 100).ToString("0.0", L10n.Culture) + "%";
-            DrawString(font, new Vector2(0, y), name, fontSize: 11, modulate: colors[j]);
-            DrawString(font, new Vector2(Size.X - font.GetStringSize(value, fontSize: 11).X, y), value, fontSize: 11, modulate: Muted);
-            DrawRect(new Rect2(0, y + 5, Size.X, 4), new Color("14273c"));
-            if (share > 0) DrawRect(new Rect2(0, y + 5, Size.X * share, 4), colors[j]);
         }
         if (rows.Length == 0)
             DrawString(font, new Vector2(Left + 10, top + height * .6f), "—", fontSize: 16, modulate: Muted);

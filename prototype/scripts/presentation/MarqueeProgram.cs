@@ -1,7 +1,8 @@
 namespace EvolutionTwo.Presentation;
 
 public enum MarqueePalette { OrangeBlue, Orange, Blue, Red }
-public readonly record struct MarqueeCue(string Text, MarqueePalette Palette, bool Centered = false);
+public readonly record struct MarqueeCue(string Text, MarqueePalette Palette, bool Centered = false,
+    bool Bold = true, MarqueeMotion Motion = MarqueeMotion.Scroll);
 
 /// <summary>Broadcast routines and one-shot result reactions; never changes the match.</summary>
 public sealed class MarqueeProgram
@@ -57,7 +58,8 @@ public sealed class MarqueeProgram
                 {
                     _high[side] = true;
                     if (_time >= _nextCue)
-                        Show(new(L10n.Text("marquee.high", L10n.Text(side == 0 ? "ui.us" : "ui.opponent")), MarqueePalette.Orange), 6);
+                        Show(new(L10n.Text("marquee.high", L10n.Text(side == 0 ? "ui.us" : "ui.opponent")),
+                            MarqueePalette.Orange, Motion: MarqueeMotion.StopFlash), 9);
                 }
         }
         if (_time < _nextCue)
@@ -65,17 +67,18 @@ public sealed class MarqueeProgram
             if (_activeRoutine is >= 0 and <= 3 && (int)_time != _lastStatsSecond)
             {
                 _lastStatsSecond = (int)_time;
-                var updated = BuildRoutine(session, _activeRoutine);
+                var updated = BuildRoutine(session, _activeRoutine, width);
                 if (updated != Cue) { Cue = updated; Revision++; }
             }
             return;
         }
         var routine = _routine++ % 6;
-        var cue = BuildRoutine(session, routine);
-        Show(cue, Math.Max(7, (cue.Text.Length * 8 * TickerStrip.DotPitch - width) / 28 + 7), routine);
+        var cue = BuildRoutine(session, routine, width);
+        var minimum = MarqueePerformance.MinimumDuration(cue.Motion);
+        Show(cue, Math.Max(minimum, (cue.Text.Length * 8 * TickerStrip.DotPitch - width) / 28 + minimum), routine);
     }
 
-    private static MarqueeCue BuildRoutine(LevelOneSession session, int routine)
+    private static MarqueeCue BuildRoutine(LevelOneSession session, int routine, float width)
     {
         var own = session.LastResult;
         var other = session.Opponent!.LastResult;
@@ -104,14 +107,22 @@ public sealed class MarqueeProgram
                 palette = MarqueePalette.Blue; break;
             default: text = L10n.Text("billboard.audience"); palette = MarqueePalette.Orange; break;
         }
-        return new(text, palette);
+        var fits = text.Length * 8 * TickerStrip.DotPitch <= width - 24;
+        var motion = !fits ? MarqueeMotion.Scroll : routine switch
+        {
+            0 or 3 or 5 => MarqueeMotion.StopFlash,
+            1 => MarqueeMotion.Hold,
+            2 => MarqueeMotion.Burst,
+            _ => MarqueeMotion.Scroll
+        };
+        return new(text, palette, motion == MarqueeMotion.Hold, Motion: motion);
     }
 
     public void TriggerImpact(string text)
     {
         // Separate the readable alert from its rare full-screen performance.
         if (_time >= _nextImpact) { _impactStart = _time; _nextImpact = _time + 20; }
-        Show(new(text, MarqueePalette.Red, true), 4.2);
+        Show(new(text, MarqueePalette.Red, true, Motion: MarqueeMotion.Burst), 4.2);
     }
 
     private void Show(MarqueeCue cue, double seconds, int routine = -1)

@@ -37,7 +37,7 @@ public partial class PortraitView : TextureRect
     {
         if (_animations is null) return;
         AnimationFrame = pose; Gaze = pose.Gaze;
-        Texture = _animations.Get(_actor, pose);
+        Texture = _animations.GetCutout(_actor, pose);
         Modulate = Colors.White;
     }
 

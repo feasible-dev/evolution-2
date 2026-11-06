@@ -1,0 +1,19 @@
+{
+  "tool": "Built-in image_gen",
+  "approvedReference": "../v48/compact-studio.png",
+  "variants": [
+    [
+      "studio-rear",
+      "Create a production game background asset derived from the approved reference style. NOT a UI mockup. Very wide panoramic horizontal strip, approximately 6:1 aspect ratio: the empty upper broadcast studio behind the two commentators and continuing seamlessly into the upper-right corner. Dark indoor Robot Wars inspired warehouse, extremely subdued nearly black studio floor and back wall, a few thin dark steel diagonal trusses, ceiling beams, small distant cool practical lamps and faint restrained light pools. Perspective slightly frontal. An elevated grated walkway at the bottom edge traverses the entire width with restrained slim railing on the far right, but center foreground is OPEN for two seated commentators who will be composited later. Main central 70% mostly dark uncluttered negative space to keep faces readable. No people, no desks, no screens, no signs, no text, no logos, no letters, no ladders, no orange warning stripes, no robots, no flames, no outdoor scenery. Sparse semirealistic pixel art using intentional clean color clusters, matching the reference characters' pixel scale. Only the environment asset, no UI or arena. Do not paint a frame around this image. Black background, not transparent."
+    ],
+    [
+      "nico-stage",
+      "Create a production game background asset derived from the approved reference. Square image of ONLY the empty independent opponent control position. Remove ALL people, lettering, badges, game UI, graph, arena, controls. Dark warehouse studio alcove with nearly black wall and floor, one small warm amber theatrical spotlight mounted at upper-left pointing gently down toward empty portrait position in lower-left center. Small dark steel pipe guardrail at very bottom edge. A narrow column and ceiling bracket, subtle amber light pool, black negative space over right half for later name typography. No ladder, no screens, no orange rectangular plates, no large beams hiding portrait, no gold trim, no warning stripes. Semirealistic fine pixel art, controlled clean color clusters matching the reference. Square composition, full bleed. This will be a layered backdrop BEHIND an existing character sprite: do NOT draw the character. No text anywhere."
+    ]
+  ],
+  "outputs": [
+    "../../prototype/assets/studio-v49/warehouse.png",
+    "../../prototype/assets/studio-v49/opponent-stage.png"
+  ],
+  "notes": "Characters retain existing native sprite sheets. Runtime edge-connected matte compositing supplies alpha without changing source artwork. New action icons are code-native SVG."
+}

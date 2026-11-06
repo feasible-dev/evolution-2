@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evolution Wars — 3 propositions visuelles</title>
+<style>
+@font-face{font-family:Bungee;src:url('fonts/Bungee-Regular.ttf')}
+@font-face{font-family:Racing;src:url('fonts/RacingSansOne-Regular.ttf')}
+@font-face{font-family:Bowlby;src:url('fonts/BowlbyOneSC-Regular.ttf')}
+*{box-sizing:border-box}body{margin:0;background:#161a1c;color:#fff;font:18px/1.5 system-ui}main{max-width:1720px;margin:auto;padding:24px}h1{font-size:30px}h2{margin:0}p{max-width:980px;color:#ccd1d3}a{color:#8bdbff}nav{position:sticky;top:0;background:#161a1cf5;padding:12px;display:flex;gap:24px;z-index:3;flex-wrap:wrap;border-bottom:1px solid #555}section{scroll-margin-top:85px;margin:24px 0 64px}img{width:100%;display:block;margin:12px 0;border-radius:6px}small{color:#b6bdc0}.fonts{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}.sample{padding:24px;background:#25302e;border-radius:16px;overflow-wrap:anywhere}.display{font-size:30px;line-height:1.3}.orange{color:#f58b23}.blue{color:#24d0ff}button,input{font:inherit}input{padding:12px;width:min(100%,700px);margin:18px 0}.cards{display:flex;gap:10px;margin-top:22px}.card{flex:1;min-width:0;background:#f1e4c1;color:#172c35;border:5px solid #526e71;border-radius:12px;box-shadow:3px 5px #111;padding:8px;font-size:12px;text-align:center;transition:transform .15s}.card:hover{transform:translateY(-8px)}.card svg{width:100%;height:90px;display:block}.caption{font:14px system-ui}.note{padding:18px;background:#293238;border-radius:12px}
+</style>
+<nav><a href="#a">A — Vieux stade</a><a href="#b">B — Enseigne arrondie</a><a href="#c">C — Stade de nuit</a><a href="#fonts">Comparer les fontes réelles</a></nav>
+<main><h1>Trois directions pour Evolution Wars</h1>
+<p class="note">Maquettes d'ambiance, pas des captures du jeu. On peut mélanger les éléments : enseigne B, cartes C, etc. Le décor final devra laisser la place aux graphes de survie et aux commentaires. Les chiffres 1 / 2 / 3 sur les cartes sont illustratifs.</p>
+<section id="a"><h2>A — Vieux stade vert</h2><p>Métal vert, peinture crème, passerelle et échelle. Les cartes évoquent des cartes de collection sportives.</p><a href="A-ballpark.png" target="_blank"><img src="A-ballpark.png" alt="Proposition A : vieux stade vert"></a></section>
+<section id="b"><h2>B — Enseigne arrondie</h2><p>Métal émaillé, comme une vieille enseigne peinte brillante : grands arrondis, auvent et lampes. Lettres inclinées plus expressives.</p><a href="B-enamel.png" target="_blank"><img src="B-enamel.png" alt="Proposition B : enseigne arrondie"></a></section>
+<section id="c"><h2>C — Stade arcade de nuit</h2><p>Structure tubulaire, projecteurs, cartes illustrées plus affirmées. Orange pour Nico et ses agents, bleu pour nous.</p><a href="C-nightgame.png" target="_blank"><img src="C-nightgame.png" alt="Proposition C : stade arcade de nuit"></a></section>
+<section id="fonts"><h2>Les vraies fontes, utilisables dans le jeu</h2><p>Les lettres des maquettes sont dessinées par l'IA. Ces échantillons utilisent de vrais fichiers de fontes, chargés localement. Une fonte expressive pour les noms et les cartes ; des caractères simples pour les statistiques ; la matrice de points pour le ruban.</p>
+<label for="sample">Texte à comparer :</label><br><input id="sample" value="Nico Valdés / Niveau 01">
+<div class="fonts">
+<article class="sample"><a href="https://fonts.google.com/specimen/Bungee">Bungee</a><div class="display" style="font-family:Bungee"></div><div class="cards" style="font-family:Bungee"></div><p class="caption">Massive et graphique.</p></article>
+<article class="sample"><a href="https://fonts.google.com/specimen/Racing+Sans+One">Racing Sans One</a><div class="display" style="font-family:Racing"></div><div class="cards" style="font-family:Racing"></div><p class="caption">Inclinée, sportive, plus souple.</p></article>
+<article class="sample"><a href="https://fonts.google.com/specimen/Bowlby+One+SC">Bowlby One SC</a><div class="display" style="font-family:Bowlby"></div><div class="cards" style="font-family:Bowlby"></div><p class="caption">Très épaisse, irrégulière, plus exubérante.</p></article>
+</div><p><span class="orange">● NICO — #F58B23</span> &nbsp; <span class="blue">● NOUS — #24D0FF</span></p>
+<p class="note">Interaction PvP envisagée : cliquer une carte active → ouvrir le deck en superposition → choisir sa remplaçante → retrouver le match. Le match continue derrière. Le coût, les délais et les règles de remplacement restent à définir. Cette page ne modifie pas la simulation.</p>
+<small>Images : outil imagegen intégré. <a href="prompts.json">Prompts et références</a>. Fontes : Google Fonts, licences OFL conservées dans fonts/. Toutes les images sont consultables hors ligne.</small></section></main>
+<script>
+const icons=['<path d="M20 75V45Q20 25 42 25H77M60 10L77 25 60 40"/>','<path d="M22 72L70 24M25 48L48 71M48 25L70 47M15 82L32 65"/>','<path d="M18 78L78 18M48 18H78V48"/>'];
+document.querySelectorAll('.cards').forEach(rack=>{['TURN','THRUST','DIRECTION'].forEach((name,i)=>{const card=document.createElement('div');card.className='card';card.innerHTML='<svg viewBox="0 0 96 96" fill="none" stroke="#294e59" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">'+icons[i]+'</svg>'+name;rack.append(card)})});
+const sample=document.querySelector('#sample');function update(){document.querySelectorAll('.display').forEach(el=>el.textContent=sample.value)}sample.addEventListener('input',update);update();
+</script></html>

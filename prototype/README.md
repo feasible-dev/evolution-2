@@ -1,4 +1,44 @@
-# Evolution Wars — v44 Nico match reactions
+# Evolution Wars — v49 compact studio
+
+The playable broadcast now follows the approved compact black-studio concept.
+One warehouse backdrop continues behind both animated commentators into the
+right-side Evolution Wars wordmark. Nico retains an independent lit control bay.
+The LED matrix hangs from two brackets on the front of the analysts' desk, with
+no ladder. The arena keeps its existing position and dimensions.
+
+Presenter and opponent mattes are removed once at resource load through an
+edge-connected flood fill. Foreground RGB values and original source sheets stay
+unchanged. Commentary uses speech bubbles with pointers, length-based reading
+time and a short fade; quiet moments expose the backdrop even while paused.
+
+Each side has three compact illustrated cards in one row. Allocation values and
+tooltips remain available; a zero-allocation card is dimmed. The thrust symbol is
+a rocket with hot exhaust, also updated on the preparation card. Team colors are
+orange versus cyan. This pass does not introduce live deck swapping or PvP rules.
+
+Runtime review: `../art-direction/v49/index.html`. Art source prompts are preserved
+alongside the captures. Racing Sans One is bundled with its OFL license.
+
+## v46 arena broadcast hardware
+
+Nico's entrant plate uses orange paint, charcoal steel, fixed fasteners and an
+explicit opponent / level 01 label. The native portrait pixel scale is preserved.
+The LED sign has its own casing, mounting feet and fixed broadcast identification.
+The redundant selection/clock row above the rink is removed; current timing stays
+in the marquee program. Both composition charts are removed, leaving survival,
+strategy and movement statistics. Arena dimensions and simulation are unchanged.
+Review: `../art-direction/v46/index.html`.
+
+## v45 bold matrix performances
+
+The sign now uses bold letters by default. Short messages can stop in the center,
+flash three times, then continue left; other routines remain still or scroll.
+Non-letter bursts light the existing fixed dots before a readable message.
+Long messages fall back to scrolling. Orange/blue remain the everyday palette;
+rare red result effects retain their existing cooldown. Preview and native-scale
+portrait comparison: `../art-direction/v45/index.html`.
+
+## v44 Nico match reactions
 
 Nico celebrates a first perfect-survival win with small fist pumps, or reacts to
 a loss with a sigh and a shrug. The first completed 100% result determines the

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Evolution Wars — arena hardware / v46</title>
+<style>
+body{margin:0;padding:32px;background:#141512;color:#f4e6be;font:16px system-ui;max-width:1600px;margin-inline:auto}
+h1{color:#f58b23}p{max-width:850px;line-height:1.6}img{max-width:100%;display:block;margin:16px 0 40px;image-rendering:pixelated}
+a{color:#f58b23}small{color:#b9b6a4}h2{margin-top:40px}
+</style>
+<h1>EVOLUTION WARS / ARENA HARDWARE</h1>
+<p>A first industrial broadcast pass: painted orange entrant plate, charcoal steel,
+fasteners, hazard markings and a physical enclosure for the fixed LED matrix.
+Nico stays at the same native pixel scale as the commentators.</p>
+<h2>Match layout</h2>
+<p>The technical selection and clock row is gone. Current match updates remain in the
+marquee. Composition charts are removed from both sidebars and preparation; survival,
+strategy and motion statistics remain. Arena geometry and simulation are unchanged.</p>
+<img src="captures/21-type-bold.png" alt="Wide match layout with opponent plate and framed LED sign">
+<h2>Compact window</h2>
+<img src="captures/28-compact-layout.png" alt="1280 by 800 window with stacked opponent identity">
+<h2>The sign in motion</h2>
+<p>The casing and bulbs stay fixed while messages scroll, stop, flash and resume.</p>
+<img src="matrix-performance.gif" alt="Actual rendered marquee sequence">
+<h2>Original pixel scale</h2>
+<img src="captures/portrait-native-pixels.png" alt="Nico and both commentators at native scale">
+<small>Captures from the running Godot project. Earlier versions remain preserved in v44 and v45.</small>
+</html>

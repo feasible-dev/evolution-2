@@ -14,7 +14,7 @@ public partial class RulePreparationPanel : Control
     public Button CommitButton { get; private set; } = null!;
     public Button ClearButton { get; private set; } = null!;
     private Label _budget = null!, _remaining = null!, _notice = null!, _context = null!;
-    private readonly List<Label> _chances = new(), _mix = new();
+    private readonly List<Label> _chances = new();
     private const float PanelWidth = 660;
 
     public override void _Ready()
@@ -49,15 +49,7 @@ public partial class RulePreparationPanel : Control
         Place(CommitButton, 0, 463, PanelWidth, 40);
         _notice = Text(this, "", 14, Muted); _notice.AutowrapMode = TextServer.AutowrapMode.WordSmart;
         Place(_notice, 0, 509, PanelWidth, 41);
-        var mixTitle = Text(this, L10n.Text("plan.population"), 14, Accent); Place(mixTitle, 0, 570, PanelWidth, 28);
-        for (var i = 0; i < 4; i++)
-        {
-            var name = i < 3 ? BehaviorCatalog.All[i].Name : L10n.Text("plan.no_rule");
-            var color = i < 3 ? BehaviorCatalog.All[i].Color : Muted;
-            var label = Text(this, name, 13, color); Place(label, i * 170, 614, 150, 22);
-            var value = Text(this, "", 15); Place(value, i * 170, 636, 150, 25); _mix.Add(value);
-        }
-        _context = Text(this, "", 13, Muted); Place(_context, 0, 665, PanelWidth, 30);
+        _context = Text(this, "", 13, Muted); Place(_context, 0, 557, PanelWidth, 30);
         Refresh();
     }
 
@@ -107,24 +99,9 @@ public partial class RulePreparationPanel : Control
         ClearButton.Disabled = Session.HasStarted;
         _notice.Text = Session.Notice;
         _notice.Modulate = Session.Pending.HasValue ? Pink : Colors.White;
-        for (var i = 0; i < 4; i++)
-            _mix[i].Text = Session.HasStarted ? $"{Session.Composition[i] * 100f / LevelOneSession.Population:0.0} %  ({Session.Composition[i]})" : "—";
         _context.Text = !Session.HasStarted ? L10n.Text("plan.empty_help") : Session.Pending.HasValue ? L10n.Text("plan.pending", Session.Period + 1)
             : L10n.Text("plan.active", Session.Active.Turn, Session.Active.Throttle, Session.Active.Direction, Session.AppliedAtGeneration);
         QueueRedraw();
     }
 
-    public override void _Draw()
-    {
-        DrawLine(new Vector2(0, 558), new Vector2(PanelWidth, 558), new Color("173962"));
-        if (!Session.HasStarted) { DrawRect(new Rect2(0, 599, PanelWidth, 6), new Color("102743")); return; }
-        var x = 0f;
-        var colors = new[] { BehaviorCatalog.All[0].Color, BehaviorCatalog.All[1].Color, BehaviorCatalog.All[2].Color, new Color("4e6e99") };
-        for (var i = 0; i < 4; i++)
-        {
-            var width = PanelWidth * Session.Composition[i] / LevelOneSession.Population;
-            if (width > 0) DrawRect(new Rect2(x, 599, width, 6), colors[i]);
-            x += width;
-        }
-    }
 }

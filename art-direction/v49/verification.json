@@ -1,0 +1,24 @@
+{
+  "version": "v49",
+  "branch": "feat/compact-studio-v49",
+  "build": "dotnet build prototype/EvolutionTwo.csproj --nologo",
+  "buildResult": "Passed, zero warnings and errors",
+  "runtimeReview": "Godot --broadcast-review --lang=en",
+  "checks": {
+    "studioCompositingTimingLayout": 37,
+    "directionAndAttention": 35,
+    "marquee": 27,
+    "opponentReaction": 58,
+    "broadcastSchedulingAndPixels": 109,
+    "total": 266
+  },
+  "reviewedCaptures": [
+    "captures/01-level.png",
+    "captures/06-standing-reaction.png",
+    "captures/28-quiet-studio.png",
+    "captures/29-compact-layout.png"
+  ],
+  "resolutions": ["1920x1080", "1280x800"],
+  "sourceSprites": "Unchanged; edge-connected mattes are removed into cached runtime textures.",
+  "scope": "Presentation only; live PvP deck swapping remains future work."
+}

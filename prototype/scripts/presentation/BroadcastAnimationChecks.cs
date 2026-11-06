@@ -6,6 +6,7 @@ public static class BroadcastAnimationChecks
 {
     public static void Run(BroadcastScene scene)
     {
+        StudioPresentationChecks.Run(scene);
         var checks = 0;
         void Check(bool condition, string message)
         {
@@ -141,10 +142,24 @@ public static class BroadcastAnimationChecks
         {
             Run(scene);
             if (DisplayServer.GetName() == "headless") { scene.GetTree().Quit(); return; }
-            var folder=ProjectSettings.GlobalizePath("res://../art-direction/v44/captures");
+            var folder=ProjectSettings.GlobalizePath("res://../art-direction/v49/captures");
             Directory.CreateDirectory(folder);
             using (var neutral = scene.OpponentIdentity.DisplayedPortrait!.GetImage())
                 neutral.SavePng(Path.Combine(folder,"nico-neutral.png"));
+            using (var pixelScale = Image.CreateEmpty(512,128,false,Image.Format.Rgba8))
+            {
+                pixelScale.Fill(new Color("080f1c"));
+                using var opponent=scene.OpponentIdentity.DisplayedPortrait!.GetImage();
+                opponent.Convert(Image.Format.Rgba8);
+                pixelScale.BlitRect(opponent,new Rect2I(0,0,128,128),Vector2I.Zero);
+                for(var actor=0;actor<2;actor++)
+                {
+                    using var presenter=scene.Presenters[actor].Texture.GetImage();
+                    presenter.Convert(Image.Format.Rgba8);
+                    pixelScale.BlitRect(presenter,new Rect2I(0,0,192,128),new Vector2I(128+actor*192,0));
+                }
+                pixelScale.SavePng(Path.Combine(folder,"portrait-native-pixels.png"));
+            }
             await scene.ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
             using(var cards=scene.GetViewport().GetTexture().GetImage())cards.SavePng(Path.Combine(folder,"00-direction-cards.png"));
             scene.Session.Tick(4); scene.Session.Tick(1.2f); scene.SyncUi();
@@ -194,6 +209,56 @@ public static class BroadcastAnimationChecks
                 screen.SavePng(Path.Combine(folder,$"nico-{reaction.ToString().ToLowerInvariant()}.png"));
             }
             scene.OpponentIdentity.ShowReaction(default);
+            scene.Billboard.SetProcess(false);
+            scene.Billboard.Strip.SetProcess(false);
+            scene.Billboard.Strip.Impact=0;
+            var signSamples=new (string Name, MarqueeCue Cue, double Age)[]
+            {
+                ("20-type-regular",new("NICO / 95%    US / 98%",MarqueePalette.OrangeBlue,true,false,MarqueeMotion.Hold),0),
+                ("21-type-bold",new("NICO / 95%    US / 98%",MarqueePalette.OrangeBlue,true,true,MarqueeMotion.Hold),0),
+                ("22-sign-enter",new("WHO WILL SURVIVE?",MarqueePalette.Orange,Motion:MarqueeMotion.StopFlash),.5),
+                ("23-sign-stop",new("WHO WILL SURVIVE?",MarqueePalette.Orange,Motion:MarqueeMotion.StopFlash),2.8),
+                ("24-sign-flash-off",new("WHO WILL SURVIVE?",MarqueePalette.Orange,Motion:MarqueeMotion.StopFlash),3.55),
+                ("25-sign-flash-on",new("WHO WILL SURVIVE?",MarqueePalette.Orange,Motion:MarqueeMotion.StopFlash),3.75),
+                ("26-sign-resume",new("WHO WILL SURVIVE?",MarqueePalette.Orange,Motion:MarqueeMotion.StopFlash),6.7),
+                ("27-sign-burst",new("100%",MarqueePalette.OrangeBlue,true,Motion:MarqueeMotion.Burst),.3)
+            };
+            foreach(var sample in signSamples)
+            {
+                scene.Billboard.Strip.SetCue(sample.Cue);
+                scene.Billboard.Strip.RenderAt(sample.Age);
+                await scene.ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
+                using var screen=scene.GetViewport().GetTexture().GetImage();
+                screen.SavePng(Path.Combine(folder,sample.Name+".png"));
+            }
+            var sequenceFolder=Path.Combine(folder,"sign-sequence");
+            Directory.CreateDirectory(sequenceFolder);
+            for(var i=0;i<102;i++)
+            {
+                var burst=i>=90;
+                var cue=burst?new MarqueeCue("ENERGY / NICO 82% / US 85%",MarqueePalette.Orange,true,Motion:MarqueeMotion.Burst)
+                    :new MarqueeCue("WHO WILL SURVIVE?",MarqueePalette.Orange,Motion:MarqueeMotion.StopFlash);
+                scene.Billboard.Strip.SetCue(cue);
+                scene.Billboard.Strip.RenderAt((burst?i-90:i)*.1);
+                await scene.ToSignal(RenderingServer.Singleton,RenderingServer.SignalName.FramePostDraw);
+                using var screen=scene.GetViewport().GetTexture().GetImage();
+                var scale=screen.GetWidth()/scene.Size.X;
+                var rect=new Rect2I((int)(scene.Billboard.Position.X*scale),(int)(scene.Billboard.Position.Y*scale),
+                    (int)(scene.Billboard.Size.X*scale),(int)(scene.Billboard.Size.Y*scale));
+                using var strip=screen.GetRegion(rect);
+                strip.SavePng(Path.Combine(sequenceFolder,$"{i:000}.png"));
+            }
+            await scene.ToSignal(scene.GetTree().CreateTimer(12), SceneTreeTimer.SignalName.Timeout);
+            await scene.ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+            using (var quiet = scene.GetViewport().GetTexture().GetImage())
+                quiet.SavePng(Path.Combine(folder, "28-quiet-studio.png"));
+            scene.GetWindow().Size = new Vector2I(1280, 800);
+            await scene.ToSignal(scene.GetTree().CreateTimer(.3), SceneTreeTimer.SignalName.Timeout);
+            scene.Billboard.Strip.SetCue(new("WHO WILL SURVIVE?", MarqueePalette.Orange, true, Motion: MarqueeMotion.Hold));
+            scene.Billboard.Strip.RenderAt(0);
+            await scene.ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+            using (var compact = scene.GetViewport().GetTexture().GetImage())
+                compact.SavePng(Path.Combine(folder, "29-compact-layout.png"));
             scene.GetTree().Quit();
         }
         catch(Exception ex) { GD.PushError(ex.ToString()); scene.GetTree().Quit(1); }
