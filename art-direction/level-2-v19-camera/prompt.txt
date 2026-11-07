@@ -1,0 +1,10 @@
+Use case: identity-preserve. Create a CAMERA-FACING ENDING VARIANT of this existing4x4 Nao animation sheet. Preserve exact fictional adult20-year-old character identity, head size, detailed pixel art, brown hair, navy cropped stadium tee with red-white badge, white shorts, restrained proportions, same4x4 equal-cell grid, same background and fixed framing.
+Keep cells0-7 (top two rows) unchanged: existing double peace fan.
+For cells8-15 (bottom two rows), keep the SAME action of arms lowering and hands joining loosely BEHIND the lower back, but she DOES NOT turn toward the arena. Instead she settles facing the PHOTOGRAPHER/viewer, head upright and chin level, eyes making straightforward friendly eye contact.
+Expression: a HAPPY OPPONENT pleased to participate, simply cheerful, sincere and relaxed. Small symmetrical closed-mouth smile, warm attentive eyes, natural eyebrows. No coy sideways head tilt, no looking up through lashes, no puckered lips, no blush, no theatrical shyness. This is an ordinary friendly contestant portrait. Do not age down, enlarge eyes, enlarge chest, arch back or jut hips.
+cell8 hands at waist, head straightens after peace gesture.
+cell9 hands beside hips, shoulders and torso settling face-on.
+cell10 arms move behind lower back; face and eyes stay toward viewer, smile softens into sincere contentment.
+cell11 hands clasped behind back, hidden by torso, arms softly curve back, shoulders down and comfortable.
+cells12-15 hold same front-facing relaxed opponent stance, happy simple closed-lip smile and open attentive eyes; cell13 only a brief natural blink. Keep all four heads upright, SAME head size and body proportions, no posing changes between holds.
+No change to gesture or outfit in top half, no text, borders, extra props, mouth-covering or laugh. Produce the entire corrected4x4atlas. This variant is intentionally different from the separately preserved arena-facing version.

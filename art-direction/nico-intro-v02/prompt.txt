@@ -1,0 +1,10 @@
+Precise local edit to this 4x4 sprite sheet of Nico Valdes. Keep the exact same man, face, age, thinning hair, crooked glasses, moustache, mustard T-shirt, body size, pixel style, background and cell grid. Preserve all other poses.
+Replace the TWO-FINGER GREETING with a shy SMALL OPEN-HAND WAVE. No peace/V sign, no two-finger salute, no military salute.
+Change these row-major zero-indexed cells:
+7 (row2 col4): just after adjusting glasses, the hand withdraws and ALL FOUR fingers start uncurling together, thumb naturally apart.
+8 (row3 col1): hand raised only beside shoulder/lower cheek, open palm gently toward viewer; FOUR relaxed fingers close together, thumb apart. Elbow low close to torso. A hesitant friendly greeting.
+9 (row3 col2): same open palm, tiny wrist tilt outward around10degrees, soft modest smile, shoulders relaxed.
+10 (row3 col3): same OPEN hand, wrist tilts slightly back inward, small restrained wave. Fingers remain relaxed and together; absolutely no V.
+11 (row3 col4): open relaxed hand descending from shoulder to chest.
+12 (row4 col1): hand continuing down, fingers relaxing naturally.
+All five digits should be anatomically correct and the palm readable. The hand is normal size, not oversized. Do not raise arm overhead or make a broad wave. It is an awkward modest 'hello' from a gentle unassuming man. The glasses adjustment in cells4-6 stays unchanged; touching glasses with fingertips is okay but the GREETING must be the whole hand. Keep head size, body alignment and other pixels unchanged. Output the entire corrected 4x4 atlas with original2:3 aspect ratio.

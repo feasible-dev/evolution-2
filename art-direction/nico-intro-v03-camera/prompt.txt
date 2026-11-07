@@ -1,0 +1,7 @@
+Use case: identity-preserve. Make a CAMERA-FACING ENDING VARIANT of this Nico Valdes4x4sprite atlas. Preserve exact original middle-aged man, uneven eyes, thinning comb-over, crooked thin gold glasses, long nose, sparse moustache, mustard pocket T-shirt, brown pants, all anatomy, head size, pixel detail and dark-purple background. Same4x4grid, exact scale.
+Keep cells0-12 COMPLETELY UNCHANGED, including adjusting glasses and the shy OPEN-HAND WAVE with all fingers relaxed together. NO peace sign or two-finger greeting.
+Change ONLY cells13,14,15 (last three cells of bottom row):
+13: his waving hand settles beside hip, shoulders relaxed; he keeps his eyes toward the VIEWER/CAMERA rather than turning to screen right.
+14: arms resting naturally at sides, head upright and very nearly facing front, both eyes visibly looking toward photographer. Small warm closed-mouth smile, a little awkward but happy to be here.
+15: same camera-facing resting pose and kind simple smile, same body positioning and head size. No large grin, no theatrical expression.
+This must clearly be eye contact with the viewer, NOT looking at the arena off to the right. Keep body mostly frontal just as source. No redesign or beautification. The original arena-looking ending is separately preserved; this is the alternative. Entire16cell sheet, no text or labels.

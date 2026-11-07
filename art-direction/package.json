@@ -1,0 +1,7 @@
+{
+  "name": "evolution-wars-art-tools",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Optional local tools for retained sprite sources",
+  "dependencies": { "sharp": "0.34.5" }
+}

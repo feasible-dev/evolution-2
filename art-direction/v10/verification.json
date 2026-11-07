@@ -1,9 +1,0 @@
-{
-  "nativeRender": "passed",
-  "nativeButtonFlips": 16,
-  "slidersRetained": true,
-  "reticles": 8,
-  "captures": 10,
-  "webScriptSyntax": "passed",
-  "missingFiles": []
-}

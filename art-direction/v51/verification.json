@@ -1,9 +1,0 @@
-{
-  "build": "PASS, 0 warnings, 0 errors",
-  "visual_checks": 46,
-  "review_exit_code": 0,
-  "reviewed_resolutions": ["1920x1080", "1280x800"],
-  "reviewed_poses": ["seated", "glance", "rink", "excited", "standing", "table-impact"],
-  "full_simulation_rerun": false,
-  "scope": "Rendering, layout and standing sprites only; simulation unchanged"
-}

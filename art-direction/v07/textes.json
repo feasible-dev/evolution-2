@@ -1,9 +1,0 @@
-{
-  "title": "CIBLE",
-  "front": "Accélère vers sa cible.",
-  "back": "Chaque point possède sa cible. La position de cette cible est héritée et peut muter.",
-  "sliderLabel": "Poids",
-  "source": "prototype/scripts/presentation/BehaviorCatalog.cs + prototype/scripts/vendor/core/GeneRuleEvaluator.cs",
-  "rulesUntouched": true,
-  "noCostOrPopulationPrediction": true
-}

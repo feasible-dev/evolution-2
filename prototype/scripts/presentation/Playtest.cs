@@ -208,10 +208,11 @@ public static class Playtest
             CheckLocalization();
             var s = scene.Session;
             Check(scene.Preparation.Cards.Length == 3, "three approved cards are in the playable scene");
-            Check(MathF.Abs(scene.Presenters[1].Position.X - scene.Presenters[0].Position.X - 192) < .01f,
+            Check(MathF.Abs(scene.Presenters[1].Position.X - scene.Presenters[0].GetRect().End.X) < .01f
+                && MathF.Abs(scene.Presenters[1].Position.X - scene.Size.X * .5f) < .01f,
                 "presenters sit together at the center");
             Check(scene.BubbleArea(0).End.X < scene.Presenters[0].Position.X
-                && scene.BubbleArea(1).Position.X > scene.Presenters[1].Position.X + 192,
+                && scene.BubbleArea(1).Position.X > scene.Presenters[1].GetRect().End.X,
                 "Gerard's bubble stays left and Rene's bubble stays right");
             var gerardLine = scene.SpeechFor(0);
             s.Tick(4); s.Tick(1); scene.SyncUi();

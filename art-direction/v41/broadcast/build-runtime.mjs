@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
-import sharp from '../../../.cache/sprite-tools/node_modules/sharp/lib/index.js';
+import sharp from 'sharp';
 const dir=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(dir,'../../..'),out=path.join(root,'prototype/assets/broadcast-v41');
 await fs.mkdir(out,{recursive:true});

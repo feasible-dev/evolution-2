@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import sharp from '../../.cache/sprite-tools/node_modules/sharp/lib/index.js';
+import sharp from 'sharp';
 const dir=path.dirname(fileURLToPath(import.meta.url));
 const out=path.resolve(dir,'../../prototype/assets/broadcast-v38');
 // Original five-column scoreboard alphabet. Each number is one five-bit row.

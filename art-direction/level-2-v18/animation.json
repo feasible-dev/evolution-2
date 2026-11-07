@@ -1,0 +1,339 @@
+{
+  "character": "Nao Morita",
+  "age": 20,
+  "city": "Fukuoka, Japan",
+  "status": "Animation preview; not integrated into game",
+  "generator": "Built-in imagegen finale revision; existing v13 dance frames preserved",
+  "sources": [
+    "nao-dance-base.png",
+    "nao-finale-sheet.png"
+  ],
+  "nativeFrame": {
+    "width": 192,
+    "height": 192
+  },
+  "atlas": {
+    "columns": 4,
+    "rows": 8
+  },
+  "crops": [
+    {
+      "left": 0,
+      "top": 0,
+      "width": 296,
+      "height": 333
+    },
+    {
+      "left": 296,
+      "top": 0,
+      "width": 295,
+      "height": 333
+    },
+    {
+      "left": 591,
+      "top": 0,
+      "width": 296,
+      "height": 333
+    },
+    {
+      "left": 887,
+      "top": 0,
+      "width": 295,
+      "height": 333
+    },
+    {
+      "left": 0,
+      "top": 333,
+      "width": 296,
+      "height": 332
+    },
+    {
+      "left": 296,
+      "top": 333,
+      "width": 295,
+      "height": 332
+    },
+    {
+      "left": 591,
+      "top": 333,
+      "width": 296,
+      "height": 332
+    },
+    {
+      "left": 887,
+      "top": 333,
+      "width": 295,
+      "height": 332
+    },
+    {
+      "left": 0,
+      "top": 665,
+      "width": 296,
+      "height": 333
+    },
+    {
+      "left": 296,
+      "top": 665,
+      "width": 295,
+      "height": 333
+    },
+    {
+      "left": 591,
+      "top": 665,
+      "width": 296,
+      "height": 333
+    },
+    {
+      "left": 887,
+      "top": 665,
+      "width": 295,
+      "height": 333
+    },
+    {
+      "left": 0,
+      "top": 998,
+      "width": 296,
+      "height": 332
+    },
+    {
+      "left": 296,
+      "top": 998,
+      "width": 295,
+      "height": 332
+    },
+    {
+      "left": 591,
+      "top": 998,
+      "width": 296,
+      "height": 332
+    },
+    {
+      "left": 887,
+      "top": 998,
+      "width": 295,
+      "height": 332
+    }
+  ],
+  "sequence": [
+    {
+      "frame": 0,
+      "durationMs": 230
+    },
+    {
+      "frame": 1,
+      "durationMs": 200
+    },
+    {
+      "frame": 2,
+      "durationMs": 230
+    },
+    {
+      "frame": 3,
+      "durationMs": 200
+    },
+    {
+      "frame": 0,
+      "durationMs": 230
+    },
+    {
+      "frame": 1,
+      "durationMs": 200
+    },
+    {
+      "frame": 2,
+      "durationMs": 230
+    },
+    {
+      "frame": 3,
+      "durationMs": 200
+    },
+    {
+      "frame": 12,
+      "durationMs": 160
+    },
+    {
+      "frame": 14,
+      "durationMs": 140
+    },
+    {
+      "frame": 4,
+      "durationMs": 230
+    },
+    {
+      "frame": 5,
+      "durationMs": 200
+    },
+    {
+      "frame": 6,
+      "durationMs": 230
+    },
+    {
+      "frame": 7,
+      "durationMs": 200
+    },
+    {
+      "frame": 4,
+      "durationMs": 230
+    },
+    {
+      "frame": 5,
+      "durationMs": 200
+    },
+    {
+      "frame": 6,
+      "durationMs": 230
+    },
+    {
+      "frame": 7,
+      "durationMs": 200
+    },
+    {
+      "frame": 14,
+      "durationMs": 200
+    },
+    {
+      "frame": 8,
+      "durationMs": 200
+    },
+    {
+      "frame": 9,
+      "durationMs": 200
+    },
+    {
+      "frame": 10,
+      "durationMs": 200
+    },
+    {
+      "frame": 11,
+      "durationMs": 200
+    },
+    {
+      "frame": 8,
+      "durationMs": 200
+    },
+    {
+      "frame": 9,
+      "durationMs": 200
+    },
+    {
+      "frame": 10,
+      "durationMs": 200
+    },
+    {
+      "frame": 11,
+      "durationMs": 200
+    },
+    {
+      "frame": 8,
+      "durationMs": 200
+    },
+    {
+      "frame": 9,
+      "durationMs": 200
+    },
+    {
+      "frame": 10,
+      "durationMs": 200
+    },
+    {
+      "frame": 11,
+      "durationMs": 200
+    },
+    {
+      "frame": 8,
+      "durationMs": 200
+    },
+    {
+      "frame": 9,
+      "durationMs": 200
+    },
+    {
+      "frame": 10,
+      "durationMs": 200
+    },
+    {
+      "frame": 11,
+      "durationMs": 200
+    },
+    {
+      "frame": 14,
+      "durationMs": 140
+    },
+    {
+      "frame": 16,
+      "durationMs": 180
+    },
+    {
+      "frame": 17,
+      "durationMs": 160
+    },
+    {
+      "frame": 18,
+      "durationMs": 160
+    },
+    {
+      "frame": 19,
+      "durationMs": 170
+    },
+    {
+      "frame": 20,
+      "durationMs": 200
+    },
+    {
+      "frame": 21,
+      "durationMs": 350
+    },
+    {
+      "frame": 22,
+      "durationMs": 550
+    },
+    {
+      "frame": 23,
+      "durationMs": 180
+    },
+    {
+      "frame": 24,
+      "durationMs": 180
+    },
+    {
+      "frame": 25,
+      "durationMs": 180
+    },
+    {
+      "frame": 26,
+      "durationMs": 180
+    },
+    {
+      "frame": 27,
+      "durationMs": 350
+    },
+    {
+      "frame": 28,
+      "durationMs": 750
+    },
+    {
+      "frame": 29,
+      "durationMs": 120
+    },
+    {
+      "frame": 30,
+      "durationMs": 650
+    },
+    {
+      "frame": 31,
+      "durationMs": 1600
+    }
+  ],
+  "durationMs": 13240,
+  "finaleDurationMs": 5960,
+  "finaleRange": {
+    "start": 36,
+    "end": 52
+  },
+  "notes": [
+    "Preserves the v13 dance pixels and choreography.",
+    "Double peace transitions to a simple relaxed smile; hands join behind the back while torso, head and eyes turn screen-right and slightly downward toward the rink.",
+    "No mouth-covering gesture or laughter. Interactive preview plays once and holds the final stance; GIF repeats for review.",
+    "Finale uses timed key poses with no programmatic body deformation."
+  ]
+}

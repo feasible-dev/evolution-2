@@ -1,9 +1,0 @@
-{
-  "build": {"project": "prototype/EvolutionTwo.csproj", "errors": 0, "warnings": 0},
-  "broadcast": {"checks": 31, "result": "passed", "covers": ["unanswered glances in both directions", "delayed reply and separate return", "event cooldown and priority", "restart", "real mouth pixel changes for both actors", "stable speech body pixels", "held partner during rise"]},
-  "firstLevel": {"checks": 28519, "generations": 40, "result": "passed", "latestSurvivors": 237, "bestSurvivors": 240, "extinctions": 0},
-  "rootSimulationTests": {"result": "all passed", "warning": "Existing Godot ScriptPathAttributeGenerator warning in the console test project: GodotProjectDir is empty."},
-  "visual": {"engine": "Godot 4.6.1 .NET / OpenGL", "captures": "captures/", "count": 7, "reviewed": true},
-  "retainedArtVersions": [34, 35],
-  "artDirection": "Simplified playable trial; retain the option of a more textured midpoint later."
-}

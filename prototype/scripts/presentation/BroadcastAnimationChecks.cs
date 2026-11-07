@@ -160,7 +160,7 @@ public static class BroadcastAnimationChecks
             if (OS.GetCmdlineUserArgs().Contains("--visual-only")) StudioPresentationChecks.Run(scene);
             else Run(scene);
             if (DisplayServer.GetName() == "headless") { scene.GetTree().Quit(); return; }
-            var folder=ProjectSettings.GlobalizePath("res://../art-direction/v52/captures");
+            var folder=ProjectSettings.GlobalizePath("res://../.cache/captures/broadcast");
             Directory.CreateDirectory(folder);
             using (var neutral = scene.OpponentIdentity.DisplayedPortrait!.GetImage())
                 neutral.SavePng(Path.Combine(folder,"nico-neutral.png"));

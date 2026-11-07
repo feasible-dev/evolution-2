@@ -22,3 +22,10 @@ prototype/*.slnx
 prototype/*.csproj.user
 prototype/*.log
 .cache/
+
+# Local art tooling and regenerable single-frame exports
+node_modules/
+art-direction/level-2-v18/frames/
+art-direction/level-2-v19-camera/frames/
+art-direction/nico-intro-v02/frames/
+art-direction/nico-intro-v03-camera/frames/

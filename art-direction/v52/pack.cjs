@@ -1,5 +1,5 @@
 // Run from the repository root after generating the saved source images.
-const s=require('../../.cache/sprite-tools/node_modules/sharp');
+const s=require('sharp');
 (async()=>{
 await s('art-direction/v52/excited-source.png').resize(768,256,{kernel:'nearest'}).toFile('prototype/assets/studio-v52/gerard-excited.png');
 await s('art-direction/v52/sit-source.png').resize(384,384,{kernel:'nearest'}).toFile('prototype/assets/studio-v52/gerard-sit.png');

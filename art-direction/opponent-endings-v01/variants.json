@@ -1,0 +1,17 @@
+{
+  "status": "Alternative endings preserved for art-direction review; not integrated into runtime",
+  "defaultDirection": null,
+  "variants": [
+    {"character":"Nao Morita","level":2,"direction":"rink","label":"Toward the rink","directory":"../level-2-v18","atlas":"nao-pikki-native.png","width":192,"height":192,"finalFrame":31},
+    {"character":"Nao Morita","level":2,"direction":"camera","label":"Toward the photographer","directory":"../level-2-v19-camera","atlas":"nao-pikki-native.png","width":192,"height":192,"finalFrame":31},
+    {"character":"Nico Valdes","level":1,"direction":"rink","label":"Toward the rink","directory":"../nico-intro-v02","atlas":"nico-intro-native.png","width":128,"height":192,"finalFrame":15},
+    {"character":"Nico Valdes","level":1,"direction":"camera","label":"Toward the photographer","directory":"../nico-intro-v03-camera","atlas":"nico-intro-native.png","width":128,"height":192,"finalFrame":15}
+  ],
+  "notes": [
+    "Both orientations are retained for each opponent; no global direction has been selected.",
+    "Nao: same double peace, then hands behind back; camera variant has upright head, simple happy smile and direct friendly gaze.",
+    "Nico: same glasses adjustment and shy open-hand wave, then rink gaze or a friendly camera-facing rest.",
+    "The native pixel scale is shared; portrait canvases differ in width.",
+    "No runtime animation, simulation or game behavior was changed."
+  ]
+}

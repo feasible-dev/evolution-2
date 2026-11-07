@@ -1,123 +1,52 @@
-# Evolution Prototype Agent Notes
+# Evolution Wars agent notes
 
-This file is for coding assistants working in this repository.
+## Read first
 
-## Project Goal
+1. `README.md` — run the correct project.
+2. `docs/CURRENT_STATE.md` — approved art, current functionality, pending work.
+3. `EVOLUTION_GAME_AGENT_GUIDE.md` — architecture and verification.
+4. `FIRST_LEVEL_DIRECTION.md`, `MUTATION_CARD_DESIGN.md` for gameplay changes.
 
-This repository contains a Godot 4.6 + C# evolution sandbox prototype.
+## Project boundaries
 
-The project is no longer just a movement MVP. The current baseline already includes:
+The current game is `prototype/project.godot` / `prototype/EvolutionTwo.csproj`,
+Godot 4.6.1 .NET, C# on .NET 8. Root `project.godot` is the older sandbox.
+Current runtime code is in `prototype/scripts/presentation/` plus the vendored
+engine in `prototype/scripts/vendor/`. Root `scripts/` is not the active game's
+engine. Inspect vendor manifests before porting changes between the two.
 
-- a 2D sandbox with continuous physics
-- per-agent decision timing
-- energy, drag, braking, and mass-aware movement
-- generation-based selection, reproduction, and mutation
-- a Godot HUD for live controls
-- a first evolution graph panel with per-generation history
+Keep responsibilities separate: core state/physics, evolution, analytics, game
+orchestration, rendering and reusable UI. Keep simulation engine-light; no heavy
+node per agent. Prefer plain C#, explicit loops, readable code and English comments.
+Keep equal physics rules for both teams. Avoid layout shifts in empty charts.
 
-The next work should preserve that structure while extending the experiment surface for the player.
+For the legacy sandbox only, defaults live in both `scripts/game/RunConfiguration.cs`
+and `scenes/sandbox/SandboxScene.tscn`; keep window/layout sizing consistent with
+its `project.godot`. These are not the playable slice's defaults.
 
-## Architectural Rules
+## Verification
 
-Keep the project split by responsibility:
+- Active game: `.\Lancer-Evolution2.ps1 -Test`.
+- Root engine: `dotnet build evo-prototype.csproj` and
+  `dotnet run --project tests/EvoPrototype.Tests/EvoPrototype.Tests.csproj`.
+- Art: approved review links and optional rebuilds in `art-direction/README.md`.
+- Godot can lock compiled DLLs while playing. Stop relevant Play before rebuilding.
 
-- `scripts/core/`: agent state, physics, simulation loop, observations, intents
-- `scripts/evolution/`: survival rules, mutation, reproduction, generation cycle
-- `scripts/analytics/`: generation snapshots, history, metric definitions
-- `scripts/game/`: runtime orchestration and scene-level coordination
-- `scripts/rendering/`: sandbox world rendering
-- `scripts/ui/`: reusable UI drawing widgets such as charts
+## Art and repository hygiene
 
-Simulation and evolution logic should stay as engine-light as practical. Godot should orchestrate, render, and expose controls, not own the model.
+`prototype/assets/` contains runtime assets. Do not delete older-numbered folders
+solely because their version number looks stale; current code uses several of them.
+`art-direction/` contains selected sources and review assets, not a second runtime.
+Neon option 02 and opponent entrances are approved but still pending integration.
+Keep both rink-facing and camera-facing opponent endings.
+Write fresh captures, videos and temporary output under ignored `.cache/`.
+Do not commit logs, imports, node_modules or per-frame exports. Preserve source
+sheets, prompts and timing needed to reproduce retained assets.
 
-## Current Runtime Model
+## Git
 
-The main sandbox scene currently provides:
-
-- a fixed world rectangle rendered on the left
-- a right-side control panel for evolution and physics parameters
-- a bottom graph panel for generation history
-
-The live cycle is:
-
-1. `Running` phase: agents move, spend energy, and decide asynchronously
-2. `Selection` phase: survival bands appear and doomed agents show death markers
-3. reproduction rebuilds the next generation through clonal mutation
-4. analytics capture one generation snapshot for the graph
-
-Current graph metrics:
-
-- deaths per generation
-- survival rate
-- average mass
-- average base throttle
-
-## Important Defaults
-
-The current tuning is intentionally faster than the original MVP:
-
-- `Speed`: `8.0`
-- `Life duration`: `10.0s`
-- `Drag`: `0.08`
-- `Mutation strength`: `0.03`
-- `Band thickness`: `12.0`
-
-If you change defaults, update both:
-
-- `scripts/game/RunConfiguration.cs`
-- `scenes/sandbox/SandboxScene.tscn`
-
-and keep `project.godot` window sizing aligned with the scene layout.
-
-## Testing Guidance
-
-There is a custom console test runner in:
-
-- `tests/EvoPrototype.Tests/Program.cs`
-
-Use it to protect:
-
-- physics invariants
-- overlap resolution
-- energy behavior
-- reproduction and selection flow
-- analytics and metric defaults
-
-Preferred commands:
-
-- `dotnet build evo-prototype.csproj`
-- `dotnet run --project tests/EvoPrototype.Tests/EvoPrototype.Tests.csproj`
-
-If Godot is running, the main build can fail because the DLL is locked. Stop `Play` or close Godot first.
-
-## Coding Style
-
-- Keep logic explicit and readable.
-- Prefer plain C# data and direct update loops.
-- Avoid clever abstractions unless they clearly reduce coupling.
-- Keep comments and user-facing text in English.
-- Prefer code that remains approachable to someone coming from Go or Python.
-
-## Godot Guidance
-
-- Do not create one heavy node per simulated agent.
-- Prefer drawing from shared simulation state.
-- Keep layout numbers consistent across `project.godot`, `RunConfiguration`, and the scene.
-- When adjusting graph visuals, avoid layout shifts between empty and non-empty states.
-
-## Git Workflow
-
-- Do not work directly on `master`.
-- Create a branch for each change and merge via GitHub review.
-- Local hooks may block direct commit or push to `master`.
-- When the user asks for review-before-change, propose the patch first.
-
-## Files To Read First
-
-- `EVOLUTION_GAME_AGENT_GUIDE.md`
-- `README.md`
-- `project.godot`
-- `scripts/core/Simulation.cs`
-- `scripts/evolution/EvolutionCycleController.cs`
-- `scripts/game/SandboxController.cs`
-- `scripts/ui/GenerationChart.cs`
+Do not work directly on `master`. Use a topic branch and GitHub review for merging.
+Inspect status, stage intended files, review the staged diff, then commit/push when
+requested. When the user requests review-before-change, show the patch first.
+Track stable Godot `.uid` files and project descriptors; ignore generated caches.
+See `ai-skills/godot-git-workflow/SKILL.md` for the repository workflow.

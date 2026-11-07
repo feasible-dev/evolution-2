@@ -1,0 +1,198 @@
+{
+  "character": "Nico Valdes",
+  "level": 1,
+  "status": "Entrance animation preview; not integrated into game",
+  "generator": "Built-in imagegen",
+  "source": "nico-intro-sheet.png",
+  "reference": "current-game-portrait.png",
+  "nativeFrame": {
+    "width": 128,
+    "height": 192
+  },
+  "crops": [
+    {
+      "left": 0,
+      "top": 0,
+      "width": 256,
+      "height": 384
+    },
+    {
+      "left": 256,
+      "top": 0,
+      "width": 256,
+      "height": 384
+    },
+    {
+      "left": 512,
+      "top": 0,
+      "width": 256,
+      "height": 384
+    },
+    {
+      "left": 768,
+      "top": 0,
+      "width": 256,
+      "height": 384
+    },
+    {
+      "left": 0,
+      "top": 384,
+      "width": 256,
+      "height": 384
+    },
+    {
+      "left": 256,
+      "top": 384,
+      "width": 256,
+      "height": 384
+    },
+    {
+      "left": 512,
+      "top": 384,
+      "width": 256,
+      "height": 384
+    },
+    {
+      "left": 768,
+      "top": 384,
+      "width": 256,
+      "height": 384
+    },
+    {
+      "left": 0,
+      "top": 768,
+      "width": 256,
+      "height": 384
+    },
+    {
+      "left": 256,
+      "top": 768,
+      "width": 256,
+      "height": 384
+    },
+    {
+      "left": 512,
+      "top": 768,
+      "width": 256,
+      "height": 384
+    },
+    {
+      "left": 768,
+      "top": 768,
+      "width": 256,
+      "height": 384
+    },
+    {
+      "left": 0,
+      "top": 1152,
+      "width": 256,
+      "height": 384
+    },
+    {
+      "left": 256,
+      "top": 1152,
+      "width": 256,
+      "height": 384
+    },
+    {
+      "left": 512,
+      "top": 1152,
+      "width": 256,
+      "height": 384
+    },
+    {
+      "left": 768,
+      "top": 1152,
+      "width": 256,
+      "height": 384
+    }
+  ],
+  "durationMs": 3840,
+  "sequence": [
+    {
+      "frame": 0,
+      "durationMs": 450,
+      "label": "Rest"
+    },
+    {
+      "frame": 1,
+      "durationMs": 200,
+      "label": "Notices camera"
+    },
+    {
+      "frame": 2,
+      "durationMs": 200,
+      "label": "Small smile"
+    },
+    {
+      "frame": 3,
+      "durationMs": 140,
+      "label": "Hand rising"
+    },
+    {
+      "frame": 4,
+      "durationMs": 160,
+      "label": "Touches glasses"
+    },
+    {
+      "frame": 5,
+      "durationMs": 180,
+      "label": "Adjusts glasses"
+    },
+    {
+      "frame": 6,
+      "durationMs": 140,
+      "label": "Releases glasses"
+    },
+    {
+      "frame": 7,
+      "durationMs": 140,
+      "label": "Greeting begins"
+    },
+    {
+      "frame": 8,
+      "durationMs": 200,
+      "label": "Open-hand greeting"
+    },
+    {
+      "frame": 9,
+      "durationMs": 230,
+      "label": "Small wrist wave"
+    },
+    {
+      "frame": 10,
+      "durationMs": 200,
+      "label": "Wrist returns"
+    },
+    {
+      "frame": 11,
+      "durationMs": 150,
+      "label": "Hand lowering"
+    },
+    {
+      "frame": 12,
+      "durationMs": 150,
+      "label": "Settles"
+    },
+    {
+      "frame": 13,
+      "durationMs": 150,
+      "label": "Settles toward camera"
+    },
+    {
+      "frame": 14,
+      "durationMs": 350,
+      "label": "Friendly camera glance"
+    },
+    {
+      "frame": 15,
+      "durationMs": 800,
+      "label": "Camera-facing rest"
+    }
+  ],
+  "notes": [
+    "Notices camera, adjusts glasses, gives a small shy open-hand wave, then settles facing the viewer. The rink-facing version is preserved separately in nico-intro-v02.",
+    "Same logical portrait size as runtime Nico; no programmatic body deformation.",
+    "Preview repeats for review; proposed entrance would play once."
+  ]
+}

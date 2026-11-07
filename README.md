@@ -1,50 +1,41 @@
-# Evolution Game Prototype
+# Evolution Wars
 
-Godot 4 + C# prototype for a simple 2D simulation.
+Godot 4.6.1 .NET / C# evolution tournament prototype. The playable vertical slice
+is in **`prototype/`**. The root Godot project is the older simulation sandbox.
 
-## Current Status
+## Start here
 
-The project now contains a basic MVP:
+- [Current state and next session](docs/CURRENT_STATE.md)
+- [Approved art and previews](art-direction/README.md)
+- [Architecture and checks](EVOLUTION_GAME_AGENT_GUIDE.md)
+- [First-level decisions](FIRST_LEVEL_DIRECTION.md)
+- [Future card vocabulary](MUTATION_CARD_DESIGN.md)
 
-- a sandbox scene
-- a pure C# simulation
-- 200 agents
-- continuous movement
-- bouncing at world boundaries
-- simple 2D rendering in Godot
+## Run
 
-## Structure
+Open **`prototype/project.godot`** in Godot 4.6.1 with .NET support, or from
+PowerShell at the repository root:
 
-```text
-prototype/
-  scenes/sandbox/
-  scripts/core/
-  scripts/game/
-  scripts/rendering/
-  scripts/ui/
+```powershell
+.\Lancer-Evolution2.ps1
+.\Lancer-Evolution2.ps1 -Language fr
+.\Lancer-Evolution2.ps1 -Test
 ```
 
-## First Run
+The launcher builds `prototype/EvolutionTwo.csproj`, imports changed images, and
+launches `Main.tscn`. It expects Godot under `C:\dev\tools\godot`; on another
+machine, update its installation path and `prototype/NuGet.Config`.
+.NET 8 is selected by `global.json`.
 
-1. Open the `prototype/` folder in Godot 4 with .NET/C# support.
-2. If Godot asks to generate the C# project files, accept.
-3. Wait for the C# project generation to finish.
-4. Run the project.
+## Art review
 
-The main scene is:
+```powershell
+python -m http.server 8774 --bind 127.0.0.1 --directory art-direction
+```
 
-`res://scenes/sandbox/SandboxScene.tscn`
+Open <http://127.0.0.1:8774/>. If that server is already running, use it.
+The retained neon sign and opponent introductions are approved review assets,
+**not yet integrated into the game**. Runtime textures remain in `prototype/assets`.
 
-## Important Files
-
-- `scripts/core/Simulation.cs`: main simulation loop
-- `scripts/core/Agent.cs`: agent data
-- `scripts/game/SandboxController.cs`: Godot orchestration
-- `scripts/rendering/SandboxRenderer.cs`: agent rendering
-
-## Next Steps
-
-- add pause / reset
-- display a few on-screen stats
-- introduce energy
-- add reproduction and mutation
+Generated captures and logs are local outputs, not versioned source. Work on a
+topic branch and submit changes through GitHub review; do not commit to `master`.

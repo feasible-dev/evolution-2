@@ -1,4 +1,4 @@
-const sharp=require('../../.cache/sprite-tools/node_modules/sharp');
+const sharp=require('sharp');
 (async()=>{
  const entries=[['broadcast-v41/gerard-conversation.png',0,0,128],['broadcast-v41/gerard-conversation.png',0,6*128,128],['broadcast-v41/rink.png',0,0,128],['broadcast-v41/excited.png',0,3*128,128],['studio-v51/gerard-standing.png',2*192,0,192],['studio-v51/gerard-standing.png',3*192,0,192],['studio-v51/gerard-standing.png',2*192,192,192]];
  const items=[];

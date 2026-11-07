@@ -29,7 +29,7 @@ try {
         & $godotConsole --headless --path $projectRoot --log-file (Join-Path $projectRoot 'playtest-smoke.log') -- --smoke-test "--lang=$Language"
         if ($LASTEXITCODE -ne 0) { throw 'Les verifications ont echoue.' }
     } elseif ($Captures) {
-        $capturesFolder = Join-Path $PSScriptRoot 'art-direction\v29\captures'
+        $capturesFolder = Join-Path $PSScriptRoot '.cache\captures\flow'
         New-Item -ItemType Directory -Path $capturesFolder -Force | Out-Null
         & $godotConsole --path $projectRoot --log-file (Join-Path $projectRoot 'playtest-capture.log') -- --capture-flow "--lang=$Language" | ForEach-Object {
             if ($_ -match '^GAME_CAPTURE:([a-z0-9-]+\.png):(.+)$') {
